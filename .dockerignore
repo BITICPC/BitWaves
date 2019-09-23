@@ -1,0 +1,8 @@
+bin\
+obj\
+
+.idea\
+.git\
+
+*.DS_Store
+*.DotSettings.user
