@@ -2,7 +2,7 @@ using System.Net;
 using BitWaves.WebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BitWaves.WebAPI.Controllers
+namespace BitWaves.WebAPI.Extensions
 {
     /// <summary>
     /// 为 <see cref="ControllerBase"/> 提供扩展方法。

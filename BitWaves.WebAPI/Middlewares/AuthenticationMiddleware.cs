@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using BitWaves.WebAPI.Features;
 using BitWaves.WebAPI.Models.Internals;
 using BitWaves.WebAPI.Services;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +11,7 @@ namespace BitWaves.WebAPI.Middlewares
     /// <summary>
     /// 提供 BitWaves 应用程序自定义的身份验证中间件。
     /// </summary>
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal sealed class AuthenticationMiddleware
     {
         private readonly RequestDelegate _next;
@@ -54,7 +56,7 @@ namespace BitWaves.WebAPI.Middlewares
                 return;
             }
 
-            context.Features.Set(token);
+            context.Features.Set(new BitWavesAuthenticationFeature(token));
 
             await _next(context);
         }

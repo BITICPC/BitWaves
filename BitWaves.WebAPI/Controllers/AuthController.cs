@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
+using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Models.Internals;
 using BitWaves.WebAPI.Services;

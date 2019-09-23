@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using BitWaves.Data;
+using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
