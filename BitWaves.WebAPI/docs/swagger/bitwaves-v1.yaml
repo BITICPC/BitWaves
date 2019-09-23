@@ -1,0 +1,66 @@
+swagger: '2.0'
+info:
+  description: BitWaves 后端接口文档
+  version: 1.0.0
+  title: BitWaves Web API Docs
+  contact:
+    email: msrlancern@126.com
+
+tags:
+  - name: users
+    description: 用于访问用户数据的 API
+
+paths:
+  /users:
+    post:
+      summary: 创建一个新用户
+      description: 创建一个新用户
+      tags:
+        - users
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: data
+          schema:
+            type: object
+            required:
+              - username
+              - password
+              - phone
+            properties:
+              username:
+                description: 用户名，长度至少为3个字符
+                type: string
+                example: Lancern
+              password:
+                description: 密码，长度至少为6个字符
+                type: string
+                example: hello_world
+              phone:
+                description: 手机号，应由11个数字组成
+                type: string
+                example: "13901234567"
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 数据模型验证失败，响应的body中包含模型验证错误信息
+        422:
+          description: 数据模型有效，但在创建用户过程中出现了错误
+          schema:
+            type: object
+            required:
+              - errorCode
+              - message
+            properties:
+              errorCode:
+                description: 错误码
+                type: integer
+                example: 1
+              message:
+                description: 错误消息
+                type: string
+                example: 用户名冲突
