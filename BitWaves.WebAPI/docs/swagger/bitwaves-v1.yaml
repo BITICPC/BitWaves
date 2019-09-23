@@ -9,6 +9,8 @@ info:
 tags:
   - name: users
     description: 用于访问用户数据的 API
+  - name: auth
+    description: 用于用户身份验证的 API
 
 paths:
   /users:
@@ -24,6 +26,7 @@ paths:
       parameters:
         - in: body
           name: data
+          required: true
           schema:
             type: object
             required:
@@ -64,3 +67,72 @@ paths:
                 description: 错误消息
                 type: string
                 example: 用户名冲突
+
+  /auth:
+    post:
+      summary: 创建用户身份验证标识
+      tags:
+        - auth
+      description: 创建用户身份验证标识
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: data
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+                description: 用户名
+                example: Lancern
+              password:
+                type: string
+                description: 密码
+                example: "hello_world"
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            type: object
+            required:
+              - username
+              - isAdmin
+              - jwt
+            properties:
+              username:
+                type: string
+                description: 用户名
+                example: Lancern
+              isAdmin:
+                type: boolean
+                description: 用户是否为管理员
+                example: true
+              jwt:
+                type: string
+                description: 编码用户身份验证信息的 JWT
+        400:
+          description: 数据模型验证失败
+        422:
+          description: 数据模型验证成功，但在执行用户身份验证时出现错误
+          schema:
+            type: object
+            required:
+              - errorCode
+              - message
+            properties:
+              errorCode:
+                type: integer
+                description: 错误代码
+                example: 1
+              message:
+                type: string
+                description: 错误消息
+                example: 用户不存在
+
