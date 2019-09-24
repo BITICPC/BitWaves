@@ -49,6 +49,14 @@ namespace BitWaves.WebAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                // 在开发环境下允许跨域请求
+                app.UseCors(builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
             }
             else
             {
