@@ -14,12 +14,10 @@ namespace BitWaves.WebAPI.Controllers
     public sealed class UsersController : ControllerBase
     {
         private readonly Repository _repo;
-        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(Repository repo, ILogger<UsersController> logger)
+        public UsersController(Repository repo)
         {
             _repo = repo;
-            _logger = logger;
         }
 
         [HttpPost]
