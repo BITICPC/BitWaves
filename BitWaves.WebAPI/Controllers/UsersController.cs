@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using BitWaves.Data;
+using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,17 @@ namespace BitWaves.WebAPI.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetUserInfo(string username)
+        {
+            var entity = await _repo.Users.Find(Builders<User>.Filter.Eq(u => u.Username, username))
+                                    .FirstOrDefaultAsync();
+            if (entity == null)
+                return NotFound();
+
+            return new ObjectResult(new UserInfo(entity));
         }
     }
 }

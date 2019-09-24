@@ -68,6 +68,60 @@ paths:
                 type: string
                 example: 用户名冲突
 
+  /users/{username}:
+    get:
+      summary: 获取用户信息
+      description: 获取用户信息
+      tags:
+        - users
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: username
+          type: string
+          required: true
+          description: 用户名
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            type: object
+            required:
+              - username
+              - joinTime
+              - totalSubmissions
+              - totalAccepted
+              - totalProblemsAttempted
+              - totalProblemsAccepted
+            properties:
+              username:
+                type: string
+                description: 用户名
+                example: Lancern
+              joinTime:
+                type: string
+                description: 用户加入 BITOJ 的时间，时区为 UTC 时区
+                example: "2019-9-24T10:00:00"
+              totalSubmissions:
+                type: integer
+                description: 用户总提交数量
+                example: 10
+              totalAccepted:
+                type: integer
+                description: 用户总 AC 提交数量
+                example: 3
+              totalProblemsAttempted:
+                type: integer
+                description: 用户总共尝试的题目数量
+                example: 2
+              totalProblemsAccepted:
+                type: integer
+                description: 用户总 AC 题目数量
+                example: 1
+        404:
+          description: 用户名未找到
+
   /auth:
     post:
       summary: 创建用户身份验证标识
