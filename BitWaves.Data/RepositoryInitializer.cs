@@ -35,23 +35,24 @@ namespace BitWaves.Data
         /// <summary>
         /// 初始化用户数据集。
         /// </summary>
-        /// <param name="force">是否强制初始化。</param>
-        private void InitializeUserCollection(bool force)
+        private void InitializeUserCollection()
         {
             _logger?.LogTrace("初始化用户数据集...");
-
-            if (!force && _repo.Users.Exists())
-            {
-                _logger?.LogTrace("用户数据集已经存在且初始化模式不是强制初始化模式。");
-                return;
-            }
 
             var indexesList = new List<CreateIndexModel<User>>
             {
                 // Username 上的唯一升序索引
                 // 注意：MongoDB 哈希索引不能保证唯一性，因此使用普通索引
                 new CreateIndexModel<User>(Builders<User>.IndexKeys.Ascending(user => user.Username),
-                                           new CreateIndexOptions { Unique = true })
+                                           new CreateIndexOptions { Unique = true }),
+                // TotalSubmissions 上的递减索引
+                new CreateIndexModel<User>(Builders<User>.IndexKeys.Descending(user => user.TotalSubmissions)),
+                // TotalAcceptedSubmissions 上的递减索引
+                new CreateIndexModel<User>(Builders<User>.IndexKeys.Descending(user => user.TotalAcceptedSubmissions)),
+                // TotalProblemsAttempted 上的递减索引
+                new CreateIndexModel<User>(Builders<User>.IndexKeys.Descending(user => user.TotalProblemsAttempted)),
+                // TotalProblemsAccepted 上的递减索引
+                new CreateIndexModel<User>(Builders<User>.IndexKeys.Descending(user => user.TotalProblemsAccepted))
             };
 
             _repo.Users.Indexes.CreateMany(indexesList);
@@ -61,12 +62,11 @@ namespace BitWaves.Data
         /// <summary>
         /// 初始化数据库。
         /// </summary>
-        /// <param name="force">是否强制初始化。</param>
-        public void Initialize(bool force = false)
+        public void Initialize()
         {
             _logger?.LogTrace("初始化 BitWaves 数据库...");
 
-            InitializeUserCollection(force);
+            InitializeUserCollection();
         }
 
         /// <summary>
