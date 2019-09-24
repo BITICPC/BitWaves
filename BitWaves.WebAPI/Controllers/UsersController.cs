@@ -1,10 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
@@ -52,6 +55,36 @@ namespace BitWaves.WebAPI.Controllers
                 return NotFound();
 
             return new ObjectResult(new UserInfo(entity));
+        }
+
+        private Expression<Func<User, object>> GetRanklistKeySelector(RanklistKey key)
+        {
+            switch (key)
+            {
+                case RanklistKey.TotalAccepted:
+                    return u => u.TotalAcceptedSubmissions;
+                case RanklistKey.TotalSubmissions:
+                    return u => u.TotalSubmissions;
+                case RanklistKey.TotalProblemsAccepted:
+                    return u => u.TotalProblemsAccepted;
+                case RanklistKey.TotalProblemsAttempted:
+                    return u => u.TotalProblemsAttempted;
+                default:
+                    throw new Exception("Unreachable code.");
+            }
+        }
+
+        [HttpGet("ranklist")]
+        public async Task<IActionResult> GetRanklist(
+            [FromQuery] RanklistKey by,
+            [FromQuery][Range(1, int.MaxValue)] int limit = 20)
+        {
+            var entities = await _repo.Users.Find(Builders<User>.Filter.Empty)
+                                      .SortByDescending(GetRanklistKeySelector(by))
+                                      .Limit(limit)
+                                      .ToListAsync();
+
+            return new ObjectResult(entities.Select(e => new UserInfo(e)));
         }
     }
 }
