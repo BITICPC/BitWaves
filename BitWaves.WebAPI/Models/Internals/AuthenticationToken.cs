@@ -30,6 +30,7 @@ namespace BitWaves.WebAPI.Models.Internals
             Contract.NotNull(user, nameof(user));
 
             UserIdRaw = user.Id.ToByteArray();
+            Username = user.Username;
             IsAdmin = user.IsAdmin;
             CreationTime = DateTime.UtcNow;
         }
@@ -45,6 +46,12 @@ namespace BitWaves.WebAPI.Models.Internals
         /// </summary>
         [JsonIgnore]
         public ObjectId UserId => new ObjectId(UserIdRaw);
+
+        /// <summary>
+        /// 获取用户名。
+        /// </summary>
+        [JsonProperty("username")]
+        public string Username { get; private set; }
 
         /// <summary>
         /// 获取用户是否为管理员。
