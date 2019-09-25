@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Extensions;
+using BitWaves.WebAPI.Filters;
 using BitWaves.WebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -55,6 +57,41 @@ namespace BitWaves.WebAPI.Controllers
                 return NotFound();
 
             return new ObjectResult(new UserInfo(entity));
+        }
+
+        [HttpPut("{username}")]
+        [RequireAuthentication]
+        public async Task<IActionResult> SetUserInfo(
+            string username,
+            [FromBody] UpdateUserModel model)
+        {
+            var authToken = HttpContext.GetAuthenticationToken();
+            if (authToken.Username != username && !authToken.IsAdmin)
+            {
+                return Forbid();
+            }
+
+            var updates = new List<UpdateDefinition<User>>();
+
+            if (model.Phone.HasValue)
+            {
+                updates.Add(Builders<User>.Update.Set(u => u.Phone, model.Phone.Value));
+            }
+
+            if (model.StudentId.HasValue)
+            {
+                updates.Add(Builders<User>.Update.Set(u => u.StudentId, model.StudentId.Value));
+            }
+
+            if (updates.Count == 0)
+            {
+                // 不需要执行任何更改
+                return Ok();
+            }
+
+            await _repo.Users.UpdateOneAsync(Builders<User>.Filter.Eq(u => u.Username, username),
+                                             Builders<User>.Update.Combine(updates));
+            return Ok();
         }
 
         private Expression<Func<User, object>> GetRanklistKeySelector(RanklistKey key)
