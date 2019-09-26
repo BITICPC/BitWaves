@@ -1,4 +1,6 @@
 using System;
+using System.Net;
+using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models.Internals;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -19,11 +21,12 @@ namespace BitWaves.WebAPI.Filters
         /// <inheritdoc />
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var authToken = context.HttpContext.Features.Get<AuthenticationToken>();
+            var authToken = context.HttpContext.GetAuthenticationToken();
             if (authToken == null)
             {
-                // 请求不携带有效的身份验证标识
-                context.Result = new ForbidResult();
+                // 请求不携带有效的身份验证标识，返回 403 Forbidden
+                // 注意：不要使用 ForbidResult，因为我们没有采用 ASP.Net Core MVC 内置的身份验证机制
+                context.Result = new StatusCodeResult((int) HttpStatusCode.Forbidden);
                 return;
             }
 

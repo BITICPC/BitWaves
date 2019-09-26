@@ -10,6 +10,7 @@ using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Filters;
 using BitWaves.WebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
@@ -113,7 +114,7 @@ namespace BitWaves.WebAPI.Controllers
 
         [HttpGet("ranklist")]
         public async Task<IActionResult> GetRanklist(
-            [FromQuery] RanklistKey by,
+            [FromQuery][BindRequired] RanklistKey by,
             [FromQuery][Range(1, int.MaxValue)] int limit = 20)
         {
             var entities = await _repo.Users.Find(Builders<User>.Filter.Empty)

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Utils
@@ -28,6 +29,7 @@ namespace BitWaves.WebAPI.Utils
         /// <exception cref="EmptyOptionalException">
         /// 当前的 <see cref="Optional{T}"/> 实例不包含任何值。
         /// </exception>
+        [ValidateNever]
         public T Value
         {
             get
