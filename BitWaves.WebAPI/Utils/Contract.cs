@@ -19,5 +19,29 @@ namespace BitWaves.WebAPI.Utils
             if (value == null)
                 throw new ArgumentNullException(variableName);
         }
+
+        /// <summary>
+        /// 检查给定的有符号值不为负值。
+        /// </summary>
+        /// <param name="value">要检查的值。</param>
+        /// <param name="variableName">变量名称。</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> 为负。</exception>
+        public static void NonNegative(long value, string variableName)
+        {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(variableName);
+        }
+
+        /// <summary>
+        /// 检查给定的有符号值为正值。
+        /// </summary>
+        /// <param name="value">要检查的值。</param>
+        /// <param name="variableName">变量名称。</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> 为负或零。</exception>
+        public static void Positive(long value, string variableName)
+        {
+            if (value <= 0)
+                throw new ArgumentOutOfRangeException(variableName);
+        }
     }
 }
