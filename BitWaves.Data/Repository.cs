@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 
 namespace BitWaves.Data
 {
@@ -40,6 +41,16 @@ namespace BitWaves.Data
         /// 获取用户数据集。
         /// </summary>
         public IMongoCollection<User> Users => Database.GetCollection<User>("Users");
+
+        /// <summary>
+        /// 获取题目数据集。
+        /// </summary>
+        public IMongoCollection<Problem> Problems => Database.GetCollection<Problem>("Problems");
+
+        /// <summary>
+        /// 获取 BitWaves 的 MongoDB 实例上的 GridFS 数据集。
+        /// </summary>
+        public IGridFSBucket Files => new GridFSBucket(Database);
     }
 
     namespace DependencyInjection

@@ -59,6 +59,30 @@ namespace BitWaves.Data
             _logger?.LogDebug("在用户数据集上创建了{0}个索引。", indexesList.Count);
         }
 
+        private void InitializeProblemCollection()
+        {
+            _logger?.LogTrace("初始化题目数据集...");
+
+            var indexesList = new List<CreateIndexModel<Problem>>
+            {
+                // ArchiveId 上的递增索引
+                // 注意：不能在 ArchiveId 上创建唯一性索引，因为在 ArchiveId 上可能有多个实体值为 null
+                // ArchiveId 上的唯一性由应用端保证
+                new CreateIndexModel<Problem>(Builders<Problem>.IndexKeys.Ascending(problem => problem.ArchiveId)),
+                // Difficulty 上的递增索引
+                new CreateIndexModel<Problem>(Builders<Problem>.IndexKeys.Ascending(problem => problem.Difficulty)),
+                // TotalSubmissions 上的递减索引
+                new CreateIndexModel<Problem>(
+                    Builders<Problem>.IndexKeys.Descending(problem => problem.TotalSubmissions)),
+                // AcceptedSubmissions 上的递减索引
+                new CreateIndexModel<Problem>(
+                    Builders<Problem>.IndexKeys.Descending(problem => problem.AcceptedSubmissions))
+            };
+
+            _repo.Problems.Indexes.CreateMany(indexesList);
+            _logger?.LogDebug("在题目数据集上创建了{0}个索引。", indexesList.Count);
+        }
+
         /// <summary>
         /// 初始化数据库。
         /// </summary>
@@ -67,6 +91,7 @@ namespace BitWaves.Data
             _logger?.LogTrace("初始化 BitWaves 数据库...");
 
             InitializeUserCollection();
+            InitializeProblemCollection();
         }
 
         /// <summary>
