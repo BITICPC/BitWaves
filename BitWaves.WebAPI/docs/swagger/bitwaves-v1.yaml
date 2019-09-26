@@ -207,7 +207,7 @@ paths:
                 example: "Beijing Institute of Technology"
               studentId:
                 type: string
-                description: 学号，不应为空。若不需要更改学号，请不要提供该成员。
+                description: 学号。若不需要更改学号，请不要提供该成员。
                 example: "1120160001"
               blogUrl:
                 type: string
@@ -354,3 +354,140 @@ paths:
                 type: string
                 description: 错误消息
                 example: 用户不存在
+
+  /archive:
+    get:
+      summary: 获取 Problem Archive 列表
+      description: 获取 Problem Archive 列表
+      tags:
+        - archive
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: by
+          type: string
+          required: false
+          description: 列表排序方法，默认值为 Id
+          enum:
+            - Id
+            - Difficulty
+            - LastUpdateTime
+            - TotalSubmissions
+            - AcceptedSubmissions
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: 分页参数，要返回的列表的页面编号，页面编号从 0 开始，默认值为 0
+        - in: query
+          name: itemsPerPage
+          type: integer
+          required: false
+          description: 分页参数，每一页上的项目数量，默认值为 20
+      responses:
+        200:
+          description: 操作成功完成，响应包含头部字段 X-BitWaves-Count，表示符合筛选条件的题目总数
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProblemInfo'
+        400:
+          description: 请求中携带的参数无效
+
+definitions:
+  UserInfo:
+    type: object
+    required:
+      - username
+      - joinTime
+      - totalSubmissions
+      - totalAccepted
+      - totalProblemsAttempted
+      - totalProblemsAccepted
+    properties:
+      username:
+        type: string
+        description: 用户名
+        example: Lancern
+      joinTime:
+        type: string
+        description: 用户加入 BITOJ 的时间，时区为 UTC 时区
+        example: "2019-9-24T10:00:00"
+      totalSubmissions:
+        type: integer
+        description: 用户总提交数量
+        example: 10
+      totalAccepted:
+        type: integer
+        description: 用户总 AC 提交数量
+        example: 3
+      totalProblemsAttempted:
+        type: integer
+        description: 用户总共尝试的题目数量
+        example: 2
+      totalProblemsAccepted:
+        type: integer
+        description: 用户总 AC 题目数量
+        example: 1
+
+  ProblemInfo:
+    type: object
+    required:
+      - id
+      - archiveId
+      - title
+      - creationTime
+      - lastUpdateTime
+      - author
+      - difficulty
+      - tags
+      - totalSubmissions
+      - acceptedSubmissions
+    properties:
+      id:
+        type: string
+        description: 题目的全局唯一 ID，请注意与题目的 archiveId 的区别
+        example: "5d8825e87d2847a7e4886fbf"
+      archiveId:
+        type: integer
+        description: 题目在 Problem Archive 中的 ID
+        example: 10
+      title:
+        type: string
+        description: 题目的标题
+        example: "Two Sums"
+      creationTime:
+        type: string
+        description: 题目的创建时间，UTC 时区
+        example: "2019-09-23T01:54:48.087Z"
+      lastUpdateTime:
+        type: string
+        description: 题目上次更新的时间，UTC 时区
+        example: "2019-09-23T01:54:48.087Z"
+      author:
+        type: string
+        description: 题目的作者的用户名
+        example: "admin"
+      difficulty:
+        type: integer
+        description: 题目的难度系数
+        example: 2500
+      tags:
+        type: array
+        items:
+          type: string
+        description: 题目的标签
+        example:
+          - 字符串
+          - 模拟
+          - 数据结构
+      totalSubmissions:
+        type: integer
+        description: 题目的总提交数量
+        example: 1000
+      acceptedSubmissions:
+        type: integer
+        description: 题目的 AC 提交数量
+        example: 100
+
