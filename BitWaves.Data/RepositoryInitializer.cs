@@ -69,6 +69,9 @@ namespace BitWaves.Data
                 // 注意：不能在 ArchiveId 上创建唯一性索引，因为在 ArchiveId 上可能有多个实体值为 null
                 // ArchiveId 上的唯一性由应用端保证
                 new CreateIndexModel<Problem>(Builders<Problem>.IndexKeys.Ascending(problem => problem.ArchiveId)),
+                // LastUpdateTime 上的递减索引
+                new CreateIndexModel<Problem>(
+                    Builders<Problem>.IndexKeys.Descending(problem => problem.LastUpdateTime)),
                 // Difficulty 上的递增索引
                 new CreateIndexModel<Problem>(Builders<Problem>.IndexKeys.Ascending(problem => problem.Difficulty)),
                 // TotalSubmissions 上的递减索引
