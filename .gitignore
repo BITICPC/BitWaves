@@ -3,5 +3,7 @@ obj/
 /packages/
 .idea/
 
+publish/
+
 *.DS_Store
 *.DotSettings.user
