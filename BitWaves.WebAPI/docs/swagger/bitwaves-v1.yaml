@@ -104,6 +104,11 @@ paths:
           type: string
           required: true
           description: 用户名
+        - in: header
+          name: Jwt
+          type: string
+          required: true
+          description: 包含用户身份标识的 JWT
         - in: body
           name: data
           required: true
