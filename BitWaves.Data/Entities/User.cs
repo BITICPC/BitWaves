@@ -12,25 +12,40 @@ namespace BitWaves.Data.Entities
     public sealed class User
     {
         /// <summary>
-        /// 获取或设置用户 ID。
+        /// 获取用户 ID。
         /// </summary>
         [BsonId]
         public ObjectId Id { get; private set; }
 
         /// <summary>
-        /// 获取用户名。
+        /// 获取或设置用户名。
         /// </summary>
         public string Username { get; set; }
 
         /// <summary>
-        /// 获取用户密码的 SHA256 哈希值。
+        /// 获取或设置用户密码的 SHA256 哈希值。
         /// </summary>
         public byte[] PasswordHash { get; set; }
 
         /// <summary>
-        /// 获取用户手机号。
+        /// 获取或设置用户的昵称。
+        /// </summary>
+        public string Nickname { get; set; }
+
+        /// <summary>
+        /// 获取或设置用户学校。
+        /// </summary>
+        public string School { get; set; }
+
+        /// <summary>
+        /// 获取或设置用户手机号。
         /// </summary>
         public string Phone { get; set; }
+
+        /// <summary>
+        /// 获取或设置用户电子邮箱。
+        /// </summary>
+        public string Email { get; set; }
 
         /// <summary>
         /// 获取或设置用户学号。
@@ -38,32 +53,37 @@ namespace BitWaves.Data.Entities
         public string StudentId { get; set; }
 
         /// <summary>
-        /// 获取用户的注册时间。
+        /// 获取或设置用户的个人博客的 URL。
         /// </summary>
-        public DateTime JoinTime { get; set; }
+        public string BlogUrl { get; set; }
 
         /// <summary>
-        /// 获取用户的总提交数。
+        /// 获取用户的注册时间。
+        /// </summary>
+        public DateTime JoinTime { get; private set; }
+
+        /// <summary>
+        /// 获取或设置用户的总提交数。
         /// </summary>
         public int TotalSubmissions { get; set; }
 
         /// <summary>
-        /// 获取用户的总 AC 提交数。
+        /// 获取或设置用户的总 AC 提交数。
         /// </summary>
         public int TotalAcceptedSubmissions { get; set; }
 
         /// <summary>
-        /// 获取用户曾经提交过的题目总数。
+        /// 获取或设置用户曾经提交过的题目总数。
         /// </summary>
         public int TotalProblemsAttempted { get; set; }
 
         /// <summary>
-        /// 获取用户通过的题目总数。
+        /// 获取或设置用户通过的题目总数。
         /// </summary>
         public int TotalProblemsAccepted { get; set; }
 
         /// <summary>
-        /// 获取用户管理员标志位。
+        /// 获取或设置用户是否为管理员。
         /// </summary>
         public bool IsAdmin { get; set; }
 
