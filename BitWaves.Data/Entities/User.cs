@@ -33,11 +33,6 @@ namespace BitWaves.Data.Entities
         public string Nickname { get; set; }
 
         /// <summary>
-        /// 获取或设置用户学校。
-        /// </summary>
-        public string School { get; set; }
-
-        /// <summary>
         /// 获取或设置用户手机号。
         /// </summary>
         public string Phone { get; set; }
@@ -46,6 +41,11 @@ namespace BitWaves.Data.Entities
         /// 获取或设置用户电子邮箱。
         /// </summary>
         public string Email { get; set; }
+
+        /// <summary>
+        /// 获取或设置用户学校。
+        /// </summary>
+        public string School { get; set; }
 
         /// <summary>
         /// 获取或设置用户学号。

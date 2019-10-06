@@ -82,11 +82,85 @@ paths:
           type: string
           required: true
           description: 用户名
+        - in: query
+          name: detailed
+          type: boolean
+          required: false
+          description: 是否包含更加详细的信息，默认为 `false`
+        - in: header
+          name: Jwt
+          type: string
+          required: false
+          description: 当 `detailed` 为 `true` 时，提供包含用户身份验证信息的 JWT
       responses:
         200:
           description: 操作成功完成
           schema:
-            $ref: "#/definitions/UserInfo"
+            type: object
+            required:
+              - username
+              - nickname
+              - phone
+              - email
+              - school
+              - studentId
+              - blogUrl
+              - joinTime
+              - totalSubmissions
+              - totalAccepted
+              - totalProblemsAttempted
+              - totalProblemsAccepted
+            properties:
+              username:
+                type: string
+                description: 用户名
+                example: Lancern
+              nickname:
+                type: string
+                description: 用户昵称
+                example: msr
+              phone:
+                type: string
+                description: 当 `detailed` 为 `true` 时，本字段包含用户的手机号
+                example: "13901234567"
+              email:
+                type: string
+                description: 用户邮箱
+                example: msr@bit.edu.cn
+              school:
+                type: string
+                description: 用户的学校
+                example: Beijing Institute of Technology
+              studentId:
+                type: string
+                description: 当 `detailed` 为 `true` 时，本字段包含用户的学号
+                example: "1120160123"
+              blogUrl:
+                type: string
+                description: 用户的博客 URL
+                example: https://lancern.github.io
+              joinTime:
+                type: string
+                description: 用户加入 BITOJ 的时间，时区为 UTC 时区
+                example: "2019-9-24T10:00:00"
+              totalSubmissions:
+                type: integer
+                description: 用户总提交数量
+                example: 10
+              totalAccepted:
+                type: integer
+                description: 用户总 AC 提交数量
+                example: 3
+              totalProblemsAttempted:
+                type: integer
+                description: 用户总共尝试的题目数量
+                example: 2
+              totalProblemsAccepted:
+                type: integer
+                description: 用户总 AC 题目数量
+                example: 1
+        403:
+          description: 参数 `detailed` 为 `true` 但提供的 JWT 无效
         404:
           description: 用户名未找到
     put:
@@ -115,14 +189,30 @@ paths:
           description: 描述用户信息修改数据
           schema:
             properties:
+              nickname:
+                type: string
+                description: 昵称，长度应大于 0。若不需要更改昵称，请不要提供该成员。
+                example: "msr"
               phone:
                 type: string
                 description: 手机号码，包含 11 位数字。若不需要更改手机号，请不要提供该成员。
                 example: "13701234567"
+              email:
+                type: string
+                description: 电子邮箱。若不需要更改手机号，请不要提供该成员。
+                example: "msr@bit.edu.cn"
+              school:
+                type: string
+                description: 学校名称，包含至少 2 个字符。若不需要更改学校名称，请不要提供该成员。
+                example: "Beijing Institute of Technology"
               studentId:
                 type: string
-                description: 学号。若不需要更改学号，请不要提供该成员。
+                description: 学号，不应为空。若不需要更改学号，请不要提供该成员。
                 example: "1120160001"
+              blogUrl:
+                type: string
+                description: 用户博客 URL。若不需要更改此项，请不要提供该成员。
+                example: "https://lancern.github.io"
       responses:
         200:
           description: 操作成功完成
@@ -161,7 +251,39 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/UserInfo"
+              type: object
+              required:
+                - username
+                - joinTime
+                - totalSubmissions
+                - totalAccepted
+                - totalProblemsAttempted
+                - totalProblemsAccepted
+              properties:
+                username:
+                  type: string
+                  description: 用户名
+                  example: Lancern
+                joinTime:
+                  type: string
+                  description: 用户加入 BITOJ 的时间，时区为 UTC 时区
+                  example: "2019-9-24T10:00:00"
+                totalSubmissions:
+                  type: integer
+                  description: 用户总提交数量
+                  example: 10
+                totalAccepted:
+                  type: integer
+                  description: 用户总 AC 提交数量
+                  example: 3
+                totalProblemsAttempted:
+                  type: integer
+                  description: 用户总共尝试的题目数量
+                  example: 2
+                totalProblemsAccepted:
+                  type: integer
+                  description: 用户总 AC 题目数量
+                  example: 1
         400:
           description: 无效的查询参数
 
@@ -232,40 +354,3 @@ paths:
                 type: string
                 description: 错误消息
                 example: 用户不存在
-
-definitions:
-  UserInfo:
-    type: object
-    required:
-      - username
-      - joinTime
-      - totalSubmissions
-      - totalAccepted
-      - totalProblemsAttempted
-      - totalProblemsAccepted
-    properties:
-      username:
-        type: string
-        description: 用户名
-        example: Lancern
-      joinTime:
-        type: string
-        description: 用户加入 BITOJ 的时间，时区为 UTC 时区
-        example: "2019-9-24T10:00:00"
-      totalSubmissions:
-        type: integer
-        description: 用户总提交数量
-        example: 10
-      totalAccepted:
-        type: integer
-        description: 用户总 AC 提交数量
-        example: 3
-      totalProblemsAttempted:
-        type: integer
-        description: 用户总共尝试的题目数量
-        example: 2
-      totalProblemsAccepted:
-        type: integer
-        description: 用户总 AC 题目数量
-        example: 1
-

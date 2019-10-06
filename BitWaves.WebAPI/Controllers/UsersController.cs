@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
@@ -50,14 +49,25 @@ namespace BitWaves.WebAPI.Controllers
         }
 
         [HttpGet("{username}")]
-        public async Task<IActionResult> GetUserInfo(string username)
+        public async Task<IActionResult> GetUserInfo(string username, bool detailed = false)
         {
+            if (detailed)
+            {
+                var authToken = HttpContext.GetAuthenticationToken();
+                if (authToken == null || (authToken.Username != username && !authToken.IsAdmin))
+                {
+                    return Forbid();
+                }
+            }
+
             var entity = await _repo.Users.Find(Builders<User>.Filter.Eq(u => u.Username, username))
                                     .FirstOrDefaultAsync();
             if (entity == null)
+            {
                 return NotFound();
+            }
 
-            return new ObjectResult(new UserInfo(entity));
+            return new ObjectResult(new UserInfo(entity, detailed));
         }
 
         [HttpPut("{username}")]
@@ -72,24 +82,7 @@ namespace BitWaves.WebAPI.Controllers
                 return Forbid();
             }
 
-            var updates = new List<UpdateDefinition<User>>();
-
-            if (model.Phone.HasValue)
-            {
-                updates.Add(Builders<User>.Update.Set(u => u.Phone, model.Phone.Value));
-            }
-
-            if (model.StudentId.HasValue)
-            {
-                updates.Add(Builders<User>.Update.Set(u => u.StudentId, model.StudentId.Value));
-            }
-
-            if (updates.Count == 0)
-            {
-                // 不需要执行任何更改
-                return Ok();
-            }
-
+            var updates = model.GetUpdateDefinition();
             await _repo.Users.UpdateOneAsync(Builders<User>.Filter.Eq(u => u.Username, username),
                                              Builders<User>.Update.Combine(updates));
             return Ok();
@@ -122,7 +115,7 @@ namespace BitWaves.WebAPI.Controllers
                                       .Limit(limit)
                                       .ToListAsync();
 
-            return new ObjectResult(entities.Select(e => new UserInfo(e)));
+            return new ObjectResult(entities.Select(e => new UserRanklistInfo(e)));
         }
     }
 }

@@ -14,12 +14,19 @@ namespace BitWaves.WebAPI.Models
         /// 初始化 <see cref="UserInfo"/> 类的新实例。
         /// </summary>
         /// <param name="entity">用户实体对象。</param>
+        /// <param name="details">是否包含更详细的信息。</param>
         /// <exception cref="ArgumentNullException"><paramref name="entity"/> 为 null。</exception>
-        public UserInfo(User entity)
+        public UserInfo(User entity, bool details = false)
         {
             Contract.NotNull(entity, nameof(entity));
 
             Username = entity.Username;
+            Nickname = entity.Nickname;
+            Phone = details ? entity.Phone : null;
+            Email = entity.Email;
+            School = entity.School;
+            StudentId = details ? entity.StudentId : null;
+            BlogUrl = entity.BlogUrl;
             JoinTime = entity.JoinTime;
             TotalSubmissions = entity.TotalSubmissions;
             TotalAcceptedSubmissions = entity.TotalAcceptedSubmissions;
@@ -32,6 +39,42 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         [JsonProperty("username")]
         public string Username { get; }
+
+        /// <summary>
+        /// 获取用户的昵称。
+        /// </summary>
+        [JsonProperty("nickname")]
+        public string Nickname { get; }
+
+        /// <summary>
+        /// 获取用户的手机号。
+        /// </summary>
+        [JsonProperty("phone")]
+        public string Phone { get; }
+
+        /// <summary>
+        /// 获取用户的电子邮箱。
+        /// </summary>
+        [JsonProperty("email")]
+        public string Email { get; }
+
+        /// <summary>
+        /// 获取用户的学校。
+        /// </summary>
+        [JsonProperty("school")]
+        public string School { get; }
+
+        /// <summary>
+        /// 获取用户的学号。
+        /// </summary>
+        [JsonProperty("studentId")]
+        public string StudentId { get; }
+
+        /// <summary>
+        /// 获取用户的博客地址。
+        /// </summary>
+        [JsonProperty("blogUrl")]
+        public string BlogUrl { get; }
 
         /// <summary>
         /// 获取用户的加入时间。
