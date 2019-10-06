@@ -1,5 +1,5 @@
 ﻿using BitWaves.Data.DependencyInjection;
-using BitWaves.WebAPI.Middlewares;
+using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Services.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,6 +41,10 @@ namespace BitWaves.WebAPI
 
             // 添加不带签名和加密的 JWT 服务
             services.AddPlainJoseJwt();
+
+            // 添加 BitWaves 身份验证中间件
+            services.AddAuthentication(options => options.DefaultScheme = BitWavesAuthDefaults.SchemeName)
+                    .AddBitWavesScheme();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,7 +68,7 @@ namespace BitWaves.WebAPI
             }
 
             app.UseHttpsRedirection();
-            app.UseBitWavesAuthentication();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

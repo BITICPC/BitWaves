@@ -1,4 +1,4 @@
-using BitWaves.WebAPI.Models.Internals;
+using BitWaves.WebAPI.Authentication;
 
 namespace BitWaves.WebAPI.Features
 {
@@ -11,7 +11,7 @@ namespace BitWaves.WebAPI.Features
         /// 初始化 <see cref="BitWavesAuthenticationFeature"/> 类的新实例。
         /// </summary>
         /// <param name="token">当前 HTTP 上下文中所包含的用户身份验证标识。</param>
-        public BitWavesAuthenticationFeature(AuthenticationToken token)
+        public BitWavesAuthenticationFeature(BitWavesAuthenticationToken token)
         {
             AuthenticationToken = token;
         }
@@ -19,6 +19,6 @@ namespace BitWaves.WebAPI.Features
         /// <summary>
         /// 获取当前 HTTP 请求中所包含的身份验证标识。若当前的 HTTP 请求不包含身份验证标识，返回 null。
         /// </summary>
-        public AuthenticationToken AuthenticationToken { get; }
+        public BitWavesAuthenticationToken AuthenticationToken { get; }
     }
 }

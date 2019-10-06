@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
+using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
-using BitWaves.WebAPI.Models.Internals;
 using BitWaves.WebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -43,7 +43,7 @@ namespace BitWaves.WebAPI.Controllers
                 return this.ErrorMessage(2, "密码错误");
             }
 
-            var authToken = new AuthenticationToken(user);
+            var authToken = new BitWavesAuthenticationToken(user);
             var authTokenJwt = _jwt.Encode(authToken);
 
             var result = new LoginResult(user, authTokenJwt);

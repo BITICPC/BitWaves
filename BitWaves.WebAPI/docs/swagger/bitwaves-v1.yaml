@@ -88,10 +88,10 @@ paths:
           required: false
           description: 是否包含更加详细的信息，默认为 `false`
         - in: header
-          name: Jwt
+          name: Authorization
           type: string
           required: false
-          description: 当 `detailed` 为 `true` 时，提供包含用户身份验证信息的 JWT
+          description: 当 `detailed` 为 `true` 时，提供身份验证信息。内容格式应该为 `Jwt <jwt>`，注意 `Jwt` 与 `<jwt>` 之间的空格
       responses:
         200:
           description: 操作成功完成
@@ -179,10 +179,10 @@ paths:
           required: true
           description: 用户名
         - in: header
-          name: Jwt
+          name: Authorization
           type: string
           required: true
-          description: 包含用户身份标识的 JWT
+          description: 提供身份验证信息。内容格式应该为 `Jwt <jwt>`，注意 `Jwt` 与 `<jwt>` 之间的空格
         - in: body
           name: data
           required: true

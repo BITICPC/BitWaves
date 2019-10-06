@@ -1,31 +1,34 @@
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Utils;
+using Microsoft.AspNetCore.Authentication;
 using MongoDB.Bson;
 using Newtonsoft.Json;
 
-namespace BitWaves.WebAPI.Models.Internals
+namespace BitWaves.WebAPI.Authentication
 {
     /// <summary>
     /// 封装用户身份验证标识。
     /// </summary>
-    public sealed class AuthenticationToken
+    public sealed class BitWavesAuthenticationToken
     {
         /// <summary>
-        /// 初始化 <see cref="AuthenticationToken"/> 类的新实例。
+        /// 初始化 <see cref="BitWavesAuthenticationToken"/> 类的新实例。
         /// </summary>
         [JsonConstructor]
-        private AuthenticationToken()
+        private BitWavesAuthenticationToken()
         {
             CreationTime = DateTime.UtcNow;
         }
 
         /// <summary>
-        /// 初始化包含给定的用户信息的 <see cref="AuthenticationToken"/> 对象。
+        /// 初始化包含给定的用户信息的 <see cref="BitWavesAuthenticationToken"/> 对象。
         /// </summary>
         /// <param name="user">用户。</param>
         /// <exception cref="ArgumentNullException"><paramref name="user"/> 为 null。</exception>
-        public AuthenticationToken(User user)
+        public BitWavesAuthenticationToken(User user)
         {
             Contract.NotNull(user, nameof(user));
 
@@ -64,5 +67,21 @@ namespace BitWaves.WebAPI.Models.Internals
         /// </summary>
         [JsonProperty("creationTime")]
         public DateTime CreationTime { get; private set; }
+
+        /// <summary>
+        /// 从当前的身份验证标识创建 <see cref="AuthenticationTicket"/> 对象。
+        /// </summary>
+        /// <returns>创建的 <see cref="AuthenticationTicket"/> 对象。</returns>
+        public AuthenticationTicket GetAuthenticationTicket()
+        {
+            var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.Name, Username));
+            claims.Add(new Claim(ClaimTypes.Role,
+                                 IsAdmin ? BitWavesAuthDefaults.AdminRoleName : BitWavesAuthDefaults.NonAdminRoleName));
+            claims.Add(new Claim(BitWavesAuthDefaults.IdentityCreationTime, CreationTime.ToLongTimeString()));
+
+            var principle = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            return new AuthenticationTicket(principle, BitWavesAuthDefaults.SchemeName);
+        }
     }
 }

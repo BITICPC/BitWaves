@@ -2,12 +2,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
+using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Extensions;
-using BitWaves.WebAPI.Filters;
 using BitWaves.WebAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MongoDB.Driver;
@@ -53,8 +55,13 @@ namespace BitWaves.WebAPI.Controllers
         {
             if (detailed)
             {
-                var authToken = HttpContext.GetAuthenticationToken();
-                if (authToken == null || (authToken.Username != username && !authToken.IsAdmin))
+                if (HttpContext.User == null)
+                {
+                    return Forbid();
+                }
+
+                if (!HttpContext.User.HasClaim(ClaimTypes.Name, username) &&
+                    !HttpContext.User.HasClaim(ClaimTypes.Role, BitWavesAuthDefaults.AdminRoleName))
                 {
                     return Forbid();
                 }
@@ -71,13 +78,13 @@ namespace BitWaves.WebAPI.Controllers
         }
 
         [HttpPut("{username}")]
-        [RequireAuthentication]
+        [Authorize]
         public async Task<IActionResult> SetUserInfo(
             string username,
             [FromBody] UpdateUserModel model)
         {
-            var authToken = HttpContext.GetAuthenticationToken();
-            if (authToken.Username != username && !authToken.IsAdmin)
+            if (!HttpContext.User.HasClaim(ClaimTypes.Name, username) &&
+                !HttpContext.User.HasClaim(ClaimTypes.Role, BitWavesAuthDefaults.AdminRoleName))
             {
                 return Forbid();
             }
