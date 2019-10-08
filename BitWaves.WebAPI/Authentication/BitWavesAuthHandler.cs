@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -30,16 +31,16 @@ namespace BitWaves.WebAPI.Authentication
         }
 
         /// <inheritdoc />
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out var headerValue))
             {
-                return Task.FromResult(AuthenticateResult.NoResult());
+                return AuthenticateResult.NoResult();
             }
 
             if (!headerValue.Scheme.Equals("Jwt", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.FromResult(AuthenticateResult.NoResult());
+                return AuthenticateResult.NoResult();
             }
 
             var jwt = headerValue.Parameter;
@@ -50,13 +51,25 @@ namespace BitWaves.WebAPI.Authentication
             }
             catch (Exception ex)
             {
-                return Task.FromResult(AuthenticateResult.Fail(ex));
+                return AuthenticateResult.Fail(ex);
             }
 
             var ticket = token.GetAuthenticationTicket();
-            Context.User = ticket.Principal;
+            return AuthenticateResult.Success(ticket);
+        }
 
-            return Task.FromResult(AuthenticateResult.Success(ticket));
+        /// <inheritdoc />
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        {
+            // In BitWavesAuthHandler we need to return 403 instead of 401 since all authentication information
+            // is available.
+            if (Context.Response.HasStarted)
+            {
+                return Task.CompletedTask;
+            }
+
+            Context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
+            return Task.CompletedTask;
         }
     }
 }

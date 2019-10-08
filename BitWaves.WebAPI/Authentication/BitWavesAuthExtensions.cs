@@ -1,6 +1,8 @@
 using System;
 using BitWaves.WebAPI.Utils;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BitWaves.WebAPI.Authentication
 {
@@ -28,6 +30,23 @@ namespace BitWaves.WebAPI.Authentication
 
             return builder.AddScheme<BitWavesAuthOptions, BitWavesAuthHandler>(
                 BitWavesAuthDefaults.SchemeName, options);
+        }
+
+        /// <summary>
+        /// 添加 BitWaves 权限验证服务。
+        /// </summary>
+        /// <param name="services">服务集。</param>
+        /// <returns>服务集。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="services"/> 为 null。</exception>
+        public static IServiceCollection AddBitWavesAuthorization(this IServiceCollection services)
+        {
+            Contract.NotNull(services, nameof(services));
+
+            return services.AddAuthorization(options =>
+            {
+                options.AddPolicy(BitWavesAuthDefaults.AdminOnlyPolicyName,
+                                  policyBuilder => policyBuilder.RequireRole(BitWavesAuthDefaults.AdminRoleName));
+            });
         }
     }
 }

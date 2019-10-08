@@ -11,6 +11,11 @@ namespace BitWaves.WebAPI.Authentication
         public const string SchemeName = "BitWaves";
 
         /// <summary>
+        /// BitWaves 身份验证中间件签发的身份验证标识的 authentication type.
+        /// </summary>
+        public const string AuthenticateType = "BitWaves";
+
+        /// <summary>
         /// BitWaves 身份验证所生成的 claim 中表示管理员身份的角色名称。
         /// </summary>
         public const string AdminRoleName = "Admin";
@@ -24,5 +29,10 @@ namespace BitWaves.WebAPI.Authentication
         /// BitWaves 身份验证所生成的 claim 中表示 identity 创建时间的名称。
         /// </summary>
         public const string IdentityCreationTime = "IdentityCreationTime";
+
+        /// <summary>
+        /// 仅限 BitWaves 管理员访问的权限政策名称。
+        /// </summary>
+        public const string AdminOnlyPolicyName = "AdminOnly";
     }
 }

@@ -80,7 +80,7 @@ namespace BitWaves.WebAPI.Authentication
                                  IsAdmin ? BitWavesAuthDefaults.AdminRoleName : BitWavesAuthDefaults.NonAdminRoleName));
             claims.Add(new Claim(BitWavesAuthDefaults.IdentityCreationTime, CreationTime.ToLongTimeString()));
 
-            var principle = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            var principle = new ClaimsPrincipal(new ClaimsIdentity(claims, BitWavesAuthDefaults.AuthenticateType));
             return new AuthenticationTicket(principle, BitWavesAuthDefaults.SchemeName);
         }
     }

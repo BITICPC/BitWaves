@@ -45,6 +45,7 @@ namespace BitWaves.WebAPI
             // 添加 BitWaves 身份验证中间件
             services.AddAuthentication(options => options.DefaultScheme = BitWavesAuthDefaults.SchemeName)
                     .AddBitWavesScheme();
+            services.AddBitWavesAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
