@@ -34,6 +34,13 @@ namespace BitWaves.WebAPI.Models
         public Utils.Optional<string> Email { get; private set; }
 
         /// <summary>
+        /// 获取学校名称。
+        /// </summary>
+        [JsonProperty("school")]
+        [OptionalValidation(typeof(MinLengthAttribute), 2)]
+        public Utils.Optional<string> School { get; private set; }
+
+        /// <summary>
         /// 获取学号。
         /// </summary>
         [JsonProperty("studentId")]
@@ -69,6 +76,11 @@ namespace BitWaves.WebAPI.Models
             if (Email.HasValue)
             {
                 updates.Add(Builders<User>.Update.Set(u => u.Email, Email.Value));
+            }
+
+            if (School.HasValue)
+            {
+                updates.Add(Builders<User>.Update.Set(u => u.School, School.Value));
             }
 
             if (StudentId.HasValue)

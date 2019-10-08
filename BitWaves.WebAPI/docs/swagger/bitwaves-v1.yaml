@@ -199,7 +199,7 @@ paths:
                 example: "13701234567"
               email:
                 type: string
-                description: 电子邮箱。若不需要更改手机号，请不要提供该成员。
+                description: 电子邮箱。若不需要更改电子邮箱，请不要提供该成员。
                 example: "msr@bit.edu.cn"
               school:
                 type: string
