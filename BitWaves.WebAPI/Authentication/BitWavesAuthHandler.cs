@@ -31,16 +31,16 @@ namespace BitWaves.WebAPI.Authentication
         }
 
         /// <inheritdoc />
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out var headerValue))
             {
-                return AuthenticateResult.NoResult();
+                return Task.FromResult(AuthenticateResult.NoResult());
             }
 
             if (!headerValue.Scheme.Equals("Jwt", StringComparison.OrdinalIgnoreCase))
             {
-                return AuthenticateResult.NoResult();
+                return Task.FromResult(AuthenticateResult.NoResult());
             }
 
             var jwt = headerValue.Parameter;
@@ -51,11 +51,11 @@ namespace BitWaves.WebAPI.Authentication
             }
             catch (Exception ex)
             {
-                return AuthenticateResult.Fail(ex);
+                return Task.FromResult(AuthenticateResult.Fail(ex));
             }
 
             var ticket = token.GetAuthenticationTicket();
-            return AuthenticateResult.Success(ticket);
+            return Task.FromResult(AuthenticateResult.Success(ticket));
         }
 
         /// <inheritdoc />
