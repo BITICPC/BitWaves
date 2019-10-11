@@ -137,8 +137,10 @@ namespace BitWaves.WebAPI.Controllers
             {
                 foreach (var archiveId in ids)
                 {
-                    var result = _repo.Problems.DeleteOne(Builders<Problem>.Filter.Eq(p => p.ArchiveId, archiveId));
-                    if (result.DeletedCount == 0)
+                    var entity = _repo.Problems.FindOneAndUpdate(
+                        Builders<Problem>.Filter.Eq(p => p.ArchiveId, archiveId),
+                        Builders<Problem>.Update.Set(p => p.ArchiveId, null));
+                    if (entity == null)
                     {
                         notFound.Add(archiveId);
                     }

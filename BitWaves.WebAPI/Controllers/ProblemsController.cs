@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
+using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
+using BitWaves.WebAPI.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -19,6 +23,20 @@ namespace BitWaves.WebAPI.Controllers
         public ProblemsController(Repository repo)
         {
             _repo = repo;
+        }
+
+        [HttpGet]
+        [Authorize(Policy = BitWavesAuthDefaults.AdminOnlyPolicyName)]
+        public async Task<IActionResult> GetProblems(
+            [FromQuery] [Range(0, int.MaxValue)] int page = 0,
+            [FromQuery] [Range(1, int.MaxValue)] int itemsPerPage = 20)
+        {
+            var query = _repo.Problems.Find(Builders<Problem>.Filter.Empty)
+                             .SortByDescending(p => p.LastUpdateTime);
+            var totalCount = await query.CountDocumentsAsync();
+            var entities = await query.Paginate(page, itemsPerPage)
+                                .ToListAsync();
+            return new ListResult<ProblemInfo>(totalCount, entities.Select(p => new ProblemInfo(p)));
         }
 
         [HttpPost]

@@ -439,6 +439,95 @@ paths:
           description: 给定的题目创建数据无效
         403:
           description: 用户没有权限创建题目
+    get:
+      summary: 获取题目列表
+      description: 获取题目列表
+      tags:
+        - problems
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: 分页参数，页面编号。页面编号从 0 开始
+        - in: query
+          name: itemsPerPage
+          type: integer
+          required: false
+          description: 分页参数，每一页上的元素数量。默认为 20
+      responses:
+        200:
+          description: 操作成功完成，响应包含头部字段 X-BitWaves-Count 表示符合筛选条件的题目的总数量（分页前）
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - id
+                - archiveId
+                - title
+                - creationTime
+                - lastUpdateTime
+                - author
+                - difficulty
+                - tags
+                - totalSubmissions
+                - acceptedSubmissions
+              properties:
+                id:
+                  type: string
+                  description: 题目的全局唯一 ID
+                  example: "5d9f5abdb8004b8de56b8a7c"
+                archiveId:
+                  type: integer
+                  description: 题目在公开题目集中的 ID。若题目不在公开题目集中，此成员为 null
+                  example: 10
+                title:
+                  type: string
+                  description: 题目标题
+                  example: "诸神眷顾的幻想乡"
+                creationTime:
+                  type: string
+                  description: 题目的创建时间，时区为 UTC 时区
+                  example: "2019-09-23T01:54:48.087Z"
+                lastUpdateTime:
+                  type: string
+                  description: 题目的上次更新时间，时区为 UTC 时区
+                  example: "2019-09-23T01:54:48.087Z"
+                author:
+                  type: string
+                  description: 题目的作者
+                  example: "Lancern"
+                difficulty:
+                  type: integer
+                  description: 题目的难度系数
+                  example: 80
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: 题目的标签
+                  example:
+                    - 字符串
+                    - 模拟
+                    - 数据结构
+                totalSubmissions:
+                  type: integer
+                  description: 题目的总提交数量
+                  example: 100
+                acceptedSubmissions:
+                  type: integer
+                  description: 题目的 AC 提交数量
+                  example: 80
+        400:
+          description: 请求中携带的参数无效
+        403:
+          description: 用户没有相应的权限
 
   /problems/{problemId}:
     put:
@@ -599,7 +688,7 @@ paths:
                 difficulty:
                   type: integer
                   description: 题目的难度系数
-                  example: 2500
+                  example: 80
                 tags:
                   type: array
                   items:
