@@ -11,6 +11,10 @@ tags:
     description: 用于访问用户数据的 API
   - name: auth
     description: 用于用户身份验证的 API
+  - name: problems
+    description: 用于访问题目集的 API
+  - name: archive
+    description: 用于访问公开题目集的 API
 
 paths:
   /users:
@@ -355,6 +359,170 @@ paths:
                 description: 错误消息
                 example: 用户不存在
 
+  /problems:
+    post:
+      summary: 创建一个题目
+      description: 创建一个题目
+      tags:
+        - problems
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          description: 题目创建数据
+          schema:
+            type: object
+            required:
+              - title
+              - legend
+              - input
+              - output
+            properties:
+              title:
+                type: string
+                description: 题目标题，长度大于 0
+                example: "诸神眷顾的幻想乡"
+              legend:
+                type: string
+                description: 题目背景描述，长度大于 0
+                example: "hello world"
+              input:
+                type: string
+                description: 输入格式描述，长度大于 0
+                example: "input description"
+              output:
+                type: string
+                description: 输出格式描述，长度大于 0
+                example: "output description"
+              notes:
+                type: string
+                description: 提示信息
+                example: "long long int 型数据请使用 %lld 格式描述符"
+              difficulty:
+                type: integer
+                description: 题目的难度系数，有效范围为 [0, 100]。
+                example: 80
+              tags:
+                type: array
+                items:
+                  type: string
+                description: 题目的标签。
+                example:
+                  - 字符串
+                  - 模拟
+                  - 数据结构
+              timeLimit:
+                type: integer
+                description: 单个测试点的时间限制，单位为毫秒。有效范围为 [500, 10000]。
+                example: 1000
+              memoryLimit:
+                type: integer
+                description: 单个测试点的内存限制，单位为MB。有效范围为 [32, 1024]。
+                example: 256
+              judgeMode:
+                type: string
+                description: 题目的评测模式。
+                enum:
+                  - Standard
+                  - SpecialJudge
+                  - Interactive
+                example: SpecialJudge
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 给定的题目创建数据无效
+        403:
+          description: 用户没有权限创建题目
+
+  /problems/{problemId}:
+    put:
+      summary: 修改题目信息
+      description: 修改题目信息
+      tags:
+        - problems
+      parameters:
+        - in: path
+          name: problemId
+          type: string
+          required: true
+          description: 题目的全局唯一 ID
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 身份验证头部字段，内容格式为 `Jwt <jwt>`，注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          description: 题目修改信息
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                description: 题目的标题，长度大于 0。若不需要修改，请不要提供此字段
+                example: "诸神眷顾的幻想乡"
+              legend:
+                type: string
+                description: 题目的背景描述，长度大于 0。若不需要修改，请不要提供此字段
+                example: "hello world"
+              input:
+                type: string
+                description: 题目的输入描述，长度大于 0。若不需要修改，请不要提供此字段
+                example: "input description"
+              output:
+                type: string
+                description: 题目的输出描述，长度大于 0。若不需要修改，请不要提供此字段
+                example: "output description"
+              notes:
+                type: string
+                description: 题目的提示信息。若不需要修改，请不要提供此字段
+                example: "notes"
+              difficulty:
+                type: integer
+                description: 题目的难度系数，有效范围为 [0, 100]。若不需要修改，请不要提供此字段
+                example: 80
+              tags:
+                type: array
+                items:
+                  type: string
+                description: 题目的标签。若不需要修改，请不要提供此字段
+                example:
+                  - 字符串
+                  - 模拟
+                  - 数据结构
+              timeLimit:
+                type: integer
+                description: 单个测试点的时间限制，单位为毫秒。有效范围为 [500, 10000]。若不需要修改，请不要提供此字段
+                example: 1000
+              memoryLimit:
+                type: integer
+                description: 单个测试点的内存限制，单位为MB。有效范围为 [32, 1024]。若不需要修改，请不要提供此字段
+                example: 256
+              judgeMode:
+                type: string
+                description: 题目的评测模式。若不需要修改，请不要提供此字段
+                enum:
+                  - Standard
+                  - SpecialJudge
+                  - Interactive
+                example: SpecialJudge
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 给定的题目修改信息无效
+        403:
+          description: 用户没有权限修改题目信息
+        404:
+          description: 题目不存在
+
   /archive:
     get:
       summary: 获取 Problem Archive 列表
@@ -368,13 +536,13 @@ paths:
           name: by
           type: string
           required: false
-          description: 列表排序方法，默认值为 Id
+          description: 列表排序方法，默认值为 `Id`
           enum:
-            - Id
-            - Difficulty
-            - LastUpdateTime
-            - TotalSubmissions
-            - AcceptedSubmissions
+            - "`Id`"
+            - "`Difficulty`"
+            - "`LastUpdateTime`"
+            - "`TotalSubmissions`"
+            - "`AcceptedSubmissions`"
         - in: query
           name: page
           type: integer
@@ -387,107 +555,191 @@ paths:
           description: 分页参数，每一页上的项目数量，默认值为 20
       responses:
         200:
-          description: 操作成功完成，响应包含头部字段 X-BitWaves-Count，表示符合筛选条件的题目总数
+          description: 操作成功完成，响应包含头部字段 `X-BitWaves-Count`，表示符合筛选条件的题目总数
           schema:
             type: array
             items:
-              $ref: '#/definitions/ProblemInfo'
+              type: object
+              required:
+                - id
+                - archiveId
+                - title
+                - creationTime
+                - lastUpdateTime
+                - author
+                - difficulty
+                - tags
+                - totalSubmissions
+                - acceptedSubmissions
+              properties:
+                id:
+                  type: string
+                  description: 题目的全局唯一 ID，请注意与题目的 archiveId 的区别
+                  example: "5d8825e87d2847a7e4886fbf"
+                archiveId:
+                  type: integer
+                  description: 题目在 Problem Archive 中的 ID
+                  example: 10
+                title:
+                  type: string
+                  description: 题目的标题
+                  example: "Two Sums"
+                creationTime:
+                  type: string
+                  description: 题目的创建时间，UTC 时区
+                  example: "2019-09-23T01:54:48.087Z"
+                lastUpdateTime:
+                  type: string
+                  description: 题目上次更新的时间，UTC 时区
+                  example: "2019-09-23T01:54:48.087Z"
+                author:
+                  type: string
+                  description: 题目的作者的用户名
+                  example: "admin"
+                difficulty:
+                  type: integer
+                  description: 题目的难度系数
+                  example: 2500
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: 题目的标签
+                  example:
+                    - 字符串
+                    - 模拟
+                    - 数据结构
+                totalSubmissions:
+                  type: integer
+                  description: 题目的总提交数量
+                  example: 1000
+                acceptedSubmissions:
+                  type: integer
+                  description: 题目的 AC 提交数量
+                  example: 100
         400:
           description: 请求中携带的参数无效
-
-definitions:
-  UserInfo:
-    type: object
-    required:
-      - username
-      - joinTime
-      - totalSubmissions
-      - totalAccepted
-      - totalProblemsAttempted
-      - totalProblemsAccepted
-    properties:
-      username:
-        type: string
-        description: 用户名
-        example: Lancern
-      joinTime:
-        type: string
-        description: 用户加入 BITOJ 的时间，时区为 UTC 时区
-        example: "2019-9-24T10:00:00"
-      totalSubmissions:
-        type: integer
-        description: 用户总提交数量
-        example: 10
-      totalAccepted:
-        type: integer
-        description: 用户总 AC 提交数量
-        example: 3
-      totalProblemsAttempted:
-        type: integer
-        description: 用户总共尝试的题目数量
-        example: 2
-      totalProblemsAccepted:
-        type: integer
-        description: 用户总 AC 题目数量
-        example: 1
-
-  ProblemInfo:
-    type: object
-    required:
-      - id
-      - archiveId
-      - title
-      - creationTime
-      - lastUpdateTime
-      - author
-      - difficulty
-      - tags
-      - totalSubmissions
-      - acceptedSubmissions
-    properties:
-      id:
-        type: string
-        description: 题目的全局唯一 ID，请注意与题目的 archiveId 的区别
-        example: "5d8825e87d2847a7e4886fbf"
-      archiveId:
-        type: integer
-        description: 题目在 Problem Archive 中的 ID
-        example: 10
-      title:
-        type: string
-        description: 题目的标题
-        example: "Two Sums"
-      creationTime:
-        type: string
-        description: 题目的创建时间，UTC 时区
-        example: "2019-09-23T01:54:48.087Z"
-      lastUpdateTime:
-        type: string
-        description: 题目上次更新的时间，UTC 时区
-        example: "2019-09-23T01:54:48.087Z"
-      author:
-        type: string
-        description: 题目的作者的用户名
-        example: "admin"
-      difficulty:
-        type: integer
-        description: 题目的难度系数
-        example: 2500
+    post:
+      summary: 向公开题目集中添加题目
+      description: 向公开题目集中添加题目
       tags:
-        type: array
-        items:
+        - archive
+      parameters:
+        - in: header
+          name: Authorization
           type: string
-        description: 题目的标签
-        example:
-          - 字符串
-          - 模拟
-          - 数据结构
-      totalSubmissions:
-        type: integer
-        description: 题目的总提交数量
-        example: 1000
-      acceptedSubmissions:
-        type: integer
-        description: 题目的 AC 提交数量
-        example: 100
-
+          required: true
+          description: 用户身份验证标识，内容格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          description: 要添加的题目数据
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - id
+                - archiveId
+              properties:
+                id:
+                  type: string
+                  description: 题目的全局唯一 ID
+                  example: "5d8825e87d2847a7e4886fbf"
+                archiveId:
+                  type: integer
+                  description: 题目在公开题目集中的 ID，大于等于 0
+                  example: 100
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 请求中的数据不合法
+        403:
+          description: 用户没有权限执行此操作
+        422:
+          description: 操作失败或部分失败
+          schema:
+            type: object
+            required:
+              - succeeded
+              - notFound
+              - conflict
+            properties:
+              succeeded:
+                type: array
+                items:
+                  type: string
+                description: 成功添加到公开题目集中的题目 ID 列表
+                example:
+                  - 5d8825e87d2847a7e4886fbf
+                  - 5d8825e87d2847a7e4886fbf
+              notFound:
+                type: array
+                items:
+                  type: string
+                description: 未找到的题目 ID 列表
+                example:
+                  - 5d8825e87d2847a7e4886fbf
+                  - 5d8825e87d2847a7e4886fbf
+              conflict:
+                type: array
+                items:
+                  type: string
+                description: archiveId 冲突的题目 ID 列表
+                example:
+                  - 5d8825e87d2847a7e4886fbf
+                  - 5d8825e87d2847a7e4886fbf
+    delete:
+      summary: 从公开题目集中删除题目
+      description: 从公开题目集中删除题目
+      tags:
+        - archive
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份验证标识，内容格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          description: 要删除的题目在公开题目集中的 ID
+          schema:
+            type: array
+            items:
+              type: integer
+            example:
+              - 0
+              - 1
+              - 2
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 请求中的数据无效
+        403:
+          description: 用户没有权限执行此操作
+        422:
+          description: 操作不成功或仅部分成功
+          schema:
+            type: object
+            required:
+              - succeeded
+              - notFound
+            properties:
+              succeeded:
+                type: array
+                items:
+                  type: integer
+                description: 成功删除的题目在公开题目集中的 ID
+                example:
+                  - 0
+                  - 1
+              notFound:
+                type: array
+                items:
+                  type: integer
+                description: 未找到的公开题目集 ID
+                example:
+                  - 2
