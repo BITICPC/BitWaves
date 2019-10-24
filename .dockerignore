@@ -1,8 +1,12 @@
 bin\
 obj\
+publish\
 
 .idea\
+.vscode\
+
 .git\
+.gitignore
 
 *.DS_Store
 *.DotSettings.user
