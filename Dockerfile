@@ -5,11 +5,13 @@ WORKDIR /app
 COPY *.sln .
 COPY BitWaves.WebAPI/BitWaves.WebAPI.csproj ./BitWaves.WebAPI/
 COPY BitWaves.Data/BitWaves.Data.csproj ./BitWaves.Data/
+COPY BitWaves.UnitTest/BitWaves.UnitTest.csproj ./BitWaves.UnitTest/
 RUN dotnet restore
 
 # Copy everything else and build app.
 COPY BitWaves.WebAPI/. ./BitWaves.WebAPI/
 COPY BitWaves.Data/. ./BitWaves.Data/
+COPY BitWaves.UnitTest/. ./BitWaves.UnitTest/
 WORKDIR /app/BitWaves.WebAPI
 RUN dotnet publish -c Release -o publish
 
