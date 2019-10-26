@@ -21,3 +21,4 @@ WORKDIR /app
 COPY --from=build /app/BitWaves.WebAPI/publish ./
 ENTRYPOINT ["dotnet", "BitWaves.WebAPI.dll"]
 EXPOSE 80 443
+VOLUME [ "/var/log/bitwaves" ]
