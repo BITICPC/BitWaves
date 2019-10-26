@@ -27,62 +27,14 @@ git clone https://github.com/BITICPC/BitWaves.git
 cd BitWaves
 ```
 
-然后使用如下的命令在 WebAPI 子项目目录下创建配置文件 `nlog.config` 以及 `dbsettings.json`：
+然后使用如下的命令在 WebAPI 子项目目录下创建配置文件 `dbsettings.json`：
 
 ```bash
 cd BitWaves.WebAPI
-touch nlog.config
 touch dbsettings.json
 ```
 
-`nlog.config` 是 `NLog` 的配置文件，用于配置后端 API 服务的日志选项。`dbsettings.json` 中包含了数据库配置，例如到数据库实例的连接字符串等。
-
-您可以使用如下的模板 `nlog.config` 文件：
-
-```xml
-<?xml version="1.0" encoding="utf-8" ?>
-<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      autoReload="true"
-      internalLogLevel="Info"
-      internalLogFile="/var/log/bitwaves/internal.log">
-
-    <!-- enable asp.net core layout renderers -->
-    <extensions>
-        <add assembly="NLog.Web.AspNetCore"/>
-    </extensions>
-
-    <!-- the targets to write to -->
-    <targets>
-        <!-- write logs to file  -->
-        <target xsi:type="File" name="allfile" fileName="/var/log/bitwaves/bitwaves-all-${shortdate}.log"
-                layout="${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}" />
-
-        <!-- another file log, only own logs. Uses some ASP.NET core renderers -->
-        <target xsi:type="File" name="ownFile-web" fileName="/var/log/bitwaves/bitwaves-own-${shortdate}.log"
-                layout="${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}|url: ${aspnet-request-url}|action: ${aspnet-mvc-action}" />
-
-        <!-- console target -->
-        <target xsi:type="Console" name="console"
-                layout="${shortdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message}"/>
-    </targets>
-
-    <!-- rules to map from logger name to target -->
-    <rules>
-        <!--All logs, including from Microsoft-->
-        <logger name="*" minlevel="Trace" writeTo="allfile" />
-
-        <!--Skip non-critical Microsoft logs and so log only own logs-->
-        <logger name="Microsoft.*" maxlevel="Info" final="true" /> <!-- BlackHole without writeTo -->
-        <logger name="*" minlevel="Trace" writeTo="ownFile-web" />
-
-        <!-- Only own logs and critical Microsoft logs goes to console -->
-        <logger name="*" minlevel="Trace" writeTo="console" />
-    </rules>
-</nlog>
-```
-
-该模板文件将会在目录 `/var/log/bitwaves` 下放置后端 API 服务产生的所有日志。若用户从 TTY 终端启动后端 API 服务，该配置也会在终端上显示筛选后的重要日志。有关 `NLog` 配置的详细信息请参阅 [NLog 文档](https://github.com/NLog/NLog/wiki)。
+配置文件 `dbsettings.json` 中包含了数据库相关配置，例如到数据库实例的连接字符串等。由于该配置文件中包含敏感信息（连接字符串等），因此该文件没有被包含到 git 仓库中。
 
 您可以使用如下的模板 `dbsettings.json` 文件：
 

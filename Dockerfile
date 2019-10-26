@@ -19,6 +19,5 @@ RUN dotnet publish -c Release -o publish
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.1 AS runtime
 WORKDIR /app
 COPY --from=build /app/BitWaves.WebAPI/publish ./
-ENV ASPNETCORE_URLS="http://localhost:80;https://localhost:443"
 ENTRYPOINT ["dotnet", "BitWaves.WebAPI.dll"]
 EXPOSE 80 443
