@@ -9,15 +9,16 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="BitWaves.Data" Version="0.9.0" />
         <PackageReference Include="jose-jwt" Version="2.4.0" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+        <PackageReference Include="MongoDB.Bson" Version="2.9.2" />
+        <PackageReference Include="MongoDB.Driver" Version="2.9.2" />
+        <PackageReference Include="MongoDB.Driver.Core" Version="2.9.2" />
+        <PackageReference Include="MongoDB.Driver.GridFS" Version="2.9.2" />
         <PackageReference Include="NLog" Version="4.6.7" />
         <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.5" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\BitWaves.Data\BitWaves.Data.csproj" />
     </ItemGroup>
     
     <ItemGroup>
