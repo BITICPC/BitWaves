@@ -611,6 +611,108 @@ paths:
           description: 用户没有权限修改题目信息
         404:
           description: 题目不存在
+    get:
+      summary: 获取题目信息
+      description: 获取题目信息
+      tags:
+        - problems
+      parameters:
+        - in: path
+          name: problemId
+          required: true
+          type: string
+          description: 题目的全局唯一 ID
+        - in: header
+          name: Authorization
+          required: false
+          type: string
+          description: 当访问的题目不是公开题目时，提供用户身份验证标识 JWT。该字段的内容格式为 `Jwt <jwt>`，注意 `Jwt` 与 `<jwt>` 之间的空格
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                description: 题目标题
+                example: "诸神眷顾的幻想乡"
+              legend:
+                type: string
+                description: 题目正文叙述
+                example: "hello world"
+              input:
+                type: string
+                description: 题目输入描述
+                example: "input description"
+              output:
+                type: string
+                description: 题目输出描述
+                example: "output description"
+              samples:
+                type: array
+                description: 题目样例
+                items:
+                  type: object
+                  properties:
+                    input:
+                      type: string
+                      description: 样例输入
+                      example: "1 2"
+                    output:
+                      type: string
+                      description: 样例输出
+                      example: "3"
+              notes:
+                type: string
+                description: 题目提示信息
+                example: "notes"
+              difficulty:
+                type: integer
+                description: 题目难度系数，范围为 [0, 100]
+                example: 80
+              tags:
+                type: array
+                description: 题目标签
+                items:
+                  type: string
+                example:
+                  - "字符串"
+                  - "模拟"
+                  - "数据结构"
+              timeLimit:
+                type: integer
+                description: 题目时间限制，单位为毫秒
+                example: 1000
+              memoryLimit:
+                type: integer
+                description: 题目内存限制，单位为 MB
+                example: 256
+              judgeMode:
+                type: string
+                description: 题目评测模式
+                enum:
+                  - STANDARD
+                  - SPECIAL_JUDGE
+                  - INTERACTIVE
+              totalSubmissions:
+                type: integer
+                description: 题目总提交数量
+                example: 100
+              acceptedSubmissions:
+                type: integer
+                description: 题目 AC 提交数量
+                example: 80
+              testReady:
+                type: boolean
+                description: 用户是否可以提交答案
+                example: true
+        400:
+          description: 无效的题目 ID
+        403:
+          description: 用户没有足够的权限访问题目
+        404:
+          description: 未能找到指定的题目
 
   /archive:
     get:

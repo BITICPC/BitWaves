@@ -77,7 +77,7 @@ namespace BitWaves.WebAPI.Authentication
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name, Username));
             claims.Add(new Claim(ClaimTypes.Role,
-                                 IsAdmin ? BitWavesAuthDefaults.AdminRoleName : BitWavesAuthDefaults.NonAdminRoleName));
+                                 IsAdmin ? BitWavesAuthRoles.Admin : BitWavesAuthRoles.NonAdmin));
             claims.Add(new Claim(BitWavesAuthDefaults.IdentityCreationTime, CreationTime.ToLongTimeString()));
 
             var principle = new ClaimsPrincipal(new ClaimsIdentity(claims, BitWavesAuthDefaults.AuthenticateType));

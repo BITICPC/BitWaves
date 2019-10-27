@@ -18,15 +18,17 @@ namespace BitWaves.WebAPI.Controllers
     [ApiController]
     public sealed class ProblemsController : ControllerBase
     {
+        private readonly IAuthorizationService _authorization;
         private readonly Repository _repo;
 
-        public ProblemsController(Repository repo)
+        public ProblemsController(IAuthorizationService authorization, Repository repo)
         {
+            _authorization = authorization;
             _repo = repo;
         }
 
         [HttpGet]
-        [Authorize(Policy = BitWavesAuthDefaults.AdminOnlyPolicyName)]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> GetProblems(
             [FromQuery] [Range(0, int.MaxValue)] int page = 0,
             [FromQuery] [Range(1, int.MaxValue)] int itemsPerPage = 20)
@@ -36,11 +38,12 @@ namespace BitWaves.WebAPI.Controllers
             var totalCount = await query.CountDocumentsAsync();
             var entities = await query.Paginate(page, itemsPerPage)
                                 .ToListAsync();
-            return new ListResult<ProblemInfo>(totalCount, entities.Select(p => new ProblemInfo(p)));
+            return new ListResult<ProblemInfo>(
+                totalCount, entities.Select(p => new ProblemInfo(p, ProblemInfoSerializationFlags.Less)));
         }
 
         [HttpPost]
-        [Authorize(Policy = BitWavesAuthDefaults.AdminOnlyPolicyName)]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> CreateProblem(
             [FromBody] CreateProblemModel model)
         {
@@ -50,7 +53,7 @@ namespace BitWaves.WebAPI.Controllers
         }
 
         [HttpPut("{problemId}")]
-        [Authorize(Policy = BitWavesAuthDefaults.AdminOnlyPolicyName)]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> UpdateProblem(
             string problemId,
             [FromBody] UpdateProblemModel model)
@@ -58,7 +61,7 @@ namespace BitWaves.WebAPI.Controllers
             if (!ObjectId.TryParse(problemId, out var id))
             {
                 ModelState.AddModelError(nameof(problemId), "Invalid problem ID.");
-                return BadRequest();
+                return ValidationProblem();
             }
 
             var updateDefinition = model.CreateUpdateDefinition();
@@ -72,6 +75,34 @@ namespace BitWaves.WebAPI.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet("{problemId}")]
+        public async Task<IActionResult> GetProblem(
+            string problemId)
+        {
+            if (!ObjectId.TryParse(problemId, out var id))
+            {
+                ModelState.AddModelError(nameof(problemId), "Invalid problem ID.");
+                return ValidationProblem();
+            }
+
+            var entity = await _repo.Problems.Find(Builders<Problem>.Filter.Eq(p => p.Id, id))
+                                    .FirstOrDefaultAsync();
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            // Check whether the user has access to the problem.
+            // TODO: Update Resource-based authorization policy name below.
+            var authResult = await _authorization.AuthorizeAsync(User, entity, BitWavesAuthPolicies.GetProblemDetail);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return new ObjectResult(new ProblemInfo(entity, ProblemInfoSerializationFlags.Full));
         }
     }
 }

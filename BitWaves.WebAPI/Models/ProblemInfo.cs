@@ -14,8 +14,9 @@ namespace BitWaves.WebAPI.Models
         /// 初始化 <see cref="ProblemInfo"/> 类的新实例。
         /// </summary>
         /// <param name="entity">题目实体对象。</param>
+        /// <param name="serializationFlags">序列化选项。</param>
         /// <exception cref="ArgumentNullException"><paramref name="entity"/> 为 null。</exception>
-        public ProblemInfo(Problem entity)
+        public ProblemInfo(Problem entity, ProblemInfoSerializationFlags serializationFlags)
         {
             Contract.NotNull(entity, nameof(entity));
 
@@ -27,8 +28,13 @@ namespace BitWaves.WebAPI.Models
             Author = entity.Author;
             Difficulty = entity.Difficulty;
             Tags = entity.Tags.ToArray();
+            TimeLimit = entity.JudgeInfo.TimeLimit;
+            MemoryLimit = entity.JudgeInfo.MemoryLimit;
             TotalSubmissions = entity.TotalSubmissions;
             AcceptedSubmissions = entity.AcceptedSubmissions;
+            IsTestReady = entity.JudgeInfo.TestDataArchiveFileId != null;
+
+            SerializationFlags = serializationFlags;
         }
 
         /// <summary>
@@ -80,6 +86,18 @@ namespace BitWaves.WebAPI.Models
         public string[] Tags { get; }
 
         /// <summary>
+        /// 获取题目的时间限制，单位为毫秒。
+        /// </summary>
+        [JsonProperty("timeLimit")]
+        public int TimeLimit { get; }
+
+        /// <summary>
+        /// 获取题目的空间限制，单位为 MB。
+        /// </summary>
+        [JsonProperty("memoryLimit")]
+        public int MemoryLimit { get; }
+
+        /// <summary>
         /// 获取题目的总提交数量。
         /// </summary>
         [JsonProperty("totalSubmissions")]
@@ -90,5 +108,32 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         [JsonProperty("acceptedSubmissions")]
         public int AcceptedSubmissions { get; }
+
+        /// <summary>
+        /// 获取题目是否包含有效的测试数据集。
+        /// </summary>
+        [JsonProperty("testReady")]
+        public bool IsTestReady { get; }
+
+        /// <summary>
+        /// 获取或设置当前对象的序列化选项。
+        /// </summary>
+        [JsonIgnore]
+        public ProblemInfoSerializationFlags SerializationFlags { get; set; }
+
+        private bool ShouldSerializeTimeLimit()
+        {
+            return SerializationFlags == ProblemInfoSerializationFlags.Full;
+        }
+
+        private bool ShouldSerializeMemoryLimit()
+        {
+            return SerializationFlags == ProblemInfoSerializationFlags.Full;
+        }
+
+        private bool ShouldSerializeIsTestReady()
+        {
+            return SerializationFlags == ProblemInfoSerializationFlags.Full;
+        }
     }
 }

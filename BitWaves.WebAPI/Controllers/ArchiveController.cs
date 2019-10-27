@@ -51,13 +51,15 @@ namespace BitWaves.WebAPI.Controllers
             query = query.Paginate(page, itemsPerPage);
 
             var viewEntityList = await query.ToListAsync();
-            var viewList = viewEntityList.Select(entity => new ProblemInfo(entity));
+            var viewList = viewEntityList.Select(entity => new ProblemInfo(entity, ProblemInfoSerializationFlags.Less));
 
             return new ListResult<ProblemInfo>(totalCount, viewList);
         }
 
+        // FIXME: Remove lock blocks used below and use db's synchronization mechanisms instead.
+
         [HttpPost]
-        [Authorize(Policy = BitWavesAuthDefaults.AdminOnlyPolicyName)]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public IActionResult AddProblems([FromBody] ArchiveAddProblemModel[] model)
         {
             var succeeded = new List<ObjectId>();
@@ -125,7 +127,7 @@ namespace BitWaves.WebAPI.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Policy = BitWavesAuthDefaults.AdminOnlyPolicyName)]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public IActionResult DeleteProblems([FromBody] int[] problemIds)
         {
             var ids = problemIds.ToHashSet();

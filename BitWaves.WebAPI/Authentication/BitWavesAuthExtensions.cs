@@ -1,4 +1,5 @@
 using System;
+using BitWaves.WebAPI.Authentication.Policies;
 using BitWaves.WebAPI.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -42,11 +43,17 @@ namespace BitWaves.WebAPI.Authentication
         {
             Contract.NotNull(services, nameof(services));
 
-            return services.AddAuthorization(options =>
+            services.AddAuthorization(options =>
             {
-                options.AddPolicy(BitWavesAuthDefaults.AdminOnlyPolicyName,
-                                  policyBuilder => policyBuilder.RequireRole(BitWavesAuthDefaults.AdminRoleName));
+                options.AddPolicy(BitWavesAuthPolicies.AdminOnly,
+                                  policyBuilder => policyBuilder.RequireRole(BitWavesAuthRoles.Admin));
+                options.AddPolicy(BitWavesAuthPolicies.GetProblemDetail,
+                    policyBuilder => policyBuilder.Requirements.Add(new GetProblemDetailRequirement()));
             });
+
+            services.AddSingleton<IAuthorizationHandler, GetProblemDetailAuthorizationHandler>();
+
+            return services;
         }
     }
 }

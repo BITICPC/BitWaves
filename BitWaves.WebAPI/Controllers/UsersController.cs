@@ -53,6 +53,7 @@ namespace BitWaves.WebAPI.Controllers
         [HttpGet("{username}")]
         public async Task<IActionResult> GetUserInfo(string username, bool detailed = false)
         {
+            // TODO: Refactor here to use authorization policy instead of authorize manually.
             if (detailed)
             {
                 if (HttpContext.User == null)
@@ -61,7 +62,7 @@ namespace BitWaves.WebAPI.Controllers
                 }
 
                 if (!HttpContext.User.HasClaim(ClaimTypes.Name, username) &&
-                    !HttpContext.User.HasClaim(ClaimTypes.Role, BitWavesAuthDefaults.AdminRoleName))
+                    !HttpContext.User.HasClaim(ClaimTypes.Role, BitWavesAuthRoles.Admin))
                 {
                     return Forbid();
                 }
@@ -83,8 +84,9 @@ namespace BitWaves.WebAPI.Controllers
             string username,
             [FromBody] UpdateUserModel model)
         {
+            // TODO: Refactor here to use authorization policy instead of authorize manually.
             if (!HttpContext.User.HasClaim(ClaimTypes.Name, username) &&
-                !HttpContext.User.HasClaim(ClaimTypes.Role, BitWavesAuthDefaults.AdminRoleName))
+                !HttpContext.User.HasClaim(ClaimTypes.Role, BitWavesAuthRoles.Admin))
             {
                 return Forbid();
             }
