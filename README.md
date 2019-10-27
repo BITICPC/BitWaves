@@ -1,16 +1,6 @@
 # BitWaves
-BitWaves 是 BITOJ 的后端应用，采用 ASP.Net Core 框架进行编写。数据库采用 MongoDB。
 
-## 模块划分
-
-* 数据层，提供数据库中数据实体抽象的定义。数据层作为一个库维护在子项目 `BitWaves.Data` 中。
-* 后端 API 应用，提供访问 BITOJ 中的数据的统一接口，符合 REST 设计规范。后端 API 应用作为一个 ASP.NET Core WebAPI 应用程序维护在子项目 `BitWaves.WebAPI` 中。
-* 评测基础服务，为评测调度和评测终端提供公用的组件。该模块作为一个库维护在子项目 `BitWaves.Judge` 中。
-* 评测调度，提供中心化的评测机发现、评测机管理和评测任务调度的功能。该模块作为一个 .NET Core 控制台应用维护在子项目 `BitWaves.JudgeCenter` 中（尚未启动编写）。
-* 评测终端，提供单个评测机到评测调度的通信和单个评测机的管理功能。该模块作为一个 .NET Core 控制台应用维护在子项目 `BitWaves.JudgeHost` 中（尚未启动编写）。
-* 单元测试，维护在子项目 `BitWaves.UnitTest` 中。
-
-注意，评测沙盒作为一个单独的项目维护在仓库 `BITICPC/WaveJudgeWorker` 中，采用 Rust 编写。
+BitWaves 是 BITOJ 的后端 Web API 应用，采用 ASP.Net Core 框架进行编写。
 
 ## 功能
 
@@ -62,4 +52,47 @@ docker build .
 
 docker build 的过程中可能需要访问互联网以下载和安装第三方依赖包，因此可能耗时较长，请耐心等待。
 
-> To be further updated.
+docker 镜像构建成功后，执行如下命令启动应用程序：
+
+```bash
+docker run -d --network host <image-id> --urls http://0.0.0.0:80
+```
+
+请将 `<image-id>` 替换为 docker 构建过程中产生的应用程序镜像 ID。如果您不清楚此 ID，请执行下列命令：
+
+```bash
+docker image ls
+```
+
+您将看到类似于如下格式的输出：
+
+```
+REPOSITORY                             TAG                 IMAGE ID            CREATED             SIZE
+<none>                                 <none>              123456789123        7 minutes ago       259MB
+<none>                                 <none>              111111111111        7 minutes ago       1.81GB
+mcr.microsoft.com/dotnet/core/sdk      2.1                 7eb1ecf4a018        10 days ago         1.74GB
+mcr.microsoft.com/dotnet/core/aspnet   2.1                 190467cc5405        10 days ago         253MB
+```
+
+使用您的输出中位于该列表第一行的镜像的 `IMAGE ID` 字段（在本例中即为 `123456789123`）替换 `<image-id>` 即可。
+
+如果您需要停止应用程序，请执行如下命令：
+
+```bash
+docker stop <container-id>
+```
+
+请使用应用程序的容器 ID 替换 `<container-id>` 部分。如果您不清楚您的容器 ID，请执行下列命令：
+
+```bash
+docker ps
+```
+
+您将看到类似于如下格式的输出：
+
+```
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+000111222333        123456789123        "dotnet BitWaves.Web…"   10 minutes ago      Up 10 minutes                           silly_bartik
+```
+
+请使用与您的应用程序镜像 ID（在本例中为 `123456789123`）所对应的容器 ID（在本例中为 `000111222333`）替换 `<container-id>` 部分。
