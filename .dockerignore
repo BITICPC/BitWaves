@@ -8,5 +8,7 @@ publish\
 .git\
 .gitignore
 
+BitWaves.UnitTest\
+
 *.DS_Store
 *.DotSettings.user
