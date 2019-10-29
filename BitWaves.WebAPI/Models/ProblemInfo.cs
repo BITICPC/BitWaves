@@ -27,10 +27,14 @@ namespace BitWaves.WebAPI.Models
             CreationTime = entity.CreationTime;
             LastUpdateTime = entity.LastUpdateTime;
             Author = entity.Author;
+            Source = entity.Source;
             Difficulty = entity.Difficulty;
             Tags = entity.Tags.ToArray();
             TotalSubmissions = entity.TotalSubmissions;
             AcceptedSubmissions = entity.AcceptedSubmissions;
+            TotalAttemptedUsers = entity.TotalAttemptedUsers;
+            TotalSolvedUsers = entity.TotalSolvedUsers;
+            LastSubmissionTime = entity.LastSubmissionTime;
 
             if (scheme == ProblemInfoScheme.Full)
             {
@@ -84,6 +88,12 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         [JsonProperty("author")]
         public string Author { get; }
+
+        /// <summary>
+        /// 获取题目的来源。
+        /// </summary>
+        [JsonProperty("source")]
+        public string Source { get; }
 
         /// <summary>
         /// 获取题目的正文叙述。
@@ -150,6 +160,24 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         [JsonProperty("acceptedSubmissions")]
         public int AcceptedSubmissions { get; }
+
+        /// <summary>
+        /// 获取尝试过该题目的用户数量。
+        /// </summary>
+        [JsonProperty("totalAttemptedUsers")]
+        public int TotalAttemptedUsers { get; }
+
+        /// <summary>
+        /// 获取成功解答该题目的用户数量。
+        /// </summary>
+        [JsonProperty("totalSolvedUsers")]
+        public int TotalSolvedUsers { get; }
+
+        /// <summary>
+        /// 获取上次提交本题目的时间。
+        /// </summary>
+        [JsonProperty("lastSubmissionTime")]
+        public DateTime LastSubmissionTime { get; }
 
         /// <summary>
         /// 获取题目是否包含有效的测试数据集。
