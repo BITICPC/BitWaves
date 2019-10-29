@@ -755,6 +755,7 @@ definitions:
       - creationTime
       - lastUpdateTime
       - author
+      - source
       - difficulty
       - tags
       - totalSubmissions
@@ -784,6 +785,10 @@ definitions:
         type: string
         description: 题目的作者的用户名
         example: "admin"
+      source:
+        type: string
+        description: 题目的来源
+        example: "2018年北京理工大学程序设计校赛"
       difficulty:
         type: integer
         description: 题目的难度系数
@@ -805,6 +810,18 @@ definitions:
         type: integer
         description: 题目的 AC 提交数量
         example: 100
+      totalAttemptedUsers:
+        type: integer
+        description: 尝试过该题目的用户总数
+        example: 100
+      totalSolvedUsers:
+        type: integer
+        description: 成功解答该题目的用户总数
+        example: 40
+      lastSubmissionTime:
+        type: string
+        description: 题目的上次提交时间
+        example: "2019-09-23T01:54:48.087Z"
   ProblemInfo:
     type: object
     required:
@@ -814,6 +831,7 @@ definitions:
       - creationTime
       - lastUpdateTime
       - author
+      - source
       - legend
       - input
       - output
@@ -851,6 +869,10 @@ definitions:
         type: string
         description: 题目的作者的用户名
         example: "admin"
+      source:
+        type: string
+        description: 题目的来源
+        example: "2018年北京理工大学程序设计校赛"
       legend:
         type: string
         description: 题目正文叙述
@@ -917,6 +939,18 @@ definitions:
         type: integer
         description: 题目 AC 提交数量
         example: 80
+      totalAttemptedUsers:
+        type: integer
+        description: 尝试过该题目的用户总数
+        example: 100
+      totalSolvedUsers:
+        type: integer
+        description: 成功解答该题目的用户总数
+        example: 40
+      lastSubmissionTime:
+        type: string
+        description: 题目的上次提交时间
+        example: "2019-09-23T01:54:48.087Z"
       testReady:
         type: boolean
         description: 用户是否可以提交答案
