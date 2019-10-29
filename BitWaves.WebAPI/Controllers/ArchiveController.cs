@@ -51,7 +51,7 @@ namespace BitWaves.WebAPI.Controllers
             query = query.Paginate(page, itemsPerPage);
 
             var viewEntityList = await query.ToListAsync();
-            var viewList = viewEntityList.Select(entity => new ProblemInfo(entity, ProblemInfoSerializationFlags.Less));
+            var viewList = viewEntityList.Select(entity => new ProblemInfo(entity, ProblemInfoScheme.List));
 
             return new ListResult<ProblemInfo>(totalCount, viewList);
         }

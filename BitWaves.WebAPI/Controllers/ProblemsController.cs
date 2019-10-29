@@ -39,7 +39,7 @@ namespace BitWaves.WebAPI.Controllers
             var entities = await query.Paginate(page, itemsPerPage)
                                 .ToListAsync();
             return new ListResult<ProblemInfo>(
-                totalCount, entities.Select(p => new ProblemInfo(p, ProblemInfoSerializationFlags.Less)));
+                totalCount, entities.Select(p => new ProblemInfo(p, ProblemInfoScheme.List)));
         }
 
         [HttpPost]
@@ -102,7 +102,7 @@ namespace BitWaves.WebAPI.Controllers
                 return Forbid();
             }
 
-            return new ObjectResult(new ProblemInfo(entity, ProblemInfoSerializationFlags.Full));
+            return new ObjectResult(new ProblemInfo(entity, ProblemInfoScheme.Full));
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Utils;
 using Newtonsoft.Json;
@@ -14,9 +15,9 @@ namespace BitWaves.WebAPI.Models
         /// 初始化 <see cref="ProblemInfo"/> 类的新实例。
         /// </summary>
         /// <param name="entity">题目实体对象。</param>
-        /// <param name="serializationFlags">序列化选项。</param>
+        /// <param name="scheme">创建的 <see cref="ProblemInfo"/> 数据模型的应用场景。</param>
         /// <exception cref="ArgumentNullException"><paramref name="entity"/> 为 null。</exception>
-        public ProblemInfo(Problem entity, ProblemInfoSerializationFlags serializationFlags)
+        public ProblemInfo(Problem entity, ProblemInfoScheme scheme)
         {
             Contract.NotNull(entity, nameof(entity));
 
@@ -28,13 +29,24 @@ namespace BitWaves.WebAPI.Models
             Author = entity.Author;
             Difficulty = entity.Difficulty;
             Tags = entity.Tags.ToArray();
-            TimeLimit = entity.JudgeInfo.TimeLimit;
-            MemoryLimit = entity.JudgeInfo.MemoryLimit;
             TotalSubmissions = entity.TotalSubmissions;
             AcceptedSubmissions = entity.AcceptedSubmissions;
-            IsTestReady = entity.JudgeInfo.TestDataArchiveFileId != null;
 
-            SerializationFlags = serializationFlags;
+            if (scheme == ProblemInfoScheme.Full)
+            {
+                Legend = entity.Description?.Legend;
+                Input = entity.Description?.Input;
+                Output = entity.Description?.Output;
+                SampleTests = entity.Description?.SampleTests
+                                    ?.Select(st => new ProblemSampleTestInfo(st))
+                                    .ToArray();
+                Notes = entity.Description?.Notes;
+                TimeLimit = entity.JudgeInfo.TimeLimit;
+                MemoryLimit = entity.JudgeInfo.MemoryLimit;
+                IsTestReady = entity.JudgeInfo.TestDataArchiveFileId != null;
+            }
+
+            Scheme = scheme;
         }
 
         /// <summary>
@@ -72,6 +84,36 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         [JsonProperty("author")]
         public string Author { get; }
+
+        /// <summary>
+        /// 获取题目的正文叙述。
+        /// </summary>
+        [JsonProperty("legend")]
+        public string Legend { get; }
+
+        /// <summary>
+        /// 获取题目的输入描述。
+        /// </summary>
+        [JsonProperty("input")]
+        public string Input { get; }
+
+        /// <summary>
+        /// 获取题目的输出描述。
+        /// </summary>
+        [JsonProperty("output")]
+        public string Output { get; }
+
+        /// <summary>
+        /// 获取题目的测试样例。
+        /// </summary>
+        [JsonProperty("samples")]
+        public ProblemSampleTestInfo[] SampleTests { get; }
+
+        /// <summary>
+        /// 获取题目的提示信息。
+        /// </summary>
+        [JsonProperty("notes")]
+        public string Notes { get; }
 
         /// <summary>
         /// 获取题目的难度系数。
@@ -119,21 +161,52 @@ namespace BitWaves.WebAPI.Models
         /// 获取或设置当前对象的序列化选项。
         /// </summary>
         [JsonIgnore]
-        public ProblemInfoSerializationFlags SerializationFlags { get; set; }
+        public ProblemInfoScheme Scheme { get; set; }
+
+        #region Conditional Property Serialization Checks
+
+        // TODO: Refactor this hell: use a different approach to conditionally serialize properties of ProblemInfo.
+
+        private bool ShouldSerializeLegend()
+        {
+            return Scheme == ProblemInfoScheme.Full;
+        }
+
+        private bool ShouldSerializeInput()
+        {
+            return Scheme == ProblemInfoScheme.Full;
+        }
+
+        private bool ShouldSerializeOutput()
+        {
+            return Scheme == ProblemInfoScheme.Full;
+        }
+
+        private bool ShouldSerializeSampleTests()
+        {
+            return Scheme == ProblemInfoScheme.Full;
+        }
+
+        private bool ShouldSerializeNotes()
+        {
+            return Scheme == ProblemInfoScheme.Full;
+        }
 
         private bool ShouldSerializeTimeLimit()
         {
-            return SerializationFlags == ProblemInfoSerializationFlags.Full;
+            return Scheme == ProblemInfoScheme.Full;
         }
 
         private bool ShouldSerializeMemoryLimit()
         {
-            return SerializationFlags == ProblemInfoSerializationFlags.Full;
+            return Scheme == ProblemInfoScheme.Full;
         }
 
         private bool ShouldSerializeIsTestReady()
         {
-            return SerializationFlags == ProblemInfoSerializationFlags.Full;
+            return Scheme == ProblemInfoScheme.Full;
         }
+
+        #endregion
     }
 }
