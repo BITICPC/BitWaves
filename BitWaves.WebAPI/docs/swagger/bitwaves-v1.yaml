@@ -477,6 +477,8 @@ paths:
     get:
       summary: 获取公开题目集中给定 ID 题目的详细信息
       description: 获取公开题目集中给定 ID 题目的详细信息
+      tags:
+        - archive
       parameters:
         - in: path
           name: archiveId
