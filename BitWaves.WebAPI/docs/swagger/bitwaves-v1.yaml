@@ -7,6 +7,8 @@ info:
     email: msrlancern@126.com
 
 tags:
+  - name: contents
+    description: 用于访问静态对象库的 API
   - name: users
     description: 用于访问用户数据的 API
   - name: auth
@@ -17,6 +19,82 @@ tags:
     description: 用于访问公开题目集的 API
 
 paths:
+  /contents:
+    get:
+      summary: 获取静态对象列表
+      description: 获取静态对象列表
+      tags:
+        - contents
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+          description: 身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: query
+          name: name
+          required: false
+          type: string
+          description: 要筛选的静态对象的名称
+        - in: query
+          name: mimeType
+          required: false
+          type: string
+          description: 要筛选的静态对象的 MIME 类型
+        - in: query
+          name: page
+          required: false
+          type: integer
+          description: 分页参数，页面编号。页面编号从 0 开始，默认为 0
+        - in: query
+          name: itemsPerPage
+          required: false
+          type: integer
+          description: 分页参数，每个页面中的元素数量
+      responses:
+        200:
+          description: 操作成功完成，响应头部中带有 `X-BitWaves-Count` 字段表示分页前总的符合条件的静态对象数量
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ContentObjectInfo'
+        400:
+          description: 无效的查询参数
+        403:
+          description: 用户没有相应的权限
+    post:
+      summary: 上传一个静态对象
+      description: 上传一个静态对象。静态对象的大小不应该超过 14 MB
+      tags:
+        - contents
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+          description: 身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: formData
+          required: true
+          name: content
+          type: file
+          description: 包含静态对象数据的文件。文件大小不应该超过 14 MB
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: 新创建的静态对象的全局唯一 ID
+                example: a154edb2431fdbb230fbf384
+        400:
+          description: 无效的输入数据
+        403:
+          description: 用户没有相应的权限
+
   /users:
     post:
       summary: 创建一个新用户
@@ -496,6 +574,36 @@ paths:
           description: 无法找到指定的题目
 
 definitions:
+  ContentObjectInfo:
+    type: object
+    required:
+      - id
+      - name
+      - mimeType
+      - creationTime
+      - size
+    properties:
+      id:
+        type: string
+        description: 静态对象的全局唯一 ID
+        example: a154edb2431fdbb230fbf384
+      name:
+        type: string
+        description: 静态对象的名称
+        example: bit-logo.jpg
+      mimeType:
+        type: string
+        description: 静态对象的 MIME 类型
+        example: image/jpg
+      creationTime:
+        type: string
+        description: 静态对象被创建时的时间，UTC 时区
+        example: 2019-10-04T14:23:56.241Z
+      size:
+        type: integer
+        description: 静态对象的字节大小
+        example: 572243
+
   PostUserModel:
     type: object
     required:
