@@ -56,6 +56,20 @@ namespace BitWaves.WebAPI.Controllers
             return new ListResult<ProblemInfo>(totalCount, viewList);
         }
 
+        [HttpGet("{archiveId}")]
+        public async Task<IActionResult> GetArchiveProblem(
+            int archiveId)
+        {
+            var entity = await _repo.Problems.Find(Builders<Problem>.Filter.Eq(problem => problem.ArchiveId, archiveId))
+                                             .FirstOrDefaultAsync();
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            return new ObjectResult(new ProblemInfo(entity, ProblemInfoScheme.Full));
+        }
+
         // FIXME: Remove lock blocks used below and use db's synchronization mechanisms instead.
 
         [HttpPost]

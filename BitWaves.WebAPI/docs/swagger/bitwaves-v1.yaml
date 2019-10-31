@@ -473,6 +473,25 @@ paths:
                 description: 未找到的公开题目集 ID
                 example:
                   - 2
+  /archive/{archiveId}:
+    get:
+      summary: 获取公开题目集中给定 ID 题目的详细信息
+      description: 获取公开题目集中给定 ID 题目的详细信息
+      parameters:
+        - in: path
+          name: archiveId
+          required: true
+          type: integer
+          description: 题目在公开题目集中的 ID
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            $ref: '#/definitions/ProblemInfo'
+        400:
+          description: 无效的题目 ID
+        404:
+          description: 无法找到指定的题目
 
 definitions:
   PostUserModel:
