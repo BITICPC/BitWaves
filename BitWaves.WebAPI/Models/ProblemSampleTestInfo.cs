@@ -18,6 +18,9 @@ namespace BitWaves.WebAPI.Models
         public ProblemSampleTestInfo(ProblemSampleTest entity)
         {
             Contract.NotNull(entity, nameof(entity));
+
+            Input = entity.Input;
+            Output = entity.Output;
         }
 
         /// <summary>
