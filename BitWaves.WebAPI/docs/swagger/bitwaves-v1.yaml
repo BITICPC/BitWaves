@@ -95,6 +95,56 @@ paths:
         403:
           description: 用户没有相应的权限
 
+  /contents/{contentId}:
+    get:
+      summary: 获取静态对象数据
+      description: 获取静态对象数据
+      tags:
+        - contents
+      parameters:
+        - in: path
+          name: contentId
+          type: string
+          required: true
+          description: 静态对象的全局唯一 ID
+        - in: query
+          name: attachment
+          type: boolean
+          required: false
+          description: 若该参数被设置为 `true`，则返回的响应中包含 `Content-Disposition` 头部字段且被设置为 `attachment`。通常情况下这样的响应会直接拉起浏览器的"下载"对话框询问用户保存地址。默认为 `false`
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 无效的请求参数
+        404:
+          description: 无法找到指定的静态对象
+    delete:
+      summary: 删除静态对象
+      description: 删除静态对象
+      tags:
+        - contents
+      parameters:
+        - in: path
+          name: contentId
+          required: true
+          type: string
+          description: 要删除的静态对象的全局唯一 ID
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+          description: 身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 无效的静态对象 ID
+        403:
+          description: 用户没有相应的权限
+        404:
+          description: 未能找到指定的静态对象
+
   /users:
     post:
       summary: 创建一个新用户

@@ -1,6 +1,7 @@
 using System;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Utils;
+using MongoDB.Bson;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -13,17 +14,17 @@ namespace BitWaves.WebAPI.Models
         /// <summary>
         /// 初始化 <see cref="ContentObjectInfo"/> 类的新实例。
         /// </summary>
-        /// <param name="entity">静态对象实体对象。</param>
+        /// <param name="entity">静态对象实体对象的 <see cref="BsonDocument"/> 表示。</param>
         /// <exception cref="ArgumentNullException"><paramref name="entity"/> 为 null。</exception>
-        public ContentObjectInfo(Content entity)
+        public ContentObjectInfo(BsonDocument entity)
         {
             Contract.NotNull(entity, nameof(entity));
 
-            Id = entity.Id.ToString();
-            Name = entity.Name;
-            MimeType = entity.MimeType;
-            CreationTime = entity.CreationTime;
-            Size = entity.Size;
+            Id = entity["_id"].AsObjectId.ToString();
+            Name = entity[nameof(Content.Name)].AsString;
+            MimeType = entity[nameof(Content.MimeType)].AsString;
+            CreationTime = entity[nameof(Content.CreationTime)].ToUniversalTime();
+            Size = entity[nameof(Content.Size)].AsInt64;
         }
 
         /// <summary>

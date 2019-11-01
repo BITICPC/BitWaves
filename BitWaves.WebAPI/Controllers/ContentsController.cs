@@ -11,6 +11,7 @@ using BitWaves.WebAPI.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
@@ -47,7 +48,9 @@ namespace BitWaves.WebAPI.Controllers
             var query = _repo.Contents.Find(filter);
             var totalCount = await query.CountDocumentsAsync();
 
-            var entities = await query.Paginate(page, itemsPerPage)
+            var entities = await query.Sort(Builders<Content>.Sort.Descending(content => content.CreationTime))
+                                      .Project(Builders<Content>.Projection.Exclude(content => content.Data))
+                                      .Paginate(page, itemsPerPage)
                                       .ToListAsync();
             return new ListResult<ContentObjectInfo>(
                 totalCount, entities.Select(content => new ContentObjectInfo(content)));
@@ -68,6 +71,48 @@ namespace BitWaves.WebAPI.Controllers
             await _repo.Contents.InsertOneAsync(content);
 
             return new ObjectResult(new { id = content.Id.ToString() });
+        }
+
+        [HttpGet("{contentId}")]
+        public async Task<IActionResult> GetObject(
+            string contentId,
+            [FromQuery] bool attachment = false)
+        {
+            if (!ObjectId.TryParse(contentId, out var id))
+            {
+                ModelState.AddModelError(nameof(contentId), "Invalid content ID.");
+                return ValidationProblem();
+            }
+
+            var content = await _repo.Contents.Find(Builders<Content>.Filter.Eq(e => e.Id, id))
+                                     .FirstOrDefaultAsync();
+            if (content == null)
+            {
+                return NotFound();
+            }
+
+            return new BitWavesContentResult(content) { IsAttachment = attachment };
+        }
+
+        [HttpDelete("{contentId}")]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
+        public async Task<IActionResult> DeleteObject(
+            string contentId)
+        {
+            if (!ObjectId.TryParse(contentId, out var id))
+            {
+                ModelState.AddModelError(nameof(contentId), "Invalid content ID.");
+                return ValidationProblem();
+            }
+
+            var deleteResult = await _repo.Contents.DeleteOneAsync(
+                Builders<Content>.Filter.Eq(content => content.Id, id));
+            if (deleteResult.DeletedCount == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok();
         }
     }
 }
