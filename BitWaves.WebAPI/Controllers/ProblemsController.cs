@@ -95,7 +95,6 @@ namespace BitWaves.WebAPI.Controllers
             }
 
             // Check whether the user has access to the problem.
-            // TODO: Update Resource-based authorization policy name below.
             var authResult = await _authorization.AuthorizeAsync(User, entity, BitWavesAuthPolicies.GetProblemDetail);
             if (!authResult.Succeeded)
             {

@@ -14,24 +14,26 @@ namespace BitWaves.WebAPI.Models
         /// 初始化 <see cref="UserInfo"/> 类的新实例。
         /// </summary>
         /// <param name="entity">用户实体对象。</param>
-        /// <param name="details">是否包含更详细的信息。</param>
+        /// <param name="scheme">用户信息的使用场景。</param>
         /// <exception cref="ArgumentNullException"><paramref name="entity"/> 为 null。</exception>
-        public UserInfo(User entity, bool details = false)
+        public UserInfo(User entity, UserInfoScheme scheme)
         {
             Contract.NotNull(entity, nameof(entity));
 
             Username = entity.Username;
             Nickname = entity.Nickname;
-            Phone = details ? entity.Phone : null;
+            Phone = entity.Phone;
             Email = entity.Email;
             School = entity.School;
-            StudentId = details ? entity.StudentId : null;
+            StudentId = entity.StudentId;
             BlogUrl = entity.BlogUrl;
             JoinTime = entity.JoinTime;
             TotalSubmissions = entity.TotalSubmissions;
             TotalAcceptedSubmissions = entity.TotalAcceptedSubmissions;
             TotalProblemsAttempted = entity.TotalProblemsAttempted;
             TotalProblemsAccepted = entity.TotalProblemsAccepted;
+
+            Scheme = scheme;
         }
 
         /// <summary>
@@ -105,5 +107,21 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         [JsonProperty("totalProblemsAccepted")]
         public int TotalProblemsAccepted { get; }
+
+        /// <summary>
+        /// 获取用户信息的使用场景。
+        /// </summary>
+        [JsonIgnore]
+        public UserInfoScheme Scheme { get; }
+
+        private bool ShouldSerializePhone()
+        {
+            return Scheme == UserInfoScheme.Full;
+        }
+
+        private bool ShouldSerializeStudentId()
+        {
+            return Scheme == UserInfoScheme.Full;
+        }
     }
 }

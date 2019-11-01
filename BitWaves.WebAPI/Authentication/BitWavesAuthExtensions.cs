@@ -49,6 +49,8 @@ namespace BitWaves.WebAPI.Authentication
                                   policyBuilder => policyBuilder.RequireRole(BitWavesAuthRoles.Admin));
                 options.AddPolicy(BitWavesAuthPolicies.GetProblemDetail,
                     policyBuilder => policyBuilder.Requirements.Add(new GetProblemDetailRequirement()));
+                options.AddPolicy(BitWavesAuthPolicies.GetUserDetail,
+                    policyBuilder => policyBuilder.Requirements.Add(new GetUserDetailInfoRequirement()));
             });
 
             services.AddSingleton<IAuthorizationHandler, GetProblemDetailAuthorizationHandler>();

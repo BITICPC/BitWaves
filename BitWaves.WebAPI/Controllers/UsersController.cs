@@ -20,10 +20,12 @@ namespace BitWaves.WebAPI.Controllers
     [ApiController]
     public sealed class UsersController : ControllerBase
     {
+        private readonly IAuthorizationService _authorization;
         private readonly Repository _repo;
 
-        public UsersController(Repository repo)
+        public UsersController(IAuthorizationService authorization, Repository repo)
         {
+            _authorization = authorization;
             _repo = repo;
         }
 
@@ -53,21 +55,6 @@ namespace BitWaves.WebAPI.Controllers
         [HttpGet("{username}")]
         public async Task<IActionResult> GetUserInfo(string username, bool detailed = false)
         {
-            // TODO: Refactor here to use authorization policy instead of authorize manually.
-            if (detailed)
-            {
-                if (HttpContext.User == null)
-                {
-                    return Forbid();
-                }
-
-                if (!HttpContext.User.HasClaim(ClaimTypes.Name, username) &&
-                    !HttpContext.User.HasClaim(ClaimTypes.Role, BitWavesAuthRoles.Admin))
-                {
-                    return Forbid();
-                }
-            }
-
             var entity = await _repo.Users.Find(Builders<User>.Filter.Eq(u => u.Username, username))
                                     .FirstOrDefaultAsync();
             if (entity == null)
@@ -75,7 +62,20 @@ namespace BitWaves.WebAPI.Controllers
                 return NotFound();
             }
 
-            return new ObjectResult(new UserInfo(entity, detailed));
+            if (detailed)
+            {
+                // 访问用户详细信息要求权限检查
+                var authResult = await _authorization.AuthorizeAsync(User, entity, BitWavesAuthPolicies.GetUserDetail);
+                if (!authResult.Succeeded)
+                {
+                    return Forbid();
+                }
+            }
+
+            var scheme = detailed
+                ? UserInfoScheme.Full
+                : UserInfoScheme.PublicInfo;
+            return new ObjectResult(new UserInfo(entity, scheme));
         }
 
         [HttpPut("{username}")]
