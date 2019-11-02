@@ -54,6 +54,7 @@ namespace BitWaves.WebAPI.Authentication
             });
 
             services.AddSingleton<IAuthorizationHandler, GetProblemDetailAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, GetUserDetailInfoAuthorizationHandler>();
 
             return services;
         }
