@@ -114,12 +114,12 @@ namespace BitWaves.WebAPI.Models
         [JsonIgnore]
         public UserInfoScheme Scheme { get; }
 
-        private bool ShouldSerializePhone()
+        public bool ShouldSerializePhone()
         {
             return Scheme == UserInfoScheme.Full;
         }
 
-        private bool ShouldSerializeStudentId()
+        public bool ShouldSerializeStudentId()
         {
             return Scheme == UserInfoScheme.Full;
         }

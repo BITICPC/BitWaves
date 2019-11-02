@@ -195,42 +195,42 @@ namespace BitWaves.WebAPI.Models
 
         // TODO: Refactor this hell: use a different approach to conditionally serialize properties of ProblemInfo.
 
-        private bool ShouldSerializeLegend()
+        public bool ShouldSerializeLegend()
         {
             return Scheme == ProblemInfoScheme.Full;
         }
 
-        private bool ShouldSerializeInput()
+        public bool ShouldSerializeInput()
         {
             return Scheme == ProblemInfoScheme.Full;
         }
 
-        private bool ShouldSerializeOutput()
+        public bool ShouldSerializeOutput()
         {
             return Scheme == ProblemInfoScheme.Full;
         }
 
-        private bool ShouldSerializeSampleTests()
+        public bool ShouldSerializeSampleTests()
         {
             return Scheme == ProblemInfoScheme.Full;
         }
 
-        private bool ShouldSerializeNotes()
+        public bool ShouldSerializeNotes()
         {
             return Scheme == ProblemInfoScheme.Full;
         }
 
-        private bool ShouldSerializeTimeLimit()
+        public bool ShouldSerializeTimeLimit()
         {
             return Scheme == ProblemInfoScheme.Full;
         }
 
-        private bool ShouldSerializeMemoryLimit()
+        public bool ShouldSerializeMemoryLimit()
         {
             return Scheme == ProblemInfoScheme.Full;
         }
 
-        private bool ShouldSerializeIsTestReady()
+        public bool ShouldSerializeIsTestReady()
         {
             return Scheme == ProblemInfoScheme.Full;
         }
