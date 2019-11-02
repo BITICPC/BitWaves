@@ -13,6 +13,8 @@ tags:
     description: 用于访问用户数据的 API
   - name: auth
     description: 用于用户身份验证的 API
+  - name: announcements
+    description: 用于全站公告的 API
   - name: problems
     description: 用于访问题目集的 API
   - name: archive
@@ -339,6 +341,132 @@ paths:
                 type: string
                 description: 错误消息
                 example: 用户不存在
+
+  /announcements:
+    get:
+      summary: 获取全站公告列表
+      description: 获取全站公告列表
+      tags:
+        - announcements
+      parameters:
+        - in: query
+          name: page
+          type: integer
+          description: 分页参数，页面编号。页面编号从 0 开始，默认为 0
+        - in: query
+          name: itemsPerPage
+          type: integer
+          description: 分页参数，每页上的元素数量，默认为 20
+      responses:
+        200:
+          description: 操作成功完成。响应的 `X-BitWaves-Count` 头部字段给出所有的符合要求的公告数量
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AnnouncementListItem'
+        400:
+          description: 无效的查询参数
+    post:
+      description: 创建新的全站公告
+      summary: 创建新的全站公告
+      tags:
+        - announcements
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          description: 要创建的公告信息
+          schema:
+            $ref: '#/definitions/PostAnnouncementModel'
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 无效的请求参数
+        403:
+          description: 用户没有相应的权限
+
+  /announcements/{announcementId}:
+    get:
+      summary: 获取全站公告信息
+      description: 获取全站公告信息
+      tags:
+        - announcements
+      parameters:
+        - in: path
+          name: announcementId
+          type: string
+          required: true
+          description: 公告的 ID
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            $ref: '#/definitions/AnnouncementInfo'
+        400:
+          description: 无效的公告 ID
+        404:
+          description: 无法找到给定的公告
+    put:
+      summary: 修改一个全站公告
+      description: 修改一个全站公告
+      tags:
+        - announcements
+      parameters:
+        - in: path
+          name: announcementId
+          type: string
+          required: true
+          description: 要修改的全站公告 ID
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          schema:
+            $ref: '#/definitions/PutAnnouncementModel'
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 无效的请求参数
+        403:
+          description: 用户没有相应的权限
+        404:
+          description: 未能找到指定的全站公告
+    delete:
+      summary: 删除一个全站公告
+      description: 删除一个全站公告
+      tags:
+        - announcements
+      parameters:
+        - in: path
+          name: announcementId
+          type: string
+          required: true
+          description: 要修改的全站公告 ID
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 无效的请求参数
+        403:
+          description: 用户没有相应的权限
+        404:
+          description: 无法找到指定的全站公告
 
   /problems:
     post:
@@ -814,6 +942,111 @@ definitions:
         type: string
         description: 密码
         example: "hello_world"
+
+  PostAnnouncementModel:
+    type: object
+    required:
+      - title
+      - content
+    properties:
+      title:
+        type: string
+        description: 全站公告的标题
+        example: BITOJ 即日起开始营业
+      pinned:
+        type: boolean
+        description: 公告是否置顶，默认为 false
+        example: false
+      content:
+        type: string
+        description: 全站公告的内容
+        example: BITOJ 即日起开始营业，欢迎 AK！
+  PutAnnouncementModel:
+    type: object
+    properties:
+      title:
+        type: string
+        description: 修改后的标题。若不需要修改标题，请不要提供此成员
+      pinned:
+        type: boolean
+        description: 修改后的置顶标记。若不需要修改此属性，请不要提供此成员
+      content:
+        type: string
+        description: 修改后的内容。若不需要修改此属性，请不要提供此成员
+
+  AnnouncementListItem:
+    type: object
+    required:
+      - id
+      - title
+      - author
+      - creationTime
+      - lastUpdateTime
+      - pinned
+    properties:
+      id:
+        type: string
+        description: 全站公告的 ID
+        example: 5d8825e87d2847a7e4886fbf
+      title:
+        type: string
+        description: 全站公告的标题
+        example: BITOJ 即日起开始营业
+      author:
+        type: string
+        description: 全站公告的作者的用户名
+        example: admin
+      creationTime:
+        type: string
+        description: 全站公告的创建时间
+        example: "2019-11-01T13:25:37.371Z"
+      lastUpdateTime:
+        type: string
+        description: 全站公告的上次修改时间
+        example: "2019-11-01T13:25:37.371Z"
+      pinned:
+        type: boolean
+        description: 公告是否置顶
+        example: false
+  AnnouncementInfo:
+    type: object
+    required:
+      - id
+      - title
+      - author
+      - creationTime
+      - lastUpdateTime
+      - pinned
+      - content
+    properties:
+      id:
+        type: string
+        description: 全站公告的 ID
+        example: 5d8825e87d2847a7e4886fbf
+      title:
+        type: string
+        description: 全站公告的标题
+        example: BITOJ 即日起开始营业
+      author:
+        type: string
+        description: 全站公告的作者的用户名
+        example: admin
+      creationTime:
+        type: string
+        description: 全站公告的创建时间
+        example: "2019-11-01T13:25:37.371Z"
+      lastUpdateTime:
+        type: string
+        description: 全站公告的上次修改时间
+        example: "2019-11-01T13:25:37.371Z"
+      pinned:
+        type: boolean
+        description: 公告是否置顶
+        example: false
+      content:
+        type: string
+        description: 全站公告的内容
+        example: BITOJ 即日起开始营业，欢迎 AK！
 
   PostProblemModel:
     type: object
