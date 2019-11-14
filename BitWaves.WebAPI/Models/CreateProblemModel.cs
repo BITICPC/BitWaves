@@ -33,7 +33,6 @@ namespace BitWaves.WebAPI.Models
         /// <summary>
         /// 获取题目的背景描述。
         /// </summary>
-        [Required]
         [MinLength(1)]
         [JsonProperty("legend")]
         public string Legend { get; private set; }
@@ -41,7 +40,6 @@ namespace BitWaves.WebAPI.Models
         /// <summary>
         /// 获取题目的输入描述。
         /// </summary>
-        [Required]
         [MinLength(1)]
         [JsonProperty("input")]
         public string Input { get; private set; }
@@ -49,7 +47,6 @@ namespace BitWaves.WebAPI.Models
         /// <summary>
         /// 获取题目的输出描述。
         /// </summary>
-        [Required]
         [MinLength(1)]
         [JsonProperty("output")]
         public string Output { get; private set; }

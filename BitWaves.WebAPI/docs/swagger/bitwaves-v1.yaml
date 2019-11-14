@@ -1052,9 +1052,6 @@ definitions:
     type: object
     required:
       - title
-      - legend
-      - input
-      - output
     properties:
       title:
         type: string
