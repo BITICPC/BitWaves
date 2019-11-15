@@ -1337,9 +1337,9 @@ definitions:
         type: string
         description: 题目评测模式
         enum:
-          - STANDARD
-          - SPECIAL_JUDGE
-          - INTERACTIVE
+          - Standard
+          - SpecialJudge
+          - Interactive
       totalSubmissions:
         type: integer
         description: 题目总提交数量

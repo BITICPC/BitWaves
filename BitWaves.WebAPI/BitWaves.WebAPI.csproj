@@ -9,7 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BitWaves.Data" Version="0.9.7" />
+        <PackageReference Include="BitWaves.Data" Version="0.9.9" />
         <PackageReference Include="jose-jwt" Version="2.4.0" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />

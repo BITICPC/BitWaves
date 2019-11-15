@@ -3,6 +3,7 @@ using System.Linq;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace BitWaves.WebAPI.Models
 {
@@ -17,6 +18,7 @@ namespace BitWaves.WebAPI.Models
         /// <param name="entity">题目实体对象。</param>
         /// <param name="scheme">创建的 <see cref="ProblemInfo"/> 数据模型的应用场景。</param>
         /// <exception cref="ArgumentNullException"><paramref name="entity"/> 为 null。</exception>
+        /// <exception cref="ArgumentException">无效的 JudgeMode 字段。</exception>
         public ProblemInfo(Problem entity, ProblemInfoScheme scheme)
         {
             Contract.NotNull(entity, nameof(entity));
@@ -48,6 +50,10 @@ namespace BitWaves.WebAPI.Models
                 TimeLimit = entity.JudgeInfo.TimeLimit;
                 MemoryLimit = entity.JudgeInfo.MemoryLimit;
                 IsTestReady = entity.JudgeInfo.TestDataArchiveFileId != null;
+
+                if (!Enum.IsDefined(typeof(ProblemJudgeMode), entity.JudgeInfo.JudgeMode))
+                    throw new ArgumentException($"Unexpected judge mode: {(int) entity.JudgeInfo.JudgeMode}");
+                JudgeMode = entity.JudgeInfo.JudgeMode.ToString();
             }
 
             Scheme = scheme;
@@ -150,6 +156,12 @@ namespace BitWaves.WebAPI.Models
         public int MemoryLimit { get; }
 
         /// <summary>
+        /// 获取题目的评测模式。
+        /// </summary>
+        [JsonProperty("judgeMode")]
+        public string JudgeMode { get; }
+
+        /// <summary>
         /// 获取题目的总提交数量。
         /// </summary>
         [JsonProperty("totalSubmissions")]
@@ -226,6 +238,11 @@ namespace BitWaves.WebAPI.Models
         }
 
         public bool ShouldSerializeMemoryLimit()
+        {
+            return Scheme == ProblemInfoScheme.Full;
+        }
+
+        public bool ShouldSerializeJudgeMode()
         {
             return Scheme == ProblemInfoScheme.Full;
         }
