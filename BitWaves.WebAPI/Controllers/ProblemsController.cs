@@ -47,7 +47,7 @@ namespace BitWaves.WebAPI.Controllers
         public async Task<IActionResult> CreateProblem(
             [FromBody] CreateProblemModel model)
         {
-            var entity = model.ToProblemEntity(User.Identity.Name);
+            var entity = model.ToEntity(User.Identity.Name);
             await _repo.Problems.InsertOneAsync(entity);
             return Ok();
         }

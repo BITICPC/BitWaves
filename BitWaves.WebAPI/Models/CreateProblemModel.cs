@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using BitWaves.Data.Entities;
@@ -96,7 +97,7 @@ namespace BitWaves.WebAPI.Models
         /// <param name="username">创建题目的用户的用户名。</param>
         /// <returns>从当前的数据模型创建的题目实体对象。</returns>
         /// <exception cref="ArgumentNullException"><paramref name="username"/> 为 null。</exception>
-        public Problem ToProblemEntity(string username)
+        public Problem ToEntity(string username)
         {
             Contract.NotNull(username, nameof(username));
 
@@ -108,7 +109,7 @@ namespace BitWaves.WebAPI.Models
             entity.Description.Output = Output;
             entity.Description.Notes = Notes;
             entity.Difficulty = Difficulty;
-            entity.Tags = Tags.ToList();
+            entity.Tags = Tags?.ToList() ?? new List<string>();
             entity.JudgeInfo.TimeLimit = TimeLimit;
             entity.JudgeInfo.MemoryLimit = MemoryLimit;
             entity.JudgeInfo.JudgeMode = JudgeMode;
