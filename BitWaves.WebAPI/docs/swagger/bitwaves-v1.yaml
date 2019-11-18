@@ -19,6 +19,8 @@ tags:
     description: 用于访问题目集的 API
   - name: archive
     description: 用于访问公开题目集的 API
+  - name: languages
+    description: 评测语言相关 API
 
 paths:
   /contents:
@@ -751,6 +753,70 @@ paths:
         404:
           description: 无法找到指定的题目
 
+  /languages:
+    get:
+      summary: 获取所有可用的评测语言列表
+      description: 获取所有可用的评测语言列表
+      tags:
+        - languages
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/LanguageInfo'
+    post:
+      summary: 创建一个新评测语言
+      description: 创建一个新评测语言
+      tags:
+        - languages
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          description: 要创建的语言数据
+          schema:
+            $ref: '#/definitions/PostLanguageModel'
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 无效的请求数据
+        403:
+          description: 用户不具备需要的权限
+  /languages/{languageId}:
+    delete:
+      summary: 删除评测语言
+      description: 删除评测语言
+      tags:
+        - languages
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: path
+          name: languageId
+          type: string
+          required: true
+          description: 要删除的评测语言的全局唯一 ID
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 无效的评测语言 ID
+        403:
+          description: 用户没有相应的权限
+        404:
+          description: 未能找到指定的评测语言
+
 definitions:
   ContentObjectInfo:
     type: object
@@ -1389,3 +1455,58 @@ definitions:
       - 0
       - 1
       - 2
+
+  PostLanguageModel:
+    type: object
+    required:
+      - langId
+      - dialect
+      - version
+      - displayName
+    properties:
+      langId:
+        type: string
+        description: 语言标识符，长度应至少为 1
+        example: cpp
+      dialect:
+        type: string
+        description: 方言标识符，长度应至少为 1
+        example: clang
+      version:
+        type: string
+        description: 版本标识符，长度应至少为 1
+        example: '17'
+      displayName:
+        type: string
+        description: 语言的显示名称，长度应至少为 1
+        example: 'Clang++ 17'
+
+  LanguageInfo:
+    type: object
+    required:
+      - id
+      - langId
+      - dialect
+      - version
+      - displayName
+    properties:
+      id:
+        type: string
+        description: 语言的全局唯一标识符
+        example: '25fa137e2b3513ace3253cdf'
+      langId:
+        type: string
+        description: 语言标识符
+        example: cpp
+      dialect:
+        type: string
+        description: 方言标识符
+        example: clang
+      version:
+        type: string
+        description: 版本标识符
+        example: '17'
+      displayName:
+        type: string
+        description: 语言的显示名称
+        example: 'Clang++ 17'

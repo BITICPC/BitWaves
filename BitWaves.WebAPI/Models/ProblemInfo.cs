@@ -3,7 +3,6 @@ using System.Linq;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Utils;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace BitWaves.WebAPI.Models
 {
