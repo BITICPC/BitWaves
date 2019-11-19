@@ -26,24 +26,18 @@ namespace BitWaves.WebAPI.Models
         /// 获取题目的背景描述。
         /// </summary>
         [JsonProperty("legend")]
-        [OptionalValidation(typeof(RequiredAttribute))]
-        [OptionalValidation(typeof(MinLengthAttribute), 1)]
         public Utils.Optional<string> Legend { get; private set; }
 
         /// <summary>
         /// 获取题目的输入格式描述。
         /// </summary>
         [JsonProperty("input")]
-        [OptionalValidation(typeof(RequiredAttribute))]
-        [OptionalValidation(typeof(MinLengthAttribute), 1)]
         public Utils.Optional<string> Input { get; private set; }
 
         /// <summary>
         /// 获取题目的输出格式描述。
         /// </summary>
         [JsonProperty("output")]
-        [OptionalValidation(typeof(RequiredAttribute))]
-        [OptionalValidation(typeof(MinLengthAttribute), 1)]
         public Utils.Optional<string> Output { get; private set; }
 
         /// <summary>
