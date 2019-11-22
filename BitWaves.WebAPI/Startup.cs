@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Converters;
 
 namespace BitWaves.WebAPI
 {
@@ -35,7 +36,11 @@ namespace BitWaves.WebAPI
         {
             services.AddMvc()
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                    .AddJsonOptions(options => options.AddObjectIdConverter());
+                    .AddJsonOptions(options =>
+                    {
+                        options.AddObjectIdConverter();
+                        options.AddEnumJsonConverter();
+                    });
 
             // 添加 BitWaves 数据仓库
             var connectionString = _config.GetConnectionString("mongodb");

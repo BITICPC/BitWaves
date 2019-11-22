@@ -80,6 +80,12 @@ namespace BitWaves.WebAPI.Models
         public Utils.Optional<ProblemJudgeMode> JudgeMode { get; private set; }
 
         /// <summary>
+        /// 当评测模式为 Standard 时，获取传递给内建答案检查器的选项。
+        /// </summary>
+        [JsonProperty("builtinCheckerOptions")]
+        public Utils.Optional<BuiltinCheckerOptions> BuiltinCheckerOptions { get; private set; }
+
+        /// <summary>
         /// 从当前的题目信息更新数据模型创建对应的数据库更新定义。
         /// </summary>
         /// <returns>创建的数据库更新定义。</returns>
@@ -138,6 +144,11 @@ namespace BitWaves.WebAPI.Models
             if (JudgeMode.HasValue)
             {
                 updates.Add(Builders<Problem>.Update.Set(p => p.JudgeInfo.JudgeMode, JudgeMode.Value));
+            }
+
+            if (BuiltinCheckerOptions.HasValue)
+            {
+                updates.Add(Builders<Problem>.Update.Set(p => p.JudgeInfo.CheckerOptions, BuiltinCheckerOptions.Value));
             }
 
             return Builders<Problem>.Update.Combine(updates);

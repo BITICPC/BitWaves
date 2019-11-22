@@ -89,6 +89,12 @@ namespace BitWaves.WebAPI.Models
         public ProblemJudgeMode JudgeMode { get; private set; }
 
         /// <summary>
+        /// 当评测模式为 Standard 时，获取传递给内建答案检查器的选项。
+        /// </summary>
+        [JsonProperty("builtinCheckerOptions")]
+        public BuiltinCheckerOptions? BuiltinCheckerOptions { get; private set; }
+
+        /// <summary>
         /// 从当前的数据模型创建题目实体对象。
         /// </summary>
         /// <param name="username">创建题目的用户的用户名。</param>
@@ -110,6 +116,7 @@ namespace BitWaves.WebAPI.Models
             entity.JudgeInfo.TimeLimit = TimeLimit;
             entity.JudgeInfo.MemoryLimit = MemoryLimit;
             entity.JudgeInfo.JudgeMode = JudgeMode;
+            entity.JudgeInfo.CheckerOptions = BuiltinCheckerOptions;
 
             return entity;
         }

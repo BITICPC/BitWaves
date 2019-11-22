@@ -50,9 +50,8 @@ namespace BitWaves.WebAPI.Models
                 MemoryLimit = entity.JudgeInfo.MemoryLimit;
                 IsTestReady = entity.JudgeInfo.TestDataArchiveFileId != null;
 
-                if (!Enum.IsDefined(typeof(ProblemJudgeMode), entity.JudgeInfo.JudgeMode))
-                    throw new ArgumentException($"Unexpected judge mode: {(int) entity.JudgeInfo.JudgeMode}");
-                JudgeMode = entity.JudgeInfo.JudgeMode.ToString();
+                JudgeMode = entity.JudgeInfo.JudgeMode;
+                BuiltinCheckerOptions = entity.JudgeInfo.CheckerOptions;
             }
 
             Scheme = scheme;
@@ -158,7 +157,13 @@ namespace BitWaves.WebAPI.Models
         /// 获取题目的评测模式。
         /// </summary>
         [JsonProperty("judgeMode")]
-        public string JudgeMode { get; }
+        public ProblemJudgeMode JudgeMode { get; }
+
+        /// <summary>
+        /// 当评测模式为 Standard 时，获取内建答案检查器的选项列表。
+        /// </summary>
+        [JsonProperty("builtinCheckerOptions")]
+        public BuiltinCheckerOptions? BuiltinCheckerOptions { get; }
 
         /// <summary>
         /// 获取题目的总提交数量。
@@ -244,6 +249,11 @@ namespace BitWaves.WebAPI.Models
         public bool ShouldSerializeJudgeMode()
         {
             return Scheme == ProblemInfoScheme.Full;
+        }
+
+        public bool ShouldSerializeBuiltinCheckerOptions()
+        {
+            return Scheme == ProblemInfoScheme.Full && JudgeMode == ProblemJudgeMode.Standard;
         }
 
         public bool ShouldSerializeIsTestReady()

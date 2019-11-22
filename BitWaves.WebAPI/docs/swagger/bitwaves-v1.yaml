@@ -1168,6 +1168,13 @@ definitions:
           - SpecialJudge
           - Interactive
         example: SpecialJudge
+      builtinCheckerOptions:
+        type: array
+        items:
+          type: string
+        description: 当评测模式为 Standard 模式时，该成员指出传递给内建答案检查器的参数。可能的值包括：`FloatingPointAware` 以及 `IgnoreCase`
+        example:
+          - IgnoreCase
   PutProblemModel:
     type: object
     properties:
@@ -1220,6 +1227,13 @@ definitions:
           - SpecialJudge
           - Interactive
         example: SpecialJudge
+      builtinCheckerOptions:
+        type: array
+        items:
+          type: string
+        description: 当评测模式为 Standard 模式时，该成员指出传递给内建答案检查器的参数。可能的值包括：`FloatingPointAware` 以及 `IgnoreCase`
+        example:
+          - FloatingPointAware
 
   ProblemListItem:
     type: object
@@ -1406,6 +1420,14 @@ definitions:
           - Standard
           - SpecialJudge
           - Interactive
+      builtinCheckerOptions:
+        type: array
+        items:
+          type: string
+        description: 当评测模式为 Standard 时，该字段表示内建答案检查器的选项。可能的值有 `FloatingPointAware` 以及 `IgnoreCase`
+        example:
+          - FloatingPointAware
+          - IgnoreCase
       totalSubmissions:
         type: integer
         description: 题目总提交数量
