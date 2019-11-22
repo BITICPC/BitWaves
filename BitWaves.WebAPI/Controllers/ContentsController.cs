@@ -52,7 +52,7 @@ namespace BitWaves.WebAPI.Controllers
                                       .Project(Builders<Content>.Projection.Exclude(content => content.Data))
                                       .Paginate(page, itemsPerPage)
                                       .ToListAsync();
-            return new ListResult<ContentObjectInfo>(
+            return new PaginatedListResult<ContentObjectInfo>(
                 totalCount, entities.Select(content => new ContentObjectInfo(content)));
         }
 

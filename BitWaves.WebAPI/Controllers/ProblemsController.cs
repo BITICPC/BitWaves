@@ -38,7 +38,7 @@ namespace BitWaves.WebAPI.Controllers
             var totalCount = await query.CountDocumentsAsync();
             var entities = await query.Paginate(page, itemsPerPage)
                                 .ToListAsync();
-            return new ListResult<ProblemInfo>(
+            return new PaginatedListResult<ProblemInfo>(
                 totalCount, entities.Select(p => new ProblemInfo(p, ProblemInfoScheme.List)));
         }
 

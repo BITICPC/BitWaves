@@ -10,17 +10,17 @@ namespace BitWaves.WebAPI.Utils
     /// 提供 BitWaves 分页列表结果的 <see cref="IActionResult"/> 实现。
     /// </summary>
     /// <typeparam name="T">列表中元素的类型。</typeparam>
-    public sealed class ListResult<T> : ObjectResult
+    public sealed class PaginatedListResult<T> : ObjectResult
     {
         private readonly long _count;
 
         /// <summary>
-        /// 初始化 <see cref="ListResult{T}"/> 的新实例。
+        /// 初始化 <see cref="PaginatedListResult{T}"/> 的新实例。
         /// </summary>
         /// <param name="count">分页前列表中的元素总数。</param>
         /// <param name="viewList">当前页内的元素列表。</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> 为负。</exception>
-        public ListResult(long count, IEnumerable<T> viewList)
+        public PaginatedListResult(long count, IEnumerable<T> viewList)
             : base(viewList)
         {
             Contract.NonNegative(count, nameof(count));
