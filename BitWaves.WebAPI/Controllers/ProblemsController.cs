@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
@@ -20,11 +21,13 @@ namespace BitWaves.WebAPI.Controllers
     {
         private readonly IAuthorizationService _authorization;
         private readonly Repository _repo;
+        private readonly IMapper _mapper;
 
-        public ProblemsController(IAuthorizationService authorization, Repository repo)
+        public ProblemsController(IAuthorizationService authorization, Repository repo, IMapper mapper)
         {
             _authorization = authorization;
             _repo = repo;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -38,8 +41,8 @@ namespace BitWaves.WebAPI.Controllers
             var totalCount = await query.CountDocumentsAsync();
             var entities = await query.Paginate(page, itemsPerPage)
                                 .ToListAsync();
-            return new PaginatedListResult<ProblemInfo>(
-                totalCount, entities.Select(p => new ProblemInfo(p, ProblemInfoScheme.List)));
+            var models = entities.Select(e => _mapper.Map<Problem, ProblemListInfo>(e));
+            return new PaginatedListResult<ProblemListInfo>(totalCount, models);
         }
 
         [HttpPost]
@@ -101,7 +104,8 @@ namespace BitWaves.WebAPI.Controllers
                 return Forbid();
             }
 
-            return new ObjectResult(new ProblemInfo(entity, ProblemInfoScheme.Full));
+            var model = _mapper.Map<Problem, ProblemInfo>(entity);
+            return new ObjectResult(model);
         }
     }
 }

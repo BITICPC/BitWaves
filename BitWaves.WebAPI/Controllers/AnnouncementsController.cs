@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
@@ -19,10 +20,12 @@ namespace BitWaves.WebAPI.Controllers
     public sealed class AnnouncementsController : ControllerBase
     {
         private readonly Repository _repo;
+        private readonly IMapper _mapper;
 
-        public AnnouncementsController(Repository repo)
+        public AnnouncementsController(Repository repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -38,8 +41,9 @@ namespace BitWaves.WebAPI.Controllers
             var entities = await query.Paginate(page, itemsPerPage)
                                       .ToListAsync();
 
-            return new PaginatedListResult<AnnouncementInfo>(
-                totalCount, entities.Select(e => new AnnouncementInfo(e, AnnouncementInfoScheme.List)));
+            var models = entities.Select(e => _mapper.Map<Announcement, AnnouncementListInfo>(e))
+                                 .ToList();
+            return new PaginatedListResult<AnnouncementListInfo>(totalCount, models);
         }
 
         [HttpPost]
@@ -70,7 +74,8 @@ namespace BitWaves.WebAPI.Controllers
                 return NotFound();
             }
 
-            return new ObjectResult(new AnnouncementInfo(entity, AnnouncementInfoScheme.Full));
+            var model = _mapper.Map<Announcement, AnnouncementInfo>(entity);
+            return new ObjectResult(model);
         }
 
         [HttpPut("{announcementId}")]

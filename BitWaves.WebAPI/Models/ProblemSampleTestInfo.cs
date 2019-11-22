@@ -1,5 +1,3 @@
-using System;
-using BitWaves.Data.Entities;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -10,28 +8,15 @@ namespace BitWaves.WebAPI.Models
     public sealed class ProblemSampleTestInfo
     {
         /// <summary>
-        /// 初始化 <see cref="ProblemSampleTestInfo"/> 类的新实例。
-        /// </summary>
-        /// <param name="entity">题目样例实体对象。</param>
-        /// <exception cref="ArgumentNullException"><paramref name="entity"/> 为 null。</exception>
-        public ProblemSampleTestInfo(ProblemSampleTest entity)
-        {
-            Contract.NotNull(entity, nameof(entity));
-
-            Input = entity.Input;
-            Output = entity.Output;
-        }
-
-        /// <summary>
-        /// 获取输入数据。
+        /// 获取或设置输入数据。
         /// </summary>
         [JsonProperty("input")]
-        public string Input { get; }
+        public string Input { get; set; }
 
         /// <summary>
-        /// 获取输出数据。
+        /// 获取或设置输出数据。
         /// </summary>
         [JsonProperty("output")]
-        public string Output { get; }
+        public string Output { get; set; }
     }
 }

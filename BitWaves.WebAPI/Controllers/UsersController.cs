@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
@@ -21,11 +22,13 @@ namespace BitWaves.WebAPI.Controllers
     {
         private readonly IAuthorizationService _authorization;
         private readonly Repository _repo;
+        private readonly IMapper _mapper;
 
-        public UsersController(IAuthorizationService authorization, Repository repo)
+        public UsersController(IAuthorizationService authorization, Repository repo, IMapper mapper)
         {
             _authorization = authorization;
             _repo = repo;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -71,10 +74,8 @@ namespace BitWaves.WebAPI.Controllers
                 }
             }
 
-            var scheme = detailed
-                ? UserInfoScheme.Full
-                : UserInfoScheme.PublicInfo;
-            return new ObjectResult(new UserInfo(entity, scheme));
+            var model = _mapper.Map<User, UserInfo>(entity);
+            return new ObjectResult(model);
         }
 
         [HttpPut("{username}")]
@@ -98,6 +99,7 @@ namespace BitWaves.WebAPI.Controllers
 
         private Expression<Func<User, object>> GetRanklistKeySelector(RanklistKey key)
         {
+            // TODO: Refactor GetRanklistKeySelector to an extension method of RanklistKey enum.
             switch (key)
             {
                 case RanklistKey.TotalAccepted:
@@ -123,7 +125,8 @@ namespace BitWaves.WebAPI.Controllers
                                       .Limit(limit)
                                       .ToListAsync();
 
-            return new ObjectResult(entities.Select(e => new UserRanklistInfo(e)));
+            var models = entities.Select(e => _mapper.Map<User, UserInfo>(e));
+            return new ObjectResult(models);
         }
     }
 }

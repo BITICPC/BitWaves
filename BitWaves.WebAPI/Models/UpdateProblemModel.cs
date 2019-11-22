@@ -148,7 +148,8 @@ namespace BitWaves.WebAPI.Models
 
             if (BuiltinCheckerOptions.HasValue)
             {
-                updates.Add(Builders<Problem>.Update.Set(p => p.JudgeInfo.CheckerOptions, BuiltinCheckerOptions.Value));
+                updates.Add(Builders<Problem>.Update.Set(p => p.JudgeInfo.BuiltinCheckerOptions,
+                                                         BuiltinCheckerOptions.Value));
             }
 
             return Builders<Problem>.Update.Combine(updates);

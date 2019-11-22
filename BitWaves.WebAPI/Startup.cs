@@ -1,5 +1,7 @@
-﻿using BitWaves.Data.DependencyInjection;
+﻿using AutoMapper;
+using BitWaves.Data.DependencyInjection;
 using BitWaves.WebAPI.Authentication;
+using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Services.DependencyInjection;
 using BitWaves.WebAPI.Utils;
 using Microsoft.AspNetCore.Builder;
@@ -53,6 +55,9 @@ namespace BitWaves.WebAPI
             services.AddAuthentication(options => options.DefaultScheme = BitWavesAuthDefaults.SchemeName)
                     .AddBitWavesScheme();
             services.AddBitWavesAuthorization();
+
+            // 添加 AutoMapper 配置
+            services.AddAutoMapper(typeof(ModelMapperProfile));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

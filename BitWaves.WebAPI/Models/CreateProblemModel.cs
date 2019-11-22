@@ -115,7 +115,7 @@ namespace BitWaves.WebAPI.Models
             entity.JudgeInfo.TimeLimit = TimeLimit;
             entity.JudgeInfo.MemoryLimit = MemoryLimit;
             entity.JudgeInfo.JudgeMode = JudgeMode;
-            entity.JudgeInfo.CheckerOptions = BuiltinCheckerOptions;
+            entity.JudgeInfo.BuiltinCheckerOptions = BuiltinCheckerOptions;
 
             return entity;
         }

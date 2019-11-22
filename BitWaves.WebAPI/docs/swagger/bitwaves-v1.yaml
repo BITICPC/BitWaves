@@ -873,6 +873,7 @@ definitions:
     type: object
     required:
       - username
+      - nickname
       - joinTime
       - totalSubmissions
       - totalAccepted
@@ -883,6 +884,10 @@ definitions:
         type: string
         description: 用户名
         example: Lancern
+      nickname:
+        type: string
+        description: 用户昵称
+        example: MSR
       joinTime:
         type: string
         description: 用户加入 BITOJ 的时间，时区为 UTC 时区
@@ -1223,6 +1228,9 @@ definitions:
       - tags
       - totalSubmissions
       - acceptedSubmissions
+      - totalAttemptedUsers
+      - totalSolvedUsers
+      - lastSubmissionTime
     properties:
       id:
         type: string

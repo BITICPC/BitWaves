@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
@@ -21,10 +22,12 @@ namespace BitWaves.WebAPI.Controllers
     public sealed class ContentsController : ControllerBase
     {
         private readonly Repository _repo;
+        private readonly IMapper _mapper;
 
-        public ContentsController(Repository repo)
+        public ContentsController(Repository repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -51,9 +54,10 @@ namespace BitWaves.WebAPI.Controllers
             var entities = await query.Sort(Builders<Content>.Sort.Descending(content => content.CreationTime))
                                       .Project(Builders<Content>.Projection.Exclude(content => content.Data))
                                       .Paginate(page, itemsPerPage)
-                                      .ToListAsync();
-            return new PaginatedListResult<ContentObjectInfo>(
-                totalCount, entities.Select(content => new ContentObjectInfo(content)));
+                                      .ToEntityListAsync<Content>();
+
+            var models = entities.Select(e => _mapper.Map<Content, ContentInfo>(e));
+            return new PaginatedListResult<ContentInfo>(totalCount, models);
         }
 
         [HttpPost]

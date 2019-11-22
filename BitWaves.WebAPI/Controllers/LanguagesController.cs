@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
@@ -16,10 +17,12 @@ namespace BitWaves.WebAPI.Controllers
     public sealed class LanguagesController : ControllerBase
     {
         private readonly Repository _repo;
+        private readonly IMapper _mapper;
 
-        public LanguagesController(Repository repo)
+        public LanguagesController(Repository repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -27,7 +30,9 @@ namespace BitWaves.WebAPI.Controllers
         {
             var languages = await _repo.Languages.Find(Builders<Language>.Filter.Empty)
                                        .ToListAsync();
-            return new ObjectResult(languages.Select(e => new LanguageInfo(e)));
+
+            var models = languages.Select(e => _mapper.Map<Language, LanguageInfo>(e));
+            return new ObjectResult(models);
         }
 
         [HttpPost]

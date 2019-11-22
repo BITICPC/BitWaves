@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
@@ -25,11 +26,15 @@ namespace BitWaves.WebAPI.Controllers
         /// </summary>
         private static readonly object UpdateArchiveIdLock = new object();
 
-        private readonly Repository _repo;
+        // TODO: Remove UpdateArchiveIdLock, use DB related solutions instead.
 
-        public ArchiveController(Repository repo)
+        private readonly Repository _repo;
+        private readonly IMapper _mapper;
+
+        public ArchiveController(Repository repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -51,9 +56,9 @@ namespace BitWaves.WebAPI.Controllers
             query = query.Paginate(page, itemsPerPage);
 
             var viewEntityList = await query.ToListAsync();
-            var viewList = viewEntityList.Select(entity => new ProblemInfo(entity, ProblemInfoScheme.List));
+            var viewList = viewEntityList.Select(entity => _mapper.Map<Problem, ProblemListInfo>(entity));
 
-            return new PaginatedListResult<ProblemInfo>(totalCount, viewList);
+            return new PaginatedListResult<ProblemListInfo>(totalCount, viewList);
         }
 
         [HttpGet("{archiveId}")]
@@ -67,7 +72,8 @@ namespace BitWaves.WebAPI.Controllers
                 return NotFound();
             }
 
-            return new ObjectResult(new ProblemInfo(entity, ProblemInfoScheme.Full));
+            var model = _mapper.Map<Problem, ProblemListInfo>(entity);
+            return new ObjectResult(model);
         }
 
         // FIXME: Remove lock blocks used below and use db's synchronization mechanisms instead.
