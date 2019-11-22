@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using BitWaves.Data.Entities;
-using BitWaves.WebAPI.Utils;
 using Microsoft.AspNetCore.Authentication;
 using MongoDB.Bson;
 using Newtonsoft.Json;

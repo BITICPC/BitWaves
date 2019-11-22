@@ -1,6 +1,5 @@
 using System;
 using BitWaves.WebAPI.Authentication.Policies;
-using BitWaves.WebAPI.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;

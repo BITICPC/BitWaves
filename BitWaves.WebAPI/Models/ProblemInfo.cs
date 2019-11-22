@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using BitWaves.Data.Entities;
-using BitWaves.WebAPI.Utils;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -208,8 +207,6 @@ namespace BitWaves.WebAPI.Models
         public ProblemInfoScheme Scheme { get; set; }
 
         #region Conditional Property Serialization Checks
-
-        // TODO: Refactor this hell: use a different approach to conditionally serialize properties of ProblemInfo.
 
         public bool ShouldSerializeLegend()
         {

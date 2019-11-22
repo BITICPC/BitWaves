@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
-using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Services;
 using Microsoft.AspNetCore.Mvc;

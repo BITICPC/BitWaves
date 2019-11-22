@@ -1,5 +1,4 @@
 using System;
-using BitWaves.WebAPI.Utils;
 using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Extensions

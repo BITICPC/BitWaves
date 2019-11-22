@@ -36,7 +36,7 @@ namespace BitWaves.WebAPI.Models
         /// 从当前的数据模型获取对 <see cref="Announcement"/> 实体对象的更新定义。
         /// </summary>
         /// <returns>对 <see cref="Announcement"/> 实体对象的更新定义。</returns>
-        public UpdateDefinition<Announcement> GetUpdateDefinition()
+        public UpdateDefinition<Announcement> ToUpdateDefinition()
         {
             var updates = new List<UpdateDefinition<Announcement>>();
 

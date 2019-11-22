@@ -1,4 +1,3 @@
-using BitWaves.WebAPI.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BitWaves.WebAPI.Services

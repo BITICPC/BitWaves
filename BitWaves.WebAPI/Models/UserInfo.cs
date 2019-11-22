@@ -1,6 +1,5 @@
 using System;
 using BitWaves.Data.Entities;
-using BitWaves.WebAPI.Utils;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
