@@ -32,7 +32,7 @@ namespace BitWaves.WebAPI.Utils
             this IEnumerable<TElement> enumerable, IDictionary<TKey, TValue> dict,
             Func<TElement, TKey> keySelector, Func<TElement, TValue> valueSelector)
         {
-            Contract.NotNull((object) enumerable, nameof(enumerable));
+            Contract.NotNull(enumerable, nameof(enumerable));
             Contract.NotNull(dict, nameof(dict));
             Contract.NotNull(keySelector, nameof(keySelector));
             Contract.NotNull(valueSelector, nameof(valueSelector));

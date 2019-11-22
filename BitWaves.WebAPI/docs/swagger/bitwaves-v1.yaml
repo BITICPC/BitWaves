@@ -170,22 +170,8 @@ paths:
           description: 操作成功完成
         400:
           description: 数据模型验证失败，响应的body中包含模型验证错误信息
-        422:
-          description: 数据模型有效，但在创建用户过程中出现了错误
-          schema:
-            type: object
-            required:
-              - errorCode
-              - message
-            properties:
-              errorCode:
-                description: 错误码
-                type: integer
-                example: 1
-              message:
-                description: 错误消息
-                type: string
-                example: 用户名冲突
+        409:
+          description: 给定的用户名已经存在
 
   /users/{username}:
     get:
@@ -327,22 +313,10 @@ paths:
                 description: 编码用户身份验证信息的 JWT
         400:
           description: 数据模型验证失败
+        404:
+          description: 指定的用户不存在
         422:
-          description: 数据模型验证成功，但在执行用户身份验证时出现错误
-          schema:
-            type: object
-            required:
-              - errorCode
-              - message
-            properties:
-              errorCode:
-                type: integer
-                description: 错误代码
-                example: 1
-              message:
-                type: string
-                description: 错误消息
-                example: 用户不存在
+          description: 密码不正确
 
   /announcements:
     get:

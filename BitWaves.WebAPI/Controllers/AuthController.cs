@@ -34,13 +34,13 @@ namespace BitWaves.WebAPI.Controllers
             if (user == null)
             {
                 // 用户不存在
-                return this.ErrorMessage(1, "用户不存在");
+                return NotFound();
             }
 
             if (!user.Challenge(model.Password))
             {
                 // 密码错误
-                return this.ErrorMessage(2, "密码错误");
+                return UnprocessableEntity();
             }
 
             var authToken = new BitWavesAuthenticationToken(user);

@@ -43,7 +43,7 @@ namespace BitWaves.WebAPI.Controllers
                 if (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
                 {
                     // 可以认为用户名冲突引发当前的异常
-                    return this.ErrorMessage(1, "用户名已经存在");
+                    return Conflict();
                 }
 
                 throw;
