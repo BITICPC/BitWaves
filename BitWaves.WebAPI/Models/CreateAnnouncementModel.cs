@@ -1,6 +1,5 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using BitWaves.Data.Entities;
+using BitWaves.WebAPI.Validation;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -14,7 +13,7 @@ namespace BitWaves.WebAPI.Models
         /// 获取或设置全站公告的标题。
         /// </summary>
         [JsonProperty("title")]
-        [Required]
+        [AnnouncementTitle]
         public string Title { get; set; }
 
         /// <summary>
@@ -27,7 +26,7 @@ namespace BitWaves.WebAPI.Models
         /// 获取或设置全站公告内容。
         /// </summary>
         [JsonProperty("content")]
-        [Required]
+        [AnnouncementContent]
         public string Content { get; set; }
     }
 }

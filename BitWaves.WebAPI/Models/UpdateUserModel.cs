@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using BitWaves.Data.Entities;
-using BitWaves.WebAPI.Utils;
+using BitWaves.WebAPI.Validation;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+
+using UrlAttribute = BitWaves.WebAPI.Validation.UrlAttribute;
 
 namespace BitWaves.WebAPI.Models
 {
@@ -16,14 +18,14 @@ namespace BitWaves.WebAPI.Models
         /// 获取用户昵称。
         /// </summary>
         [JsonProperty("nickname")]
-        [OptionalValidation(typeof(MinLengthAttribute), 1)]
+        [OptionalValidation(typeof(NicknameAttribute))]
         public Utils.Optional<string> Nickname { get; private set; }
 
         /// <summary>
         /// 获取手机号。
         /// </summary>
         [JsonProperty("phone")]
-        [OptionalValidation(typeof(RegularExpressionAttribute), @"^\d{11}")]
+        [OptionalValidation(typeof(PhoneNumberAttribute))]
         public Utils.Optional<string> Phone { get; private set; }
 
         /// <summary>
@@ -37,22 +39,21 @@ namespace BitWaves.WebAPI.Models
         /// 获取学校名称。
         /// </summary>
         [JsonProperty("school")]
-        [OptionalValidation(typeof(MinLengthAttribute), 2)]
+        [OptionalValidation(typeof(SchoolAttribute))]
         public Utils.Optional<string> School { get; private set; }
 
         /// <summary>
         /// 获取学号。
         /// </summary>
         [JsonProperty("studentId")]
-        [OptionalValidation(typeof(MinLengthAttribute), 1)]
+        [OptionalValidation(typeof(StudentIdAttribute))]
         public Utils.Optional<string> StudentId { get; private set; }
 
         /// <summary>
         /// 获取用户的博客 URL。
         /// </summary>
         [JsonProperty("blogUrl")]
-        [OptionalValidation(typeof(RegularExpressionAttribute),
-            @"^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)$")]
+        [OptionalValidation(typeof(UrlAttribute))]
         public Utils.Optional<string> BlogUrl { get; private set; }
 
         /// <summary>

@@ -1,7 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using BitWaves.WebAPI.Utils;
 
-namespace BitWaves.WebAPI.Utils
+namespace BitWaves.WebAPI.Validation
 {
     /// <summary>
     /// 为 <see cref="Optional{T}"/> 提供数据验证标记。

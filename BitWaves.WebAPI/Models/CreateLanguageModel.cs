@@ -1,5 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using BitWaves.Data.Entities;
+using BitWaves.WebAPI.Validation;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -13,32 +12,28 @@ namespace BitWaves.WebAPI.Models
         /// 获取或设置语言标识符。
         /// </summary>
         [JsonProperty("langId")]
-        [Required]
-        [MinLength(1)]
+        [LanguageIdentifier]
         public string Identifier { get; set; }
 
         /// <summary>
         /// 获取或设置语言方言。
         /// </summary>
         [JsonProperty("dialect")]
-        [Required]
-        [MinLength(1)]
+        [LanguageDialect]
         public string Dialect { get; set; }
 
         /// <summary>
         /// 获取或设置语言版本。
         /// </summary>
         [JsonProperty("version")]
-        [Required]
-        [MinLength(1)]
+        [LanguageVersion]
         public string Version { get; set; }
 
         /// <summary>
         /// 获取或设置语言的显示名称。
         /// </summary>
         [JsonProperty("displayName")]
-        [Required]
-        [MinLength(1)]
+        [LanguageDisplayName]
         public string DisplayName { get; set; }
     }
 }
