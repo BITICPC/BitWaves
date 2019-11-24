@@ -15,7 +15,7 @@ namespace BitWaves.WebAPI.Validation
         /// <summary>
         /// 语言显示名称的最长长度。
         /// </summary>
-        public const int MaxLength = 256;
+        public const int MaxLength = 128;
 
         /// <summary>
         /// 初始化 <see cref="LanguageDisplayNameAttribute"/> 类的新实例。

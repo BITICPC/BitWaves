@@ -10,12 +10,12 @@ namespace BitWaves.WebAPI.Validation
         /// <summary>
         /// 学号的最短长度。
         /// </summary>
-        public const int MinLength = 4;
+        public const int MinLength = 3;
 
         /// <summary>
         /// 学号的最长长度。
         /// </summary>
-        public const int MaxLength = 32;
+        public const int MaxLength = 30;
 
         /// <summary>
         /// 初始化 <see cref="StudentIdAttribute"/> 类的新实例。

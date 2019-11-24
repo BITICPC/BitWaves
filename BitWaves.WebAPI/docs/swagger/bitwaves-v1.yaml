@@ -857,15 +857,18 @@ definitions:
       - phone
     properties:
       username:
-        description: 用户名，长度至少为3个字符
+        description: 用户名
+        minLength: 3
+        maxLength: 64
         type: string
         example: Lancern
       password:
-        description: 密码，长度至少为6个字符
+        description: 密码
+        minLength: 6
         type: string
         example: hello_world
       phone:
-        description: 手机号，应由11个数字组成
+        description: 手机号，由 11 个十进制数字组成
         type: string
         example: "13901234567"
   PutUserModel:
@@ -873,7 +876,9 @@ definitions:
     properties:
       nickname:
         type: string
-        description: 昵称，长度应大于 0。若不需要更改昵称，请不要提供该成员。
+        minLength: 1
+        maxLength: 64
+        description: 昵称。若不需要更改昵称，请不要提供该成员。
         example: "msr"
       phone:
         type: string
@@ -885,11 +890,15 @@ definitions:
         example: "msr@bit.edu.cn"
       school:
         type: string
-        description: 学校名称，包含至少 2 个字符。若不需要更改学校名称，请不要提供该成员。
+        minLength: 1
+        maxLength: 64
+        description: 学校名称。若不需要更改学校名称，请不要提供该成员。
         example: "Beijing Institute of Technology"
       studentId:
         type: string
-        description: 学号。若不需要更改学号，请不要提供该成员。
+        minLength: 3
+        maxLength: 30
+        description: 学号，由 10 位数字组成。若不需要更改学号，请不要提供该成员。
         example: "1120160001"
       blogUrl:
         type: string
@@ -1028,6 +1037,8 @@ definitions:
     properties:
       title:
         type: string
+        minLength: 1
+        maxLength: 128
         description: 全站公告的标题
         example: BITOJ 即日起开始营业
       pinned:
@@ -1036,6 +1047,7 @@ definitions:
         example: false
       content:
         type: string
+        minLength: 1
         description: 全站公告的内容
         example: BITOJ 即日起开始营业，欢迎 AK！
   PutAnnouncementModel:
@@ -1043,12 +1055,15 @@ definitions:
     properties:
       title:
         type: string
+        minLength: 1
+        maxLength: 128
         description: 修改后的标题。若不需要修改标题，请不要提供此成员
       pinned:
         type: boolean
         description: 修改后的置顶标记。若不需要修改此属性，请不要提供此成员
       content:
         type: string
+        minLength: 1
         description: 修改后的内容。若不需要修改此属性，请不要提供此成员
 
   AnnouncementListItem:
@@ -1132,26 +1147,30 @@ definitions:
     properties:
       title:
         type: string
-        description: 题目标题，长度大于 0
+        minLength: 1
+        maxLength: 128
+        description: 题目标题
         example: "诸神眷顾的幻想乡"
   PutProblemModel:
     type: object
     properties:
       title:
         type: string
-        description: 题目的标题，长度大于 0。若不需要修改，请不要提供此字段
+        minLength: 1
+        maxLength: 128
+        description: 题目的标题。若不需要修改，请不要提供此字段
         example: "诸神眷顾的幻想乡"
       legend:
         type: string
-        description: 题目的背景描述，长度大于 0。若不需要修改，请不要提供此字段
+        description: 题目的背景描述。若不需要修改，请不要提供此字段
         example: "hello world"
       input:
         type: string
-        description: 题目的输入描述，长度大于 0。若不需要修改，请不要提供此字段
+        description: 题目的输入描述。若不需要修改，请不要提供此字段
         example: "input description"
       output:
         type: string
-        description: 题目的输出描述，长度大于 0。若不需要修改，请不要提供此字段
+        description: 题目的输出描述。若不需要修改，请不要提供此字段
         example: "output description"
       notes:
         type: string
@@ -1172,11 +1191,15 @@ definitions:
           - 数据结构
       timeLimit:
         type: integer
-        description: 单个测试点的时间限制，单位为毫秒。有效范围为 [500, 10000]。若不需要修改，请不要提供此字段
+        minimum: 500
+        maximum: 10000
+        description: 单个测试点的时间限制，单位为毫秒。若不需要修改，请不要提供此字段
         example: 1000
       memoryLimit:
         type: integer
-        description: 单个测试点的内存限制，单位为MB。有效范围为 [32, 1024]。若不需要修改，请不要提供此字段
+        minimum: 32
+        maximum: 1024
+        description: 单个测试点的内存限制，单位为MB。若不需要修改，请不要提供此字段
         example: 256
       judgeMode:
         type: string
@@ -1450,19 +1473,27 @@ definitions:
     properties:
       langId:
         type: string
-        description: 语言标识符，长度应至少为 1
+        minLength: 1
+        maxLength: 32
+        description: 语言标识符
         example: cpp
       dialect:
         type: string
-        description: 方言标识符，长度应至少为 1
+        minLength: 1
+        maxLength: 32
+        description: 方言标识符
         example: clang
       version:
         type: string
-        description: 版本标识符，长度应至少为 1
+        minLength: 1
+        maxLength: 32
+        description: 版本标识符
         example: '17'
       displayName:
         type: string
-        description: 语言的显示名称，长度应至少为 1
+        minLength: 1
+        maxLength: 128
+        description: 语言的显示名称
         example: 'Clang++ 17'
 
   LanguageInfo:
