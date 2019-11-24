@@ -36,7 +36,7 @@ namespace BitWaves.WebAPI.Controllers
                 return NotFound();
             }
 
-            if (PasswordUtils.Challenge(user.PasswordHash, model.Password))
+            if (!PasswordUtils.Challenge(user.PasswordHash, model.Password))
             {
                 // 密码错误
                 return UnprocessableEntity();
