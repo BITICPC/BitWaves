@@ -95,6 +95,11 @@ namespace BitWaves.WebAPI.Controllers
             }
 
             var update = model.ToUpdateDefinition();
+            if (update == null)
+            {
+                return Ok();
+            }
+
             var updateResult = await _repo.Announcements.UpdateOneAsync(
                 Builders<Announcement>.Filter.Eq(ann => ann.Id, id), update);
             if (updateResult.MatchedCount == 0)

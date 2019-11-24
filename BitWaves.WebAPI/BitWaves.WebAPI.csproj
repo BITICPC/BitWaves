@@ -40,7 +40,7 @@
 
     <!-- BitWaves dependencies -->
     <ItemGroup>
-        <PackageReference Include="BitWaves.Data" Version="0.11.2" />
+        <PackageReference Include="BitWaves.Data" Version="0.11.3" />
     </ItemGroup>
 
     <ItemGroup>

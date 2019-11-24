@@ -25,7 +25,9 @@ namespace BitWaves.WebAPI.Models
         /// <summary>
         /// 从当前的数据模型创建相应的 <see cref="UpdateDefinition{Problem}"/> 对象。
         /// </summary>
-        /// <returns>从当前的数据模型创建的 <see cref="UpdateDefinition{Problem}"/> 对象。</returns>
+        /// <returns>
+        /// 从当前的数据模型创建的 <see cref="UpdateDefinition{Problem}"/> 对象。若没有任何数据需要更新，返回 null。
+        /// </returns>
         public UpdateDefinition<Problem> ToUpdateDefinition()
         {
             var updates = new List<UpdateDefinition<Problem>>();
@@ -40,7 +42,9 @@ namespace BitWaves.WebAPI.Models
                 updates.Add(Builders<Problem>.Update.PullAll(p => p.Tags, TagsToRemove.Value));
             }
 
-            return Builders<Problem>.Update.Combine(updates);
+            return updates.Count > 0
+                ? Builders<Problem>.Update.Combine(updates)
+                : null;
         }
     }
 }

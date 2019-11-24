@@ -79,7 +79,7 @@ namespace BitWaves.WebAPI.Models
         /// <summary>
         /// 从当前的题目信息更新数据模型创建对应的数据库更新定义。
         /// </summary>
-        /// <returns>创建的数据库更新定义。</returns>
+        /// <returns>创建的数据库更新定义。若没有任何数据需要更新，返回 null。</returns>
         public UpdateDefinition<Problem> CreateUpdateDefinition()
         {
             // TODO: 重构 UpdateProblemModel.CreateUpdateDefinition 方法
@@ -138,7 +138,9 @@ namespace BitWaves.WebAPI.Models
                                                          BuiltinCheckerOptions.Value));
             }
 
-            return Builders<Problem>.Update.Combine(updates);
+            return updates.Count > 0
+                ? Builders<Problem>.Update.Combine(updates)
+                : null;
         }
     }
 }

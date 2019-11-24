@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Validation;
 using MongoDB.Driver;
@@ -35,7 +34,7 @@ namespace BitWaves.WebAPI.Models
         /// <summary>
         /// 从当前的数据模型获取对 <see cref="Announcement"/> 实体对象的更新定义。
         /// </summary>
-        /// <returns>对 <see cref="Announcement"/> 实体对象的更新定义。</returns>
+        /// <returns>对 <see cref="Announcement"/> 实体对象的更新定义。若没有任何数据需要更新，返回 null。</returns>
         public UpdateDefinition<Announcement> ToUpdateDefinition()
         {
             var updates = new List<UpdateDefinition<Announcement>>();
@@ -55,7 +54,9 @@ namespace BitWaves.WebAPI.Models
                 updates.Add(Builders<Announcement>.Update.Set(ann => ann.Content, Content.Value));
             }
 
-            return Builders<Announcement>.Update.Combine(updates);
+            return updates.Count > 0
+                ? Builders<Announcement>.Update.Combine(updates)
+                : null;
         }
     }
 }

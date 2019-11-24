@@ -74,6 +74,11 @@ namespace BitWaves.WebAPI.Controllers
             }
 
             var updateDefinition = model.CreateUpdateDefinition();
+            if (updateDefinition == null)
+            {
+                return Ok();
+            }
+
             var entity = await _repo.Problems.FindOneAndUpdateAsync(
                 Builders<Problem>.Filter.Eq(p => p.Id, id),
                 updateDefinition);
@@ -113,6 +118,11 @@ namespace BitWaves.WebAPI.Controllers
             }
 
             var update = model.ToUpdateDefinition();
+            if (update == null)
+            {
+                return Ok();
+            }
+
             var updateResult = await _repo.Problems.UpdateOneAsync(Builders<Problem>.Filter.Eq(p => p.Id, id), update);
             if (updateResult.MatchedCount == 0)
             {

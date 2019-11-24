@@ -59,8 +59,8 @@ namespace BitWaves.WebAPI.Models
         /// <summary>
         /// 从当前的数据模型创建 <see cref="UpdateDefinition{User}"/> 对象以更新数据库。
         /// </summary>
-        /// <returns>创建的 <see cref="UpdateDefinition{User}"/> 对象。</returns>
-        public UpdateDefinition<User> GetUpdateDefinition()
+        /// <returns>创建的 <see cref="UpdateDefinition{User}"/> 对象。若没有任何数据需要更新，返回 null。</returns>
+        public UpdateDefinition<User> ToUpdateDefinition()
         {
             var updates = new List<UpdateDefinition<User>>();
 
@@ -94,7 +94,9 @@ namespace BitWaves.WebAPI.Models
                 updates.Add(Builders<User>.Update.Set(u => u.BlogUrl, BlogUrl.Value));
             }
 
-            return Builders<User>.Update.Combine(updates);
+            return updates.Count > 0
+                ? Builders<User>.Update.Combine(updates)
+                : null;
         }
     }
 }

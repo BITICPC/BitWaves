@@ -94,7 +94,12 @@ namespace BitWaves.WebAPI.Controllers
                 return Forbid();
             }
 
-            var updates = model.GetUpdateDefinition();
+            var updates = model.ToUpdateDefinition();
+            if (updates == null)
+            {
+                return Ok();
+            }
+
             await _repo.Users.UpdateOneAsync(Builders<User>.Filter.Eq(u => u.Username, username),
                                              Builders<User>.Update.Combine(updates));
             return Ok();

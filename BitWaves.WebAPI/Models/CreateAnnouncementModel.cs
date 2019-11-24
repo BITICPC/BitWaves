@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using BitWaves.WebAPI.Validation;
 using Newtonsoft.Json;
 

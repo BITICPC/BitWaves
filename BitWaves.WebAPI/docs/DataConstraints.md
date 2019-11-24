@@ -186,3 +186,11 @@
 * 最大长度：128
 
 语言方言名称相关的数据验证逻辑定义在 `BitWaves.WebAPI/Validation/LanguageDisplayNameAttribute.cs`。
+
+## 静态内容数据
+
+### 静态内容原始数据
+
+* 是否可空：否
+* 类型：`binary`
+* 最大长度：14 MB

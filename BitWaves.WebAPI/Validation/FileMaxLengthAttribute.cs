@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
-namespace BitWaves.WebAPI.Utils
+namespace BitWaves.WebAPI.Validation
 {
     /// <summary>
     /// 为 <see cref="IFormFile"/> 提供最长长度验证逻辑。
