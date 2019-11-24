@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using BitWaves.Data.Entities;
-using BitWaves.WebAPI.Utils;
+using BitWaves.WebAPI.Validation;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 
@@ -16,7 +16,7 @@ namespace BitWaves.WebAPI.Models
         /// 获取或设置全站公告的标题。
         /// </summary>
         [JsonProperty("title")]
-        [OptionalValidation(typeof(RequiredAttribute))]
+        [OptionalValidation(typeof(AnnouncementTitleAttribute))]
         public Utils.Optional<string> Title { get; set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace BitWaves.WebAPI.Models
         /// 获取或设置全站公告的内容。
         /// </summary>
         [JsonProperty("content")]
-        [OptionalValidation(typeof(RequiredAttribute))]
+        [OptionalValidation(typeof(AnnouncementContentAttribute))]
         public Utils.Optional<string> Content { get; set; }
 
         /// <summary>

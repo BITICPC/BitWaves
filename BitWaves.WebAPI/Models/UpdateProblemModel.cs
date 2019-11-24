@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using BitWaves.Data.Entities;
-using BitWaves.WebAPI.Utils;
+using BitWaves.WebAPI.Validation;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 
@@ -18,8 +17,7 @@ namespace BitWaves.WebAPI.Models
         /// 获取题目的标题。
         /// </summary>
         [JsonProperty("title")]
-        [OptionalValidation(typeof(RequiredAttribute))]
-        [OptionalValidation(typeof(MinLengthAttribute), 1)]
+        [OptionalValidation(typeof(ProblemTitleAttribute))]
         public Utils.Optional<string> Title { get; private set; }
 
         /// <summary>
@@ -50,7 +48,7 @@ namespace BitWaves.WebAPI.Models
         /// 获取题目的难度系数。
         /// </summary>
         [JsonProperty("difficulty")]
-        [OptionalValidation(typeof(RangeAttribute), 0, 100)]
+        [OptionalValidation(typeof(DifficultyAttribute))]
         public Utils.Optional<int> Difficulty { get; private set; }
 
         /// <summary>
@@ -63,14 +61,14 @@ namespace BitWaves.WebAPI.Models
         /// 获取题目单个测试点的时间限制，单位为毫秒。
         /// </summary>
         [JsonProperty("timeLimit")]
-        [OptionalValidation(typeof(RangeAttribute), 500, 10000)]
+        [OptionalValidation(typeof(TimeLimitAttribute))]
         public Utils.Optional<int> TimeLimit { get; private set; }
 
         /// <summary>
         /// 获取题目单个测试点的内存限制，单位为 MB。
         /// </summary>
         [JsonProperty("memoryLimit")]
-        [OptionalValidation(typeof(RangeAttribute), 32, 1024)]
+        [OptionalValidation(typeof(MemoryLimitAttribute))]
         public Utils.Optional<int> MemoryLimit { get; private set; }
 
         /// <summary>

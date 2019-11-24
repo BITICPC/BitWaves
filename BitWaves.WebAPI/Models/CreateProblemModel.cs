@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using BitWaves.WebAPI.Validation;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -12,8 +12,7 @@ namespace BitWaves.WebAPI.Models
         /// 获取或设置题目标题。
         /// </summary>
         [JsonProperty("title")]
-        [Required]
-        [MinLength(1)]
+        [ProblemTitle]
         public string Title { get; set; }
     }
 }

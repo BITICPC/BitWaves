@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using BitWaves.WebAPI.Validation;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -12,25 +12,21 @@ namespace BitWaves.WebAPI.Models
         /// 获取用户名。
         /// </summary>
         [JsonProperty("username")]
-        [Required]
-        [MinLength(3)]
+        [Username]
         public string Username { get; private set; }
 
         /// <summary>
         /// 获取用户密码。
         /// </summary>
         [JsonProperty("password")]
-        [Required]
-        [MinLength(6)]
+        [Password]
         public string Password { get; private set; }
 
         /// <summary>
         /// 获取用户手机号。
         /// </summary>
         [JsonProperty("phone")]
-        [Required]
-        [StringLength(11)]
-        [RegularExpression(@"^\d{11}")]
+        [PhoneNumber]
         public string Phone { get; private set; }
     }
 }

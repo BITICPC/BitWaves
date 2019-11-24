@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using BitWaves.Data.Entities;
+using BitWaves.WebAPI.Validation;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;
@@ -21,7 +21,7 @@ namespace BitWaves.WebAPI.Models
         /// 获取题目在公开题目集中的 ID。
         /// </summary>
         [JsonProperty("archiveId")]
-        [Range(0, int.MaxValue)]
+        [ArchiveId]
         public int ArchiveId { get; private set; }
 
         /// <summary>
