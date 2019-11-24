@@ -210,6 +210,7 @@ namespace BitWaves.WebAPI.Controllers
             return Ok();
         }
 
+        // DELETE: /problems/tags
         [HttpDelete("tags")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> DeleteProblemTags(
