@@ -23,6 +23,11 @@ namespace BitWaves.WebAPI.Validation
         /// <inheritdoc />
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
+            if (validationContext == null)
+            {
+                validationContext = new ValidationContext(value);
+            }
+
             foreach (var innerValidator in _inner)
             {
                 var innerResult = innerValidator.GetValidationResult(value, validationContext);

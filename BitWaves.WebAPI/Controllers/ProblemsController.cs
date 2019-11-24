@@ -91,12 +91,12 @@ namespace BitWaves.WebAPI.Controllers
             return Ok();
         }
 
-        // PUT: /problems/{problemId}/tags
-        [HttpPut("{problemId}/tags")]
+        // POST: /problems/{problemId}/tags
+        [HttpPost("{problemId}/tags")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
-        public async Task<IActionResult> UpdateProblemTags(
+        public async Task<IActionResult> AddProblemTags(
             string problemId,
-            [FromBody] UpdateProblemTagsModel model)
+            [FromBody] [Required] [EnumerableValidation(typeof(ProblemTagNameAttribute))] string[] tagNames)
         {
             if (!ObjectId.TryParse(problemId, out var id))
             {
@@ -105,24 +105,40 @@ namespace BitWaves.WebAPI.Controllers
             }
 
             // Checks that every new problem tags specified is in the problem tag data dictionary.
-            if (model.TagsToAdd.HasValue)
-            {
-                var uniqueTags = model.TagsToAdd.Value.ToImmutableHashSet();
-                var count = await _repo.ProblemTags.CountDocumentsAsync(
-                    Builders<ProblemTag>.Filter.In(t => t.Name, uniqueTags));
+            var uniqueTags = tagNames.ToImmutableHashSet();
+            var count = await _repo.ProblemTags.CountDocumentsAsync(
+                Builders<ProblemTag>.Filter.In(t => t.Name, uniqueTags));
 
-                if (count != uniqueTags.Count)
-                {
-                    return UnprocessableEntity();
-                }
+            if (count != uniqueTags.Count)
+            {
+                return UnprocessableEntity();
             }
 
-            var update = model.ToUpdateDefinition();
-            if (update == null)
+            var update = Builders<Problem>.Update.AddToSetEach(p => p.Tags, uniqueTags);
+            var updateResult = await _repo.Problems.UpdateOneAsync(Builders<Problem>.Filter.Eq(p => p.Id, id), update);
+            if (updateResult.MatchedCount == 0)
             {
-                return Ok();
+                return NotFound();
             }
 
+            return Ok();
+        }
+
+        // DELETE: /problems/{problemId}/tags
+        [HttpDelete("{problemId}/tags")]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
+        public async Task<IActionResult> DeleteProblemTags(
+            string problemId,
+            [FromBody] [Required] [EnumerableValidation(typeof(ProblemTagNameAttribute))] string[] tagNames)
+        {
+            if (!ObjectId.TryParse(problemId, out var id))
+            {
+                ModelState.AddModelError(nameof(problemId), "invalid problem ID");
+                return ValidationProblem();
+            }
+
+            var uniqueTags = tagNames.ToImmutableHashSet();
+            var update = Builders<Problem>.Update.PullAll(p => p.Tags, uniqueTags);
             var updateResult = await _repo.Problems.UpdateOneAsync(Builders<Problem>.Filter.Eq(p => p.Id, id), update);
             if (updateResult.MatchedCount == 0)
             {
@@ -182,15 +198,13 @@ namespace BitWaves.WebAPI.Controllers
             {
                 await _repo.ProblemTags.InsertManyAsync(entities);
             }
-            catch (MongoWriteException ex)
+            catch (MongoBulkWriteException ex)
             {
-                if (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+                if (ex.WriteErrors.All(error => error.Category == ServerErrorCategory.DuplicateKey))
                 {
                     // Duplicate tag name.
                     return Conflict();
                 }
-
-                throw;
             }
 
             return Ok();

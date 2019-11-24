@@ -46,6 +46,12 @@ namespace BitWaves.WebAPI.Validation
 
             var innerValidator =
                 (ValidationAttribute) Activator.CreateInstance(_elementValidationType, _elementValidatorArgs);
+
+            if (validationContext == null)
+            {
+                validationContext = new ValidationContext(value);
+            }
+
             foreach (var element in enumerable)
             {
                 var innerResult = innerValidator.GetValidationResult(element, validationContext);

@@ -582,9 +582,9 @@ paths:
         404:
           description: 未能找到指定的题目
   /problems/{problemId}/tags:
-    put:
-      summary: 修改题目标签
-      description: 修改题目标签
+    post:
+      summary: 向题目添加标签
+      description: 向题目添加标签
       tags:
         - problems
       parameters:
@@ -596,8 +596,11 @@ paths:
         - in: body
           name: data
           required: true
+          description: 要添加的标签名称
           schema:
-            $ref: '#/definitions/PutProblemTagsModel'
+            type: array
+            items:
+              type: string
       responses:
         200:
           description: 操作成功完成
@@ -609,6 +612,34 @@ paths:
           description: 无法找到要求的题目
         422:
           description: 一个或多个要添加的标签无法在题目标签数据字典中被找到
+    delete:
+      summary: 从题目删除标签
+      description: 从题目删除标签
+      tags:
+        - problems
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          description: 要删除的标签名称
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 请求中包含无效的标签名称
+        403:
+          description: 用户没有相应的权限
+        404:
+          description: 无法找到要求的题目
 
   /problems/tags:
     get:
@@ -1323,24 +1354,6 @@ definitions:
         description: 当评测模式为 Standard 模式时，该成员指出传递给内建答案检查器的参数。可能的值包括：`FloatingPointAware` 以及 `IgnoreCase`
         example:
           - FloatingPointAware
-
-  PutProblemTagsModel:
-    type: object
-    properties:
-      tagsToAdd:
-        type: array
-        items:
-          type: string
-          minLength: 1
-          maxLength: 32
-        description: 要添加的标签名称
-      tagsToRemove:
-        type: array
-        items:
-          type: string
-          minLength: 1
-          maxLength: 32
-        description: 要删除的标签名称
 
   ProblemListItem:
     type: object
