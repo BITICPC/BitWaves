@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Validation;
 using MongoDB.Driver;
@@ -50,12 +49,6 @@ namespace BitWaves.WebAPI.Models
         [JsonProperty("difficulty")]
         [OptionalValidation(typeof(DifficultyAttribute))]
         public Utils.Optional<int> Difficulty { get; private set; }
-
-        /// <summary>
-        /// 获取题目的标签。
-        /// </summary>
-        [JsonProperty("tags")]
-        public Utils.Optional<string[]> Tags { get; private set; }
 
         /// <summary>
         /// 获取题目单个测试点的时间限制，单位为毫秒。
@@ -122,11 +115,6 @@ namespace BitWaves.WebAPI.Models
             if (Difficulty.HasValue)
             {
                 updates.Add(Builders<Problem>.Update.Set(p => p.Difficulty, Difficulty.Value));
-            }
-
-            if (Tags.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.Tags, Tags.Value.ToList()));
             }
 
             if (TimeLimit.HasValue)

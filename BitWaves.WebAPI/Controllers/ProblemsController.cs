@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -85,6 +86,42 @@ namespace BitWaves.WebAPI.Controllers
             return Ok();
         }
 
+        // PUT: /problems/{problemId}/tags
+        [HttpPut("{problemId}/tags")]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
+        public async Task<IActionResult> UpdateProblemTags(
+            string problemId,
+            [FromBody] UpdateProblemTagsModel model)
+        {
+            if (!ObjectId.TryParse(problemId, out var id))
+            {
+                ModelState.AddModelError(nameof(problemId), "invalid problem ID");
+                return ValidationProblem();
+            }
+
+            // Checks that every new problem tags specified is in the problem tag data dictionary.
+            if (model.TagsToAdd.HasValue)
+            {
+                var uniqueTags = model.TagsToAdd.Value.ToImmutableHashSet();
+                var count = await _repo.ProblemTags.CountDocumentsAsync(
+                    Builders<ProblemTag>.Filter.In(t => t.Name, uniqueTags));
+
+                if (count != uniqueTags.Count)
+                {
+                    return UnprocessableEntity();
+                }
+            }
+
+            var update = model.ToUpdateDefinition();
+            var updateResult = await _repo.Problems.UpdateOneAsync(Builders<Problem>.Filter.Eq(p => p.Id, id), update);
+            if (updateResult.MatchedCount == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
         // GET: /problems/{problemId}
         [HttpGet("{problemId}")]
         public async Task<IActionResult> GetProblem(
@@ -128,15 +165,8 @@ namespace BitWaves.WebAPI.Controllers
         [HttpPost("tags")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> CreateProblemTags(
-            [FromBody] string[] tagNames)
+            [FromBody] [Required] [EnumerableValidation(typeof(ProblemTagNameAttribute))] string[] tagNames)
         {
-            var validator = new ProblemTagNameAttribute();
-            if (tagNames.Any(name => !validator.IsValid(name)))
-            {
-                ModelState.AddModelError(nameof(tagNames), "invalid tag name.");
-                return ValidationProblem();
-            }
-
             var entities = tagNames.Select(name => new ProblemTag(name));
             try
             {
@@ -159,15 +189,8 @@ namespace BitWaves.WebAPI.Controllers
         [HttpDelete("tags")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> DeleteProblemTags(
-            [FromBody] string[] tagNames)
+            [FromBody] [Required] [EnumerableValidation(typeof(ProblemTagNameAttribute))] string[] tagNames)
         {
-            var validator = new ProblemTagNameAttribute();
-            if (tagNames.Any(name => !validator.IsValid(name)))
-            {
-                ModelState.AddModelError(nameof(tagNames), "invalid tag name.");
-                return ValidationProblem();
-            }
-
             var filter = Builders<ProblemTag>.Filter.In(e => e.Name, tagNames);
             await _repo.ProblemTags.DeleteManyAsync(filter);
 
