@@ -134,6 +134,17 @@
 
 内存限制相关的数据验证逻辑定义在 `BitWaves.WebAPI/Validation/MemoryLimitAttribute.cs`。
 
+## 题目标签数据
+
+### 题目标签名称
+
+* 是否可空：否
+* 类型：`string`
+* 最短长度：1
+* 最长长度：32
+
+题目标签名称相关的数据验证逻辑定义在 `BitWaves.WebAPI/Validation/ProblemTagNameAttribute.cs`。
+
 ## 语言数据
 
 ### 语言标识符

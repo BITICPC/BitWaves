@@ -28,6 +28,7 @@ namespace BitWaves.WebAPI.Controllers
             _mapper = mapper;
         }
 
+        // GET: /announcements
         [HttpGet]
         public async Task<IActionResult> GetAnnouncementsList(
             [FromQuery] [Range(0, int.MaxValue)] int page = 0,
@@ -46,6 +47,7 @@ namespace BitWaves.WebAPI.Controllers
             return new PaginatedListResult<AnnouncementListInfo>(totalCount, models);
         }
 
+        // POST: /announcements
         [HttpPost]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> CreateAnnouncement(
@@ -57,6 +59,7 @@ namespace BitWaves.WebAPI.Controllers
             return new ObjectResult(new { id = entity.Id });
         }
 
+        // GET: /announcements/{announcementId}
         [HttpGet("{announcementId}")]
         public async Task<IActionResult> GetAnnouncement(
             string announcementId)
@@ -78,6 +81,7 @@ namespace BitWaves.WebAPI.Controllers
             return new ObjectResult(model);
         }
 
+        // PUT: /announcements/{announcementId}
         [HttpPut("{announcementId}")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> UpdateAnnouncement(
@@ -101,6 +105,7 @@ namespace BitWaves.WebAPI.Controllers
             return Ok();
         }
 
+        // DELETE: /announcements/{announcementId}
         [HttpDelete("{announcementId}")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> DeleteAnnouncement(

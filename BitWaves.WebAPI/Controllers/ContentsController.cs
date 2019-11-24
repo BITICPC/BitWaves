@@ -30,6 +30,7 @@ namespace BitWaves.WebAPI.Controllers
             _mapper = mapper;
         }
 
+        // GET: /contents
         [HttpGet]
         [Authorize(BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> GetObjectList(
@@ -60,6 +61,7 @@ namespace BitWaves.WebAPI.Controllers
             return new PaginatedListResult<ContentInfo>(totalCount, models);
         }
 
+        // POST: /contents
         [HttpPost]
         [Authorize(BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> CreateObject(
@@ -77,6 +79,7 @@ namespace BitWaves.WebAPI.Controllers
             return new ObjectResult(new { id = content.Id });
         }
 
+        // GET: /contents/{contentId}
         [HttpGet("{contentId}")]
         public async Task<IActionResult> GetObject(
             string contentId,
@@ -98,6 +101,7 @@ namespace BitWaves.WebAPI.Controllers
             return new BitWavesContentResult(content) { IsAttachment = attachment };
         }
 
+        // DELETE: /contents/{contentId}
         [HttpDelete("{contentId}")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> DeleteObject(

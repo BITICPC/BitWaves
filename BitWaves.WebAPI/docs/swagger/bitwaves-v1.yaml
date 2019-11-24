@@ -19,6 +19,8 @@ tags:
     description: 用于访问题目集的 API
   - name: archive
     description: 用于访问公开题目集的 API
+  - name: problemTags
+    description: 用于访问题目标签数据字典的 API
   - name: languages
     description: 评测语言相关 API
 
@@ -579,6 +581,92 @@ paths:
           description: 用户没有足够的权限访问题目
         404:
           description: 未能找到指定的题目
+
+  /problems/tags:
+    get:
+      summary: 获取所有的题目标签
+      description: 获取所有的题目标签
+      tags:
+        - problemTags
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+          description: 用户身份标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - 暴力
+              - 贪心
+              - 数据结构
+        403:
+          description: 用户没有相应的权限
+    post:
+      summary: 创建新的题目标签
+      description: 创建新的题目标签
+      tags:
+        - problemTags
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+              minLength: 1
+              maxLength: 32
+          description: 要添加的标签名称
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 一个或多个标签名称不合法
+        403:
+          description: 用户没有相应的权限
+        409:
+          description: 一个或多个标签已经存在
+    delete:
+      summary: 删除已有的题目标签
+      description: 删除已有的题目标签
+      tags:
+        - problemTags
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - 暴力
+              - 模拟
+              - 数据结构
+          description: 要删除的题目标签名称
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 一个或多个标签不合法
+        403:
+          description: 用户没有相应的权限
 
   /archive:
     get:

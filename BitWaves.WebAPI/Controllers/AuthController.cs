@@ -25,6 +25,7 @@ namespace BitWaves.WebAPI.Controllers
             _logger = logger;
         }
 
+        // POST: /auth
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {

@@ -31,6 +31,7 @@ namespace BitWaves.WebAPI.Controllers
             _mapper = mapper;
         }
 
+        // POST: /users
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserModel model)
         {
@@ -54,6 +55,7 @@ namespace BitWaves.WebAPI.Controllers
             return Ok();
         }
 
+        // GET: /users/{username}
         [HttpGet("{username}")]
         public async Task<IActionResult> GetUserInfo(string username, bool detailed = false)
         {
@@ -78,6 +80,7 @@ namespace BitWaves.WebAPI.Controllers
             return new ObjectResult(model);
         }
 
+        // PUT: /users/{username}
         [HttpPut("{username}")]
         [Authorize]
         public async Task<IActionResult> SetUserInfo(
@@ -115,6 +118,7 @@ namespace BitWaves.WebAPI.Controllers
             }
         }
 
+        // GET: /users/ranklist
         [HttpGet("ranklist")]
         public async Task<IActionResult> GetRanklist(
             [FromQuery][BindRequired] RanklistKey by,

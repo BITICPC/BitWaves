@@ -25,6 +25,7 @@ namespace BitWaves.WebAPI.Controllers
             _mapper = mapper;
         }
 
+        // GET: /languages
         [HttpGet]
         public async Task<IActionResult> GetLanguages()
         {
@@ -35,6 +36,7 @@ namespace BitWaves.WebAPI.Controllers
             return new ObjectResult(models);
         }
 
+        // POST: /languages
         [HttpPost]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> CreateLanguage(
@@ -46,6 +48,7 @@ namespace BitWaves.WebAPI.Controllers
             return new ObjectResult(new { id = entity.Id });
         }
 
+        // DELETE: /languages/{id}
         [HttpDelete("{id}")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<IActionResult> DeleteLanguage(

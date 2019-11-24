@@ -37,6 +37,7 @@ namespace BitWaves.WebAPI.Controllers
             _mapper = mapper;
         }
 
+        // GET: /archive
         [HttpGet]
         public async Task<IActionResult> GetProblemList(
             [FromQuery] ArchiveListKey by = ArchiveListKey.Id,
@@ -61,6 +62,7 @@ namespace BitWaves.WebAPI.Controllers
             return new PaginatedListResult<ProblemListInfo>(totalCount, viewList);
         }
 
+        // GET: /archive/{archiveId}
         [HttpGet("{archiveId}")]
         public async Task<IActionResult> GetArchiveProblem(
             int archiveId)
@@ -78,6 +80,7 @@ namespace BitWaves.WebAPI.Controllers
 
         // FIXME: Remove lock blocks used below and use db's synchronization mechanisms instead.
 
+        // POST: /archive
         [HttpPost]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public IActionResult AddProblems([FromBody] ArchiveAddProblemModel[] model)
@@ -146,6 +149,7 @@ namespace BitWaves.WebAPI.Controllers
             }
         }
 
+        // DELETE: /archive
         [HttpDelete]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public IActionResult DeleteProblems([FromBody] int[] problemIds)
