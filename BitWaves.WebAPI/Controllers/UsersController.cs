@@ -34,7 +34,7 @@ namespace BitWaves.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserModel model)
         {
-            var user = model.ToUserEntity();
+            var user = _mapper.Map<CreateUserModel, User>(model);
 
             try
             {

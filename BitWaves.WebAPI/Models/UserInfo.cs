@@ -36,5 +36,11 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         [JsonProperty("blogUrl")]
         public string BlogUrl { get; set; }
+
+        /// <summary>
+        /// 获取或设置用户是否为管理员。
+        /// </summary>
+        [JsonProperty("isAdmin")]
+        public bool IsAdmin { get; set; }
     }
 }

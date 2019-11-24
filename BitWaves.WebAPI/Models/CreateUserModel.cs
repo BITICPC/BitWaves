@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using BitWaves.Data.Entities;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -33,18 +32,5 @@ namespace BitWaves.WebAPI.Models
         [StringLength(11)]
         [RegularExpression(@"^\d{11}")]
         public string Phone { get; private set; }
-
-        /// <summary>
-        /// 从当前数据模型对象创建 <see cref="User"/> 实体对象。
-        /// </summary>
-        /// <returns>创建的 <see cref="User"/> 实体对象。</returns>
-        public User ToUserEntity()
-        {
-            var entity = User.Create();
-            entity.Username = Username;
-            entity.SetPassword(Password);
-            entity.Phone = Phone;
-            return entity;
-        }
     }
 }

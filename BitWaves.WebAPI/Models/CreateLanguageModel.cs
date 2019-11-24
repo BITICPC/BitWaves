@@ -15,7 +15,7 @@ namespace BitWaves.WebAPI.Models
         [JsonProperty("langId")]
         [Required]
         [MinLength(1)]
-        public string LanguageIdentifier { get; set; }
+        public string Identifier { get; set; }
 
         /// <summary>
         /// 获取或设置语言方言。
@@ -40,14 +40,5 @@ namespace BitWaves.WebAPI.Models
         [Required]
         [MinLength(1)]
         public string DisplayName { get; set; }
-
-        /// <summary>
-        /// 从当前的数据模型对象创建 <see cref="Language"/> 实体对象。
-        /// </summary>
-        /// <returns>创建的 <see cref="Language"/> 实体对象。</returns>
-        public Language ToEntity()
-        {
-            return Language.Create(LanguageIdentifier, Dialect, Version, DisplayName);
-        }
     }
 }

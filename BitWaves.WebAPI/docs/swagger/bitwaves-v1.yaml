@@ -362,6 +362,15 @@ paths:
       responses:
         200:
           description: 操作成功完成
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: 新创建的全站公告的全局唯一 ID
+                example: a154edb2431fdbb230fbf384
         400:
           description: 无效的请求参数
         403:
@@ -465,6 +474,15 @@ paths:
       responses:
         200:
           description: 操作成功完成
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: 新创建的题目的全局唯一 ID
+                example: "a154edb2431fdbb230fbf384"
         400:
           description: 给定的题目创建数据无效
         403:
@@ -760,6 +778,15 @@ paths:
       responses:
         200:
           description: 操作成功完成
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: 新创建的语言的全局唯一 ID
+                example: "a154edb2431fdbb230fbf384"
         400:
           description: 无效的请求数据
         403:
@@ -923,6 +950,7 @@ definitions:
       - totalAccepted
       - totalProblemsAttempted
       - totalProblemsAccepted
+      - isAdmin
     properties:
       username:
         type: string
@@ -972,6 +1000,10 @@ definitions:
         type: integer
         description: 用户总 AC 题目数量
         example: 1
+      isAdmin:
+        type: boolean
+        description: 用户是否为管理员
+        example: true
 
   PostAuthModel:
     type: object
@@ -1102,58 +1134,6 @@ definitions:
         type: string
         description: 题目标题，长度大于 0
         example: "诸神眷顾的幻想乡"
-      legend:
-        type: string
-        description: 题目背景描述，长度大于 0
-        example: "hello world"
-      input:
-        type: string
-        description: 输入格式描述，长度大于 0
-        example: "input description"
-      output:
-        type: string
-        description: 输出格式描述，长度大于 0
-        example: "output description"
-      notes:
-        type: string
-        description: 提示信息
-        example: "long long int 型数据请使用 %lld 格式描述符"
-      difficulty:
-        type: integer
-        description: 题目的难度系数，有效范围为 [0, 100]。
-        example: 80
-      tags:
-        type: array
-        items:
-          type: string
-        description: 题目的标签。
-        example:
-          - 字符串
-          - 模拟
-          - 数据结构
-      timeLimit:
-        type: integer
-        description: 单个测试点的时间限制，单位为毫秒。有效范围为 [500, 10000]。
-        example: 1000
-      memoryLimit:
-        type: integer
-        description: 单个测试点的内存限制，单位为MB。有效范围为 [32, 1024]。
-        example: 256
-      judgeMode:
-        type: string
-        description: 题目的评测模式。
-        enum:
-          - Standard
-          - SpecialJudge
-          - Interactive
-        example: SpecialJudge
-      builtinCheckerOptions:
-        type: array
-        items:
-          type: string
-        description: 当评测模式为 Standard 模式时，该成员指出传递给内建答案检查器的参数。可能的值包括：`FloatingPointAware` 以及 `IgnoreCase`
-        example:
-          - IgnoreCase
   PutProblemModel:
     type: object
     properties:

@@ -71,10 +71,10 @@ namespace BitWaves.WebAPI.Controllers
                 await file.CopyToAsync(bufferStream);
             }
 
-            var content = Data.Entities.Content.Create(file.FileName, file.ContentType, buffer);
+            var content = new Content(file.FileName, file.ContentType, buffer);
             await _repo.Contents.InsertOneAsync(content);
 
-            return new ObjectResult(new { id = content.Id.ToString() });
+            return new ObjectResult(new { id = content.Id });
         }
 
         [HttpGet("{contentId}")]

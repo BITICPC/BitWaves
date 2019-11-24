@@ -40,10 +40,10 @@ namespace BitWaves.WebAPI.Controllers
         public async Task<IActionResult> CreateLanguage(
             [FromBody] CreateLanguageModel model)
         {
-            var entity = model.ToEntity();
+            var entity = _mapper.Map<CreateLanguageModel, Language>(model);
             await _repo.Languages.InsertOneAsync(entity);
 
-            return Ok();
+            return new ObjectResult(new { id = entity.Id });
         }
 
         [HttpDelete("{id}")]
