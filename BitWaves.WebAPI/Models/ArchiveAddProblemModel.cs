@@ -25,14 +25,21 @@ namespace BitWaves.WebAPI.Models
         public int ArchiveId { get; private set; }
 
         /// <summary>
-        /// 从当前的数据模型创建更新数据库所需的 <see cref="FilterDefinition{Problem}"/> 以及
-        /// <see cref="UpdateDefinition{Problem}"/> 定义。
+        /// 获取筛选目标实体对象的筛选定义。
         /// </summary>
-        /// <returns>二元组，第一项表示目标实体对象的筛选定义，第二项表示目标实体对象的更新定义。</returns>
-        public (FilterDefinition<Problem> Filter, UpdateDefinition<Problem> Update) CreateUpdateDefinition()
+        /// <returns>筛选目标实体对象的筛选定义。</returns>
+        public FilterDefinition<Problem> GetFilter()
         {
-            return (Builders<Problem>.Filter.Eq(p => p.Id, ProblemId),
-                Builders<Problem>.Update.Set(p => p.ArchiveId, ArchiveId));
+            return Builders<Problem>.Filter.Eq(p => p.Id, ProblemId);
+        }
+
+        /// <summary>
+        /// 从当前的数据模型创建更新数据库所需的 <see cref="UpdateDefinition{Problem}"/> 定义。
+        /// </summary>
+        /// <returns>目标实体对象的更新定义。</returns>
+        public UpdateDefinition<Problem> GetUpdateDefinition()
+        {
+            return Builders<Problem>.Update.Set(p => p.ArchiveId, ArchiveId);
         }
     }
 }

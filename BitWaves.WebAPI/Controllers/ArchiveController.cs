@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using BitWaves.Data;
@@ -12,7 +10,6 @@ using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
@@ -25,8 +22,6 @@ namespace BitWaves.WebAPI.Controllers
         /// 为保证 ArchiveId 的唯一性，在应用端设置的对象互斥锁。
         /// </summary>
         private static readonly object UpdateArchiveIdLock = new object();
-
-        // TODO: Remove UpdateArchiveIdLock, use DB related solutions instead.
 
         private readonly Repository _repo;
         private readonly IMapper _mapper;
@@ -78,116 +73,46 @@ namespace BitWaves.WebAPI.Controllers
             return new ObjectResult(model);
         }
 
-        // FIXME: Remove lock blocks used below and use db's synchronization mechanisms instead.
-
         // POST: /archive
         [HttpPost]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
-        public IActionResult AddProblems([FromBody] ArchiveAddProblemModel[] model)
+        public async Task<IActionResult> AddProblem(
+            [FromBody] ArchiveAddProblemModel model)
         {
-            var succeeded = new List<ObjectId>();
-            var notFound = new List<ObjectId>();
-            var conflict = new List<ObjectId>();
+            UpdateResult updateResult;
 
-            // 检查数据模型中是否有冲突的 ArchiveId
-            var archiveIds = new Dictionary<int, ArchiveAddProblemModel>();
-            var candidates = new List<ArchiveAddProblemModel>();
-            foreach (var updateModel in model)
+            try
             {
-                if (archiveIds.ContainsKey(updateModel.ArchiveId))
-                {
-                    conflict.Add(updateModel.ProblemId);
-                }
-                else
-                {
-                    archiveIds.Add(updateModel.ArchiveId, updateModel);
-                    candidates.Add(updateModel);
-                }
+                updateResult = await _repo.Problems.UpdateOneAsync(model.GetFilter(), model.GetUpdateDefinition());
             }
-
-            lock (UpdateArchiveIdLock)
+            catch (MongoWriteException ex)
             {
-                // 检查数据模型与数据库中冲突的 ArchiveId
-                var conflictIds = _repo.Problems.Find(
-                                           Builders<Problem>.Filter.In(p => p.ArchiveId,
-                                                                       archiveIds.Keys.Cast<int?>()))
-                                       .Project(p => p.ArchiveId)
-                                       .ToEnumerable()
-                                       .Cast<int>()
-                                       .ToHashSet();
-                foreach (var conflictId in conflictIds)
+                if (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
                 {
-                    conflict.Add(archiveIds[conflictId].ProblemId);
+                    return Conflict();
                 }
 
-                // 更新数据库
-                foreach (var updateModel in candidates.Where(x => !conflictIds.Contains(x.ArchiveId)))
-                {
-                    var (filter, update) = updateModel.CreateUpdateDefinition();
-                    var entity = _repo.Problems.FindOneAndUpdate(filter, update);
-                    if (entity == null)
-                    {
-                        notFound.Add(updateModel.ProblemId);
-                    }
-                    else
-                    {
-                        succeeded.Add(updateModel.ProblemId);
-                    }
-                }
+                throw;
             }
 
-            if (succeeded.Count == model.Length)
+            if (updateResult.MatchedCount == 0)
             {
-                return Ok();
+                return NotFound();
             }
-            else
-            {
-                return new ObjectResult(new { succeeded, notFound, conflict })
-                {
-                    StatusCode = (int) HttpStatusCode.UnprocessableEntity
-                };
-            }
+
+            return Ok();
         }
 
         // DELETE: /archive
         [HttpDelete]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
-        public IActionResult DeleteProblems([FromBody] int[] problemIds)
+        public async Task<IActionResult> DeleteProblems(
+            [FromBody] int[] problemIds)
         {
-            var ids = problemIds.ToHashSet();
+            var filter = Builders<Problem>.Filter.In(p => p.ArchiveId, problemIds.Select<int, int?>(x => x));
+            await _repo.Problems.UpdateManyAsync(filter, Builders<Problem>.Update.Unset(p => p.ArchiveId));
 
-            var succeeded = new List<int>();
-            var notFound = new List<int>();
-
-            lock (UpdateArchiveIdLock)
-            {
-                foreach (var archiveId in ids)
-                {
-                    var entity = _repo.Problems.FindOneAndUpdate(
-                        Builders<Problem>.Filter.Eq(p => p.ArchiveId, archiveId),
-                        Builders<Problem>.Update.Set(p => p.ArchiveId, null));
-                    if (entity == null)
-                    {
-                        notFound.Add(archiveId);
-                    }
-                    else
-                    {
-                        succeeded.Add(archiveId);
-                    }
-                }
-            }
-
-            if (succeeded.Count == problemIds.Length)
-            {
-                return Ok();
-            }
-            else
-            {
-                return new ObjectResult(new { succeeded, notFound })
-                {
-                    StatusCode = (int) HttpStatusCode.UnprocessableEntity
-                };
-            }
+            return Ok();
         }
     }
 }
