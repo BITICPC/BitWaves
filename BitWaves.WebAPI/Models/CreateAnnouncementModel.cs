@@ -16,6 +16,12 @@ namespace BitWaves.WebAPI.Models
         public string Title { get; set; }
 
         /// <summary>
+        /// 获取或设置创建全站公告的作者的用户名。该属性的值应该由调用方手动设置。
+        /// </summary>
+        [JsonIgnore]
+        public string Author { get; set; }
+
+        /// <summary>
         /// 获取或设置全站公告是否置顶标志。
         /// </summary>
         [JsonProperty("pinned")]

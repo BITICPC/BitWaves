@@ -14,5 +14,11 @@ namespace BitWaves.WebAPI.Models
         [JsonProperty("title")]
         [ProblemTitle]
         public string Title { get; set; }
+
+        /// <summary>
+        /// 获取或设置创建题目的作者的用户名。该属性值应该由调用方手动设置。
+        /// </summary>
+        [JsonIgnore]
+        public string Author { get; set; }
     }
 }

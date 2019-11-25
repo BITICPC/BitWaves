@@ -14,6 +14,9 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         public ModelMapperProfile()
         {
+            // Do not use private or protected constructors because this may introduce broken data.
+            ShouldUseConstructor = ci => ci.IsPublic;
+
             MapInputModels();
             MapOutputModels();
         }
@@ -22,6 +25,18 @@ namespace BitWaves.WebAPI.Models
         /// 创建从表示创建实体对象的数据模型到相应的实体对象的 AutoMapper 配置。
         /// </summary>
         private void MapInputModels()
+        {
+            CreateMap<CreateAnnouncementModel, Announcement>(MemberList.Source);
+            CreateMap<CreateUserModel, User>(MemberList.Source)
+                .ForCtorParam("passwordHash", opt => opt.MapFrom(m => PasswordUtils.GetPasswordHash(m.Password)));
+            CreateMap<CreateProblemModel, Problem>(MemberList.Source);
+            CreateMap<CreateLanguageModel, Language>(MemberList.Source);
+        }
+
+        /// <summary>
+        /// 创建从实体对象到输出模型的 AutoMapper 映射配置。
+        /// </summary>
+        private void MapOutputModels()
         {
             CreateMap<Announcement, AnnouncementListInfo>();
             CreateMap<Announcement, AnnouncementInfo>();
@@ -36,20 +51,6 @@ namespace BitWaves.WebAPI.Models
                 .ForMember(p => p.IsTestReady, opt => opt.MapFrom(e => e.TestDataArchiveFileId != null));
             CreateMap<ProblemSampleTest, ProblemSampleTestInfo>();
             CreateMap<Language, LanguageInfo>();
-        }
-
-        /// <summary>
-        /// 创建从实体对象到输出模型的 AutoMapper 映射配置。
-        /// </summary>
-        private void MapOutputModels()
-        {
-            CreateMap<CreateAnnouncementModel, Announcement>(MemberList.Source)
-                .AfterMap<SetAuthorAction<Announcement>>();
-            CreateMap<CreateUserModel, User>(MemberList.Source)
-                .ForMember(e => e.PasswordHash, opt => opt.MapFrom(m => PasswordUtils.GetPasswordHash(m.Password)));
-            CreateMap<CreateProblemModel, Problem>(MemberList.Source)
-                .AfterMap<SetAuthorAction<Problem>>();
-            CreateMap<CreateLanguageModel, Language>(MemberList.Source);
         }
     }
 }

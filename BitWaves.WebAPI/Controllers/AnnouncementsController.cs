@@ -53,6 +53,7 @@ namespace BitWaves.WebAPI.Controllers
         public async Task<IActionResult> CreateAnnouncement(
             [FromBody] CreateAnnouncementModel model)
         {
+            model.Author = User.Identity.Name;
             var entity = _mapper.Map<CreateAnnouncementModel, Announcement>(model);
 
             await _repo.Announcements.InsertOneAsync(entity);
