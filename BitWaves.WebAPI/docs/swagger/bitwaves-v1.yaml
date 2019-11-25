@@ -274,8 +274,6 @@ paths:
           description: 用户没有相应的权限
         404:
           description: 给定的用户未找到
-        422:
-          description: 旧密码无效
 
   /users/ranklist:
     get:
