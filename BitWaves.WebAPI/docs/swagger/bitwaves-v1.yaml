@@ -242,6 +242,41 @@ paths:
         403:
           description: 用户不具备相应的权限
 
+  /users/{username}/password:
+    put:
+      summary: 修改用户密码
+      description: 修改用户密码
+      tags:
+        - users
+      parameters:
+        - in: path
+          name: username
+          type: string
+          required: true
+          description: 用户名
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+          description: 提供身份验证信息。内容格式应该为 `Jwt <jwt>`，注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: body
+          name: data
+          required: true
+          description: 修改密码数据
+          schema:
+            $ref: '#/definitions/PutUserPasswordModel'
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 请求数据无效
+        403:
+          description: 用户没有相应的权限
+        404:
+          description: 给定的用户未找到
+        422:
+          description: 旧密码无效
+
   /users/ranklist:
     get:
       summary: 获取用户排名列表
@@ -1051,6 +1086,22 @@ definitions:
         type: string
         description: 用户博客 URL。若不需要更改此项，请不要提供该成员。
         example: "https://lancern.github.io"
+
+  PutUserPasswordModel:
+    type: object
+    required:
+      - password
+    properties:
+      oldPassword:
+        type: string
+        description: 当用户不是管理员时，该字段表示旧密码；否则该字段将被忽略
+        minLength: 6
+        example: "bitwaves2019"
+      password:
+        type: string
+        description: 新密码
+        minLength: 6
+        example: "bitwaves2020"
 
   UserListItem:
     type: object

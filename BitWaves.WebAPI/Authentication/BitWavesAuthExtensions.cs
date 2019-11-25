@@ -50,10 +50,13 @@ namespace BitWaves.WebAPI.Authentication
                     policyBuilder => policyBuilder.Requirements.Add(new GetProblemDetailRequirement()));
                 options.AddPolicy(BitWavesAuthPolicies.GetUserDetail,
                     policyBuilder => policyBuilder.Requirements.Add(new GetUserDetailInfoRequirement()));
+                options.AddPolicy(BitWavesAuthPolicies.SetUserPassword,
+                    policyBuilder => policyBuilder.Requirements.Add(new SetUserPasswordRequirement()));
             });
 
             services.AddSingleton<IAuthorizationHandler, GetProblemDetailAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, GetUserDetailInfoAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, SetUserPasswordAuthorizationHandler>();
 
             return services;
         }

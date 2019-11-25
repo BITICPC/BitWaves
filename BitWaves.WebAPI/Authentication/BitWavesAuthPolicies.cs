@@ -19,5 +19,10 @@ namespace BitWaves.WebAPI.Authentication
         /// 当用户尝试访问用户详细数据时的权限验证策略名称。
         /// </summary>
         public const string GetUserDetail = "AccessUserDetail";
+
+        /// <summary>
+        /// 当用户尝试修改密码时的权限验证策略名称。
+        /// </summary>
+        public const string SetUserPassword = "SetUserPassword";
     }
 }

@@ -1,13 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
+using BitWaves.WebAPI.Authentication.Policies;
 using BitWaves.WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -105,22 +104,36 @@ namespace BitWaves.WebAPI.Controllers
             return Ok();
         }
 
-        private Expression<Func<User, object>> GetRanklistKeySelector(RanklistKey key)
+        // PUT: /users/{username}/password
+        [HttpPut("{username}/password")]
+        [Authorize]
+        public async Task<IActionResult> SetUserPassword(
+            string username,
+            [FromBody] UpdateUserPasswordModel model)
         {
-            // TODO: Refactor GetRanklistKeySelector to an extension method of RanklistKey enum.
-            switch (key)
+            var entity = await _repo.Users.Find(Builders<User>.Filter.Eq(u => u.Username, username))
+                                    .FirstOrDefaultAsync();
+            if (entity == null)
             {
-                case RanklistKey.TotalAccepted:
-                    return u => u.TotalAcceptedSubmissions;
-                case RanklistKey.TotalSubmissions:
-                    return u => u.TotalSubmissions;
-                case RanklistKey.TotalProblemsAccepted:
-                    return u => u.TotalProblemsAccepted;
-                case RanklistKey.TotalProblemsAttempted:
-                    return u => u.TotalProblemsAttempted;
-                default:
-                    throw new Exception("Unreachable code.");
+                return NotFound();
             }
+
+            var requirement = new SetUserPasswordRequirement();
+            if (model.OldPassword.HasValue)
+            {
+                requirement.OldPassword = model.OldPassword.Value;
+            }
+
+            var authResult = await _authorization.AuthorizeAsync(User, entity, requirement);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var update = model.ToUpdateDefinition();
+            await _repo.Users.UpdateOneAsync(Builders<User>.Filter.Eq(u => u.Username, username), update);
+
+            return Ok();
         }
 
         // GET: /users/ranklist
@@ -130,7 +143,7 @@ namespace BitWaves.WebAPI.Controllers
             [FromQuery][Range(1, int.MaxValue)] int limit = 20)
         {
             var entities = await _repo.Users.Find(Builders<User>.Filter.Empty)
-                                      .SortByDescending(GetRanklistKeySelector(by))
+                                      .SortByDescending(by.GetKeySelector())
                                       .Limit(limit)
                                       .ToListAsync();
 
