@@ -22,7 +22,8 @@ namespace BitWaves.WebAPI.Validation
         /// </summary>
         public NicknameAttribute()
             : base(new RequiredAttribute(),
-                   new RangeAttribute(MinLength, MaxLength))
+                   new MinLengthAttribute(MinLength),
+                   new MaxLengthAttribute(MaxLength))
         { }
     }
 }
