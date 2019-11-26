@@ -30,7 +30,7 @@ namespace BitWaves.WebAPI.Controllers
 
         // GET: /announcements
         [HttpGet]
-        public async Task<IActionResult> GetAnnouncementsList(
+        public async Task<PaginatedListActionResult<AnnouncementListInfo>> GetAnnouncementsList(
             [FromQuery] [Range(0, int.MaxValue)] int page = 0,
             [FromQuery] [Range(1, int.MaxValue)] int itemsPerPage = 20)
         {
@@ -44,7 +44,7 @@ namespace BitWaves.WebAPI.Controllers
 
             var models = entities.Select(e => _mapper.Map<Announcement, AnnouncementListInfo>(e))
                                  .ToList();
-            return new PaginatedListResult<AnnouncementListInfo>(totalCount, models);
+            return (totalCount, models);
         }
 
         // POST: /announcements
@@ -62,7 +62,7 @@ namespace BitWaves.WebAPI.Controllers
 
         // GET: /announcements/{announcementId}
         [HttpGet("{announcementId}")]
-        public async Task<IActionResult> GetAnnouncement(
+        public async Task<ActionResult<AnnouncementInfo>> GetAnnouncement(
             string announcementId)
         {
             if (!ObjectId.TryParse(announcementId, out var id))
@@ -78,8 +78,7 @@ namespace BitWaves.WebAPI.Controllers
                 return NotFound();
             }
 
-            var model = _mapper.Map<Announcement, AnnouncementInfo>(entity);
-            return new ObjectResult(model);
+            return _mapper.Map<Announcement, AnnouncementInfo>(entity);
         }
 
         // PUT: /announcements/{announcementId}

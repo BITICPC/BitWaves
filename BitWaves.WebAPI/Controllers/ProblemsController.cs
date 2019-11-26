@@ -35,7 +35,7 @@ namespace BitWaves.WebAPI.Controllers
         // GET: /problems
         [HttpGet]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
-        public async Task<IActionResult> GetProblems(
+        public async Task<PaginatedListActionResult<ProblemListInfo>> GetProblems(
             [FromQuery] [Range(0, int.MaxValue)] int page = 0,
             [FromQuery] [Range(1, int.MaxValue)] int itemsPerPage = 20)
         {
@@ -45,7 +45,7 @@ namespace BitWaves.WebAPI.Controllers
             var entities = await query.Paginate(page, itemsPerPage)
                                 .ToListAsync();
             var models = entities.Select(e => _mapper.Map<Problem, ProblemListInfo>(e));
-            return new PaginatedListResult<ProblemListInfo>(totalCount, models);
+            return (totalCount, models);
         }
 
         // POST: /problems
@@ -151,7 +151,7 @@ namespace BitWaves.WebAPI.Controllers
 
         // GET: /problems/{problemId}
         [HttpGet("{problemId}")]
-        public async Task<IActionResult> GetProblem(
+        public async Task<ActionResult<ProblemInfo>> GetProblem(
             string problemId)
         {
             if (!ObjectId.TryParse(problemId, out var id))
@@ -174,18 +174,17 @@ namespace BitWaves.WebAPI.Controllers
                 return Forbid();
             }
 
-            var model = _mapper.Map<Problem, ProblemInfo>(entity);
-            return new ObjectResult(model);
+            return _mapper.Map<Problem, ProblemInfo>(entity);
         }
 
         // GET: /problems/tags
         [HttpGet("tags")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
-        public async Task<IActionResult> GetProblemTags()
+        public async Task<ActionResult<string[]>> GetProblemTags()
         {
             var entities = await _repo.ProblemTags.Find(Builders<ProblemTag>.Filter.Empty)
                                       .ToListAsync();
-            return new ObjectResult(entities.Select(e => e.Name));
+            return entities.Select(e => e.Name).ToArray();
         }
 
         // POST: /problems/tags

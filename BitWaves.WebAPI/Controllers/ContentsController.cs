@@ -34,7 +34,7 @@ namespace BitWaves.WebAPI.Controllers
         // GET: /contents
         [HttpGet]
         [Authorize(BitWavesAuthPolicies.AdminOnly)]
-        public async Task<IActionResult> GetObjectList(
+        public async Task<PaginatedListActionResult<ContentInfo>> GetObjectList(
             [FromQuery] string name = null,
             [FromQuery] string mimeType = null,
             [FromQuery] [Range(0, int.MaxValue)] int page = 0,
@@ -59,7 +59,7 @@ namespace BitWaves.WebAPI.Controllers
                                       .ToEntityListAsync<Content>();
 
             var models = entities.Select(e => _mapper.Map<Content, ContentInfo>(e));
-            return new PaginatedListResult<ContentInfo>(totalCount, models);
+            return (totalCount, models);
         }
 
         // POST: /contents

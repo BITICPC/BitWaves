@@ -34,7 +34,7 @@ namespace BitWaves.WebAPI.Controllers
 
         // GET: /archive
         [HttpGet]
-        public async Task<IActionResult> GetProblemList(
+        public async Task<PaginatedListActionResult<ProblemListInfo>> GetProblemList(
             [FromQuery] ArchiveListKey by = ArchiveListKey.Id,
             [FromQuery][Range(0, int.MaxValue)] int page = 0,
             [FromQuery][Range(1, int.MaxValue)] int itemsPerPage = 20)
@@ -54,12 +54,12 @@ namespace BitWaves.WebAPI.Controllers
             var viewEntityList = await query.ToListAsync();
             var viewList = viewEntityList.Select(entity => _mapper.Map<Problem, ProblemListInfo>(entity));
 
-            return new PaginatedListResult<ProblemListInfo>(totalCount, viewList);
+            return (totalCount, viewList);
         }
 
         // GET: /archive/{archiveId}
         [HttpGet("{archiveId}")]
-        public async Task<IActionResult> GetArchiveProblem(
+        public async Task<ActionResult<ProblemInfo>> GetArchiveProblem(
             int archiveId)
         {
             var entity = await _repo.Problems.Find(Builders<Problem>.Filter.Eq(problem => problem.ArchiveId, archiveId))
@@ -69,8 +69,7 @@ namespace BitWaves.WebAPI.Controllers
                 return NotFound();
             }
 
-            var model = _mapper.Map<Problem, ProblemInfo>(entity);
-            return new ObjectResult(model);
+            return _mapper.Map<Problem, ProblemInfo>(entity);
         }
 
         // POST: /archive

@@ -27,13 +27,13 @@ namespace BitWaves.WebAPI.Controllers
 
         // GET: /languages
         [HttpGet]
-        public async Task<IActionResult> GetLanguages()
+        public async Task<ActionResult<LanguageInfo[]>> GetLanguages()
         {
             var languages = await _repo.Languages.Find(Builders<Language>.Filter.Empty)
                                        .ToListAsync();
 
-            var models = languages.Select(e => _mapper.Map<Language, LanguageInfo>(e));
-            return new ObjectResult(models);
+            return languages.Select(e => _mapper.Map<Language, LanguageInfo>(e))
+                            .ToArray();
         }
 
         // POST: /languages

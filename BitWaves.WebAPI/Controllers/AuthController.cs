@@ -27,7 +27,7 @@ namespace BitWaves.WebAPI.Controllers
 
         // POST: /auth
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<ActionResult<LoginResult>> Login([FromBody] LoginModel model)
         {
             var user = await _repo.Users.Find(Builders<User>.Filter.Eq(u => u.Username, model.Username))
                                   .FirstOrDefaultAsync();
@@ -46,8 +46,7 @@ namespace BitWaves.WebAPI.Controllers
             var authToken = new BitWavesAuthenticationToken(user);
             var authTokenJwt = _jwt.Encode(authToken);
 
-            var result = new LoginResult(user, authTokenJwt);
-            return new ObjectResult(result);
+            return new LoginResult(user, authTokenJwt);
         }
     }
 }

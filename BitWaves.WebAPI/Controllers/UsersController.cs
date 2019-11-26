@@ -56,7 +56,7 @@ namespace BitWaves.WebAPI.Controllers
 
         // GET: /users/{username}
         [HttpGet("{username}")]
-        public async Task<IActionResult> GetUserInfo(string username, bool detailed = false)
+        public async Task<ActionResult<UserInfo>> GetUserInfo(string username, bool detailed = false)
         {
             var entity = await _repo.Users.Find(Builders<User>.Filter.Eq(u => u.Username, username))
                                     .FirstOrDefaultAsync();
@@ -75,8 +75,7 @@ namespace BitWaves.WebAPI.Controllers
                 }
             }
 
-            var model = _mapper.Map<User, UserInfo>(entity);
-            return new ObjectResult(model);
+            return _mapper.Map<User, UserInfo>(entity);
         }
 
         // PUT: /users/{username}
@@ -138,7 +137,7 @@ namespace BitWaves.WebAPI.Controllers
 
         // GET: /users/ranklist
         [HttpGet("ranklist")]
-        public async Task<IActionResult> GetRanklist(
+        public async Task<ActionResult<UserListInfo[]>> GetRanklist(
             [FromQuery][BindRequired] RanklistKey by,
             [FromQuery][Range(1, int.MaxValue)] int limit = 20)
         {
@@ -147,8 +146,8 @@ namespace BitWaves.WebAPI.Controllers
                                       .Limit(limit)
                                       .ToListAsync();
 
-            var models = entities.Select(e => _mapper.Map<User, UserInfo>(e));
-            return new ObjectResult(models);
+            return entities.Select(e => _mapper.Map<User, UserListInfo>(e))
+                           .ToArray();
         }
     }
 }
