@@ -69,7 +69,7 @@ namespace BitWaves.WebAPI.Controllers
                 return NotFound();
             }
 
-            var model = _mapper.Map<Problem, ProblemListInfo>(entity);
+            var model = _mapper.Map<Problem, ProblemInfo>(entity);
             return new ObjectResult(model);
         }
 
