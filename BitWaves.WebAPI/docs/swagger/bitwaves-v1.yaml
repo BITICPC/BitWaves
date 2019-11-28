@@ -823,12 +823,16 @@ paths:
           name: page
           type: integer
           required: false
-          description: 分页参数，要返回的列表的页面编号，页面编号从 0 开始，默认值为 0
+          description: 分页参数，要返回的列表的页面编号
+          minimum: 0
+          default: 0
         - in: query
           name: itemsPerPage
           type: integer
           required: false
-          description: 分页参数，每一页上的项目数量，默认值为 20
+          description: 分页参数，每一页上的项目数量
+          minimum: 1
+          default: 20
       responses:
         200:
           description: 操作成功完成
