@@ -8,6 +8,7 @@ using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Utils;
+using BitWaves.WebAPI.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -35,18 +36,26 @@ namespace BitWaves.WebAPI.Controllers
         // GET: /archive
         [HttpGet]
         public async Task<PaginatedListActionResult<ProblemListInfo>> GetProblemList(
-            [FromQuery] ArchiveListKey by = ArchiveListKey.Id,
-            [FromQuery][Range(0, int.MaxValue)] int page = 0,
-            [FromQuery][Range(1, int.MaxValue)] int itemsPerPage = 20)
+            [FromQuery] ArchiveListSortKey by = ArchiveListSortKey.Id,
+            [FromQuery] bool descend = false,
+            [FromQuery] [Page] int page = 0,
+            [FromQuery] [ItemsPerPage] int itemsPerPage = 20)
         {
             var query = _repo.Problems.Find(Builders<Problem>.Filter.Ne(problem => problem.ArchiveId, null));
 
-            // 执行排序
-            var sortKey = by.GetFieldSelector();
-            query = query.SortBy(sortKey);
-
             // 获取符合筛选条件的总题目数量
             var totalCount = await query.CountDocumentsAsync();
+
+            // 执行排序
+            var sortKey = by.GetFieldSelector();
+            if (descend)
+            {
+                query = query.SortByDescending(sortKey);
+            }
+            else
+            {
+                query = query.SortBy(sortKey);
+            }
 
             // 执行分页
             query = query.Paginate(page, itemsPerPage);

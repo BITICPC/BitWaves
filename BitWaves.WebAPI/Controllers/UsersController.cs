@@ -36,15 +36,26 @@ namespace BitWaves.WebAPI.Controllers
         // GET: /users
         public async Task<PaginatedListActionResult<UserListInfo>> GetUsers(
             [FromQuery] [Page] int page = 0,
-            [FromQuery] [ItemsPerPage] int itemsPerPage = 0,
-            [FromQuery] UserListSortKey by = UserListSortKey.TotalProblemsAccepted)
+            [FromQuery] [ItemsPerPage] int itemsPerPage = 1,
+            [FromQuery] UserListSortKey by = UserListSortKey.TotalProblemsAccepted,
+            [FromQuery] bool descend = true)
         {
-            var query = _repo.Users.Find(Builders<User>.Filter.Empty)
-                             .SortByDescending(by.GetKeySelector());
+            var query = _repo.Users.Find(Builders<User>.Filter.Empty);
             var totalCount = await query.CountDocumentsAsync();
+
+            if (descend)
+            {
+                query = query.SortByDescending(by.GetKeySelector());
+            }
+            else
+            {
+                query = query.SortByDescending(by.GetKeySelector());
+            }
+
             var entities = await query.Paginate(page, itemsPerPage)
                                       .ToListAsync();
             var models = entities.Select(e => _mapper.Map<User, UserListInfo>(e));
+
             return new PaginatedListActionResult<UserListInfo>(totalCount, models);
         }
 

@@ -181,13 +181,20 @@ paths:
         - in: query
           name: by
           type: string
-          required: true
+          required: false
           description: 排序依据
           enum:
             - TotalSubmissions
             - TotalAccepted
             - TotalProblemsAttempted
             - TotalProblemsAccepted
+          default: TotalProblemsAccepted
+        - in: query
+          name: descend
+          type: boolean
+          required: false
+          description: 排序时是否应该按照给定的排序依据降序排序
+          default: true
       responses:
         200:
           description: 操作成功完成
@@ -796,13 +803,22 @@ paths:
           name: by
           type: string
           required: false
-          description: 列表排序方法，默认值为 `Id`
+          description: 列表排序方法
           enum:
-            - "`Id`"
-            - "`Difficulty`"
-            - "`LastUpdateTime`"
-            - "`TotalSubmissions`"
-            - "`AcceptedSubmissions`"
+            - Id
+            - Difficulty
+            - LastUpdateTime
+            - TotalSubmissions
+            - AcceptedSubmissions
+            - TotalAttemptedUsers
+            - TotalSolvedUsers
+          default: Id
+        - in: query
+          name: descend
+          type: boolean
+          required: false
+          description: 是否按照给定关键字的降序排列
+          default: false
         - in: query
           name: page
           type: integer
