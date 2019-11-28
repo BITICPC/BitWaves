@@ -59,7 +59,11 @@ paths:
           description: 分页参数，每个页面中的元素数量
       responses:
         200:
-          description: 操作成功完成，响应头部中带有 `X-BitWaves-Count` 字段表示分页前总的符合条件的静态对象数量
+          description: 操作成功完成
+          headers:
+            X-BitWaves-Count:
+              type: integer
+              description: 分页前满足筛选条件的静态对象数量
           schema:
             type: array
             items:
@@ -370,7 +374,11 @@ paths:
           description: 分页参数，每页上的元素数量，默认为 20
       responses:
         200:
-          description: 操作成功完成。响应的 `X-BitWaves-Count` 头部字段给出所有的符合要求的公告数量
+          description: 操作成功完成
+          headers:
+            X-BitWaves-Count:
+              type: integer
+              description: 分页前满足筛选条件的公告数量
           schema:
             type: array
             items:
@@ -489,6 +497,42 @@ paths:
           description: 无法找到指定的全站公告
 
   /problems:
+    get:
+      summary: 获取题目列表
+      description: 获取题目列表
+      tags:
+        - problems
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: 分页参数，页面编号。页面编号从 0 开始
+        - in: query
+          name: itemsPerPage
+          type: integer
+          required: false
+          description: 分页参数，每一页上的元素数量。默认为 20
+      responses:
+        200:
+          description: 操作成功完成
+          headers:
+            X-BitWaves-Count:
+              type: integer
+              description: 分页前满足筛选条件的题目数量
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProblemListItem'
+        400:
+          description: 请求中携带的参数无效
+        403:
+          description: 用户没有相应的权限
     post:
       summary: 创建一个题目
       description: 创建一个题目
@@ -522,38 +566,6 @@ paths:
           description: 给定的题目创建数据无效
         403:
           description: 用户没有权限创建题目
-    get:
-      summary: 获取题目列表
-      description: 获取题目列表
-      tags:
-        - problems
-      parameters:
-        - in: header
-          name: Authorization
-          type: string
-          required: true
-          description: 用户身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
-        - in: query
-          name: page
-          type: integer
-          required: false
-          description: 分页参数，页面编号。页面编号从 0 开始
-        - in: query
-          name: itemsPerPage
-          type: integer
-          required: false
-          description: 分页参数，每一页上的元素数量。默认为 20
-      responses:
-        200:
-          description: 操作成功完成，响应包含头部字段 X-BitWaves-Count 表示符合筛选条件的题目的总数量（分页前）
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/ProblemListItem'
-        400:
-          description: 请求中携带的参数无效
-        403:
-          description: 用户没有相应的权限
 
   /problems/{problemId}:
     put:
@@ -792,7 +804,11 @@ paths:
           description: 分页参数，每一页上的项目数量，默认值为 20
       responses:
         200:
-          description: 操作成功完成，响应包含头部字段 `X-BitWaves-Count`，表示符合筛选条件的题目总数
+          description: 操作成功完成
+          headers:
+            X-BitWaves-Count:
+              type: integer
+              description: 分页前满足筛选条件的题目数量
           schema:
             type: array
             items:
