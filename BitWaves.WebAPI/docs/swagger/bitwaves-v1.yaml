@@ -156,6 +156,51 @@ paths:
           description: 未能找到指定的静态对象
 
   /users:
+    get:
+      summary: 获取用户列表
+      description: 获取用户列表
+      tags:
+        - users
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: page
+          type: integer
+          required: false
+          description: 分页参数，页面编号
+          minimum: 0
+          default: 0
+        - in: query
+          name: itemsPerPage
+          type: integer
+          required: false
+          description: 分页参数，每一页中显示的用户数量
+          minimum: 1
+          default: 20
+        - in: query
+          name: by
+          type: string
+          required: true
+          description: 排序依据
+          enum:
+            - TotalSubmissions
+            - TotalAccepted
+            - TotalProblemsAttempted
+            - TotalProblemsAccepted
+      responses:
+        200:
+          description: 操作成功完成
+          headers:
+            X-BitWaves-Count:
+              type: integer
+              description: 在未分页之前满足筛选条件的用户数量
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserListItem'
+        400:
+          description: 无效的查询参数
     post:
       summary: 创建一个新用户
       description: 创建一个新用户
@@ -278,40 +323,6 @@ paths:
           description: 用户没有相应的权限
         404:
           description: 给定的用户未找到
-
-  /users/ranklist:
-    get:
-      summary: 获取用户排名列表
-      description: 获取用户排名列表
-      tags:
-        - users
-      produces:
-        - application/json
-      parameters:
-        - in: query
-          name: by
-          type: string
-          required: true
-          description: 排名依据
-          enum:
-            - TotalSubmissions
-            - TotalAccepted
-            - TotalProblemsAttempted
-            - TotalProblemsAccepted
-        - in: query
-          name: limit
-          type: integer
-          required: false
-          description: 要在排名中显示的用户数量，默认为 20
-      responses:
-        200:
-          description: 操作成功完成
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/UserListItem'
-        400:
-          description: 无效的查询参数
 
   /auth:
     post:

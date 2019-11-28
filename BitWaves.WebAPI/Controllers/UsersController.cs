@@ -7,7 +7,10 @@ using BitWaves.Data;
 using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Authentication.Policies;
+using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
+using BitWaves.WebAPI.Utils;
+using BitWaves.WebAPI.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -28,6 +31,21 @@ namespace BitWaves.WebAPI.Controllers
             _authorization = authorization;
             _repo = repo;
             _mapper = mapper;
+        }
+
+        // GET: /users
+        public async Task<PaginatedListActionResult<UserListInfo>> GetUsers(
+            [FromQuery] [Page] int page = 0,
+            [FromQuery] [ItemsPerPage] int itemsPerPage = 0,
+            [FromQuery] UserListSortKey by = UserListSortKey.TotalProblemsAccepted)
+        {
+            var query = _repo.Users.Find(Builders<User>.Filter.Empty)
+                             .SortByDescending(by.GetKeySelector());
+            var totalCount = await query.CountDocumentsAsync();
+            var entities = await query.Paginate(page, itemsPerPage)
+                                      .ToListAsync();
+            var models = entities.Select(e => _mapper.Map<User, UserListInfo>(e));
+            return new PaginatedListActionResult<UserListInfo>(totalCount, models);
         }
 
         // POST: /users
@@ -133,21 +151,6 @@ namespace BitWaves.WebAPI.Controllers
             await _repo.Users.UpdateOneAsync(Builders<User>.Filter.Eq(u => u.Username, username), update);
 
             return Ok();
-        }
-
-        // GET: /users/ranklist
-        [HttpGet("ranklist")]
-        public async Task<ActionResult<UserListInfo[]>> GetRanklist(
-            [FromQuery][BindRequired] RanklistKey by,
-            [FromQuery][Range(1, int.MaxValue)] int limit = 20)
-        {
-            var entities = await _repo.Users.Find(Builders<User>.Filter.Empty)
-                                      .SortByDescending(by.GetKeySelector())
-                                      .Limit(limit)
-                                      .ToListAsync();
-
-            return entities.Select(e => _mapper.Map<User, UserListInfo>(e))
-                           .ToArray();
         }
     }
 }
