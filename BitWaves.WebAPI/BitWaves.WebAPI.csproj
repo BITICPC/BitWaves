@@ -38,9 +38,9 @@
         <PackageReference Include="jose-jwt" Version="2.4.0" />
     </ItemGroup>
 
-    <!-- BitWaves dependencies -->
+    <!-- BitWaves related dependencies -->
     <ItemGroup>
-        <PackageReference Include="BitWaves.Data" Version="0.11.4" />
+        <ProjectReference Include="..\BitWaves.Data\BitWaves.Data\BitWaves.Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>

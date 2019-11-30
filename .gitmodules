@@ -1,0 +1,3 @@
+[submodule "BitWaves.Data"]
+	path = BitWaves.Data
+	url = https://github.com/BITICPC/BitWaves.Data.git
