@@ -49,7 +49,7 @@ namespace BitWaves.WebAPI.Controllers
             }
             else
             {
-                query = query.SortByDescending(by.GetKeySelector());
+                query = query.SortBy(by.GetKeySelector());
             }
 
             var entities = await query.Paginate(page, itemsPerPage)
