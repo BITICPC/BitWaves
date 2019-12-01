@@ -37,14 +37,14 @@ namespace BitWaves.WebAPI.Models
         {
             CreateMap<UpdateAnnouncementModel, AnnouncementUpdateInfo>(MemberList.Source);
             CreateMap<UpdateProblemModel, ProblemUpdateInfo>(MemberList.Source)
-                .ForMember(u => u.Description.Legend, cfg => cfg.MapFrom(m => m.Legend))
-                .ForMember(u => u.Description.Input, cfg => cfg.MapFrom(m => m.Input))
-                .ForMember(u => u.Description.Output, cfg => cfg.MapFrom(m => m.Output))
-                .ForMember(u => u.Description.Notes, cfg => cfg.MapFrom(m => m.Notes))
-                .ForMember(u => u.JudgeInfo.JudgeMode, cfg => cfg.MapFrom(m => m.JudgeMode))
-                .ForMember(u => u.JudgeInfo.TimeLimit, cfg => cfg.MapFrom(m => m.TimeLimit))
-                .ForMember(u => u.JudgeInfo.MemoryLimit, cfg => cfg.MapFrom(m => m.MemoryLimit))
-                .ForMember(u => u.JudgeInfo.BuiltinCheckerOptions, cfg => cfg.MapFrom(m => m.BuiltinCheckerOptions));
+                .ForPath(u => u.Description.Legend, cfg => cfg.MapFrom(m => m.Legend))
+                .ForPath(u => u.Description.Input, cfg => cfg.MapFrom(m => m.Input))
+                .ForPath(u => u.Description.Output, cfg => cfg.MapFrom(m => m.Output))
+                .ForPath(u => u.Description.Notes, cfg => cfg.MapFrom(m => m.Notes))
+                .ForPath(u => u.JudgeInfo.JudgeMode, cfg => cfg.MapFrom(m => m.JudgeMode))
+                .ForPath(u => u.JudgeInfo.TimeLimit, cfg => cfg.MapFrom(m => m.TimeLimit))
+                .ForPath(u => u.JudgeInfo.MemoryLimit, cfg => cfg.MapFrom(m => m.MemoryLimit))
+                .ForPath(u => u.JudgeInfo.BuiltinCheckerOptions, cfg => cfg.MapFrom(m => m.BuiltinCheckerOptions));
             CreateMap<UpdateUserModel, UserUpdateInfo>(MemberList.Source);
         }
 

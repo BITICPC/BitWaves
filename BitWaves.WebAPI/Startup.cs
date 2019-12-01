@@ -4,6 +4,7 @@ using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Services.DependencyInjection;
 using BitWaves.WebAPI.Utils;
+using BitWaves.WebAPI.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +36,7 @@ namespace BitWaves.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
+            services.AddMvc(options => { options.AddMaybeTypeValidationMetadataProvider(); })
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                     .AddJsonOptions(options =>
                     {

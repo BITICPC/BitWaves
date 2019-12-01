@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using BitWaves.Data.Utils;
+using BitWaves.WebAPI.Utils;
 using BitWaves.WebAPI.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -14,6 +15,13 @@ namespace BitWaves.UnitTest
         [SetUp]
         public void Setup()
         {
+            JsonConvert.DefaultSettings = () =>
+            {
+                var settings = new JsonSerializerSettings();
+                settings.Converters.Add(new MaybeJsonConverter());
+
+                return settings;
+            };
         }
 
         [Test]

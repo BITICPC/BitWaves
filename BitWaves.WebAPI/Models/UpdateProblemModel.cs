@@ -1,6 +1,7 @@
 using BitWaves.Data.Entities;
 using BitWaves.Data.Utils;
 using BitWaves.WebAPI.Validation;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -21,24 +22,28 @@ namespace BitWaves.WebAPI.Models
         /// 获取题目的背景描述。
         /// </summary>
         [JsonProperty("legend")]
+        [ValidateNever]
         public Maybe<string> Legend { get; private set; }
 
         /// <summary>
         /// 获取题目的输入格式描述。
         /// </summary>
         [JsonProperty("input")]
+        [ValidateNever]
         public Maybe<string> Input { get; private set; }
 
         /// <summary>
         /// 获取题目的输出格式描述。
         /// </summary>
         [JsonProperty("output")]
+        [ValidateNever]
         public Maybe<string> Output { get; private set; }
 
         /// <summary>
         /// 获取题目的提示信息。
         /// </summary>
         [JsonProperty("notes")]
+        [ValidateNever]
         public Maybe<string> Notes { get; private set; }
 
         /// <summary>
@@ -66,12 +71,14 @@ namespace BitWaves.WebAPI.Models
         /// 获取题目的评测模式。
         /// </summary>
         [JsonProperty("judgeMode")]
+        [ValidateNever]
         public Maybe<ProblemJudgeMode> JudgeMode { get; private set; }
 
         /// <summary>
         /// 当评测模式为 Standard 时，获取传递给内建答案检查器的选项。
         /// </summary>
         [JsonProperty("builtinCheckerOptions")]
-        public Maybe<BuiltinCheckerOptions> BuiltinCheckerOptions { get; private set; }
+        [ValidateNever]
+        public Maybe<BuiltinCheckerOptions?> BuiltinCheckerOptions { get; private set; }
     }
 }

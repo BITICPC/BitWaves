@@ -1,5 +1,6 @@
 using BitWaves.Data.Utils;
 using BitWaves.WebAPI.Validation;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -20,6 +21,7 @@ namespace BitWaves.WebAPI.Models
         /// 获取或设置全站公告的置顶标志位。
         /// </summary>
         [JsonProperty("pinned")]
+        [ValidateNever]
         public Maybe<bool> IsPinned { get; set; }
 
         /// <summary>

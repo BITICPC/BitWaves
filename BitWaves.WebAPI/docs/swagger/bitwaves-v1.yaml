@@ -19,8 +19,6 @@ tags:
     description: 用于访问题目集的 API
   - name: archive
     description: 用于访问公开题目集的 API
-  - name: problemTags
-    description: 用于访问题目标签数据字典的 API
   - name: languages
     description: 评测语言相关 API
 
@@ -707,7 +705,7 @@ paths:
       summary: 获取所有的题目标签
       description: 获取所有的题目标签
       tags:
-        - problemTags
+        - problems
       parameters:
         - in: header
           name: Authorization
@@ -720,11 +718,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-            example:
-              - 暴力
-              - 贪心
-              - 数据结构
+              $ref: '#/definitions/ProblemTagInfo'
         403:
           description: 用户没有相应的权限
 
@@ -743,14 +737,14 @@ paths:
           required: false
           description: 列表排序方法
           enum:
-            - Id
+            - ArchiveId
             - Difficulty
             - LastUpdateTime
             - TotalSubmissions
             - AcceptedSubmissions
             - TotalAttemptedUsers
             - TotalSolvedUsers
-          default: Id
+          default: ArchiveId
         - in: query
           name: descend
           type: boolean
@@ -1563,6 +1557,21 @@ definitions:
         type: boolean
         description: 用户是否可以提交答案
         example: true
+
+  ProblemTagInfo:
+    type: object
+    required:
+      - name
+      - problems
+    properties:
+      name:
+        type: string
+        description: 标签的名称
+        example: "暴力"
+      problems:
+        type: integer
+        description: 有多少个题目包含此标签
+        example: 10
 
   PostArchiveModel:
     type: object
