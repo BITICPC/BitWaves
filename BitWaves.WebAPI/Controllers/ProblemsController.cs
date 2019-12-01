@@ -34,11 +34,15 @@ namespace BitWaves.WebAPI.Controllers
         [HttpGet]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<PaginatedListActionResult<ProblemListInfo>> GetProblems(
+            [FromQuery] ProblemSortKey by = ProblemSortKey.CreationTime,
+            [FromQuery] bool descend = true,
             [FromQuery] [Range(0, int.MaxValue)] int page = 0,
             [FromQuery] [Range(1, int.MaxValue)] int itemsPerPage = 20)
         {
             var findPipeline = new ProblemFindPipeline(ProblemFilterBuilder.Empty)
             {
+                SortKey = by,
+                SortByDescending = descend,
                 Pagination = new Pagination(page, itemsPerPage)
             };
 

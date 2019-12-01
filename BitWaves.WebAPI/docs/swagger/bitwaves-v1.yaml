@@ -525,6 +525,28 @@ paths:
           required: true
           description: 用户身份验证标识，格式为 `Jwt <jwt>`。注意 `Jwt` 与 `<jwt>` 之间的空格
         - in: query
+          name: by
+          type: string
+          required: false
+          description: 题目排序依据
+          enum:
+            - ArchiveId
+            - CreationTime
+            - LastUpdateTime
+            - Difficulty
+            - TotalSubmissions
+            - AcceptedSubmissions
+            - TotalAttemptedUsers
+            - TotalSolvedUsers
+            - LastSubmissionTime
+          default: CreationTime
+        - in: query
+          name: descend
+          type: boolean
+          required: false
+          description: 是否按照指定的排序依据的降序排序
+          default: true
+        - in: query
           name: page
           type: integer
           required: false
@@ -738,12 +760,14 @@ paths:
           description: 列表排序方法
           enum:
             - ArchiveId
-            - Difficulty
+            - CreationTime
             - LastUpdateTime
+            - Difficulty
             - TotalSubmissions
             - AcceptedSubmissions
             - TotalAttemptedUsers
             - TotalSolvedUsers
+            - LastSubmissionTime
           default: ArchiveId
         - in: query
           name: descend
