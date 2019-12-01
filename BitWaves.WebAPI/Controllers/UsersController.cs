@@ -1,19 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
-using BitWaves.Data;
+using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
+using BitWaves.Data.Repositories;
 using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Authentication.Policies;
-using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Utils;
 using BitWaves.WebAPI.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
@@ -37,26 +35,20 @@ namespace BitWaves.WebAPI.Controllers
         public async Task<PaginatedListActionResult<UserListInfo>> GetUsers(
             [FromQuery] [Page] int page = 0,
             [FromQuery] [ItemsPerPage] int itemsPerPage = 1,
-            [FromQuery] UserListSortKey by = UserListSortKey.TotalProblemsAccepted,
+            [FromQuery] UserSortKey by = UserSortKey.TotalProblemsAccepted,
             [FromQuery] bool descend = true)
         {
-            var query = _repo.Users.Find(Builders<User>.Filter.Empty);
-            var totalCount = await query.CountDocumentsAsync();
-
-            if (descend)
+            var findPipeline = new UserFindPipeline(UserFilterBuilder.Empty)
             {
-                query = query.SortByDescending(by.GetKeySelector());
-            }
-            else
-            {
-                query = query.SortBy(by.GetKeySelector());
-            }
+                SortKey = by,
+                SortByDescending = descend,
+                Pagination = new Pagination(page, itemsPerPage)
+            };
 
-            var entities = await query.Paginate(page, itemsPerPage)
-                                      .ToListAsync();
-            var models = entities.Select(e => _mapper.Map<User, UserListInfo>(e));
+            var findResult = await _repo.Users.FindManyAsync(findPipeline);
+            var models = findResult.ResultSet.Select(e => _mapper.Map<User, UserListInfo>(e));
 
-            return new PaginatedListActionResult<UserListInfo>(totalCount, models);
+            return (findResult.TotalCount, models);
         }
 
         // POST: /users
@@ -87,8 +79,7 @@ namespace BitWaves.WebAPI.Controllers
         [HttpGet("{username}")]
         public async Task<ActionResult<UserInfo>> GetUserInfo(string username, bool detailed = false)
         {
-            var entity = await _repo.Users.Find(Builders<User>.Filter.Eq(u => u.Username, username))
-                                    .FirstOrDefaultAsync();
+            var entity = await _repo.Users.FindOneAsync(username);
             if (entity == null)
             {
                 return NotFound();
@@ -121,14 +112,8 @@ namespace BitWaves.WebAPI.Controllers
                 return Forbid();
             }
 
-            var updates = model.ToUpdateDefinition();
-            if (updates == null)
-            {
-                return Ok();
-            }
-
-            await _repo.Users.UpdateOneAsync(Builders<User>.Filter.Eq(u => u.Username, username),
-                                             Builders<User>.Update.Combine(updates));
+            var update = _mapper.Map<UpdateUserModel, UserUpdateInfo>(model);
+            await _repo.Users.UpdateOneAsync(username, update);
             return Ok();
         }
 
@@ -139,8 +124,7 @@ namespace BitWaves.WebAPI.Controllers
             string username,
             [FromBody] UpdateUserPasswordModel model)
         {
-            var entity = await _repo.Users.Find(Builders<User>.Filter.Eq(u => u.Username, username))
-                                    .FirstOrDefaultAsync();
+            var entity = await _repo.Users.FindOneAsync(username);
             if (entity == null)
             {
                 return NotFound();
@@ -158,9 +142,7 @@ namespace BitWaves.WebAPI.Controllers
                 return Forbid();
             }
 
-            var update = model.ToUpdateDefinition();
-            await _repo.Users.UpdateOneAsync(Builders<User>.Filter.Eq(u => u.Username, username), update);
-
+            await _repo.Users.UpdatePasswordAsync(username, model.NewPassword);
             return Ok();
         }
     }

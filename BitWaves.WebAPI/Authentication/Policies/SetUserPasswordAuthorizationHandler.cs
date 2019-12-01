@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using BitWaves.Data;
 using BitWaves.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 
@@ -35,7 +34,7 @@ namespace BitWaves.WebAPI.Authentication.Policies
                 return Task.CompletedTask;
             }
 
-            if (!PasswordUtils.Challenge(resource.PasswordHash, requirement.OldPassword))
+            if (!resource.Challenge(requirement.OldPassword))
             {
                 context.Fail();
                 return Task.CompletedTask;

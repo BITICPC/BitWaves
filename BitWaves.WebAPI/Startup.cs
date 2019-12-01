@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BitWaves.Data.DependencyInjection;
+using BitWaves.Data.Repositories.DependencyInjection;
 using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Services.DependencyInjection;

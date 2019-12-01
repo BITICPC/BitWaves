@@ -1,7 +1,5 @@
-using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Validation;
 using MongoDB.Bson;
-using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -23,23 +21,5 @@ namespace BitWaves.WebAPI.Models
         [JsonProperty("archiveId")]
         [ArchiveId]
         public int ArchiveId { get; private set; }
-
-        /// <summary>
-        /// 获取筛选目标实体对象的筛选定义。
-        /// </summary>
-        /// <returns>筛选目标实体对象的筛选定义。</returns>
-        public FilterDefinition<Problem> GetFilter()
-        {
-            return Builders<Problem>.Filter.Eq(p => p.Id, ProblemId);
-        }
-
-        /// <summary>
-        /// 从当前的数据模型创建更新数据库所需的 <see cref="UpdateDefinition{Problem}"/> 定义。
-        /// </summary>
-        /// <returns>目标实体对象的更新定义。</returns>
-        public UpdateDefinition<Problem> GetUpdateDefinition()
-        {
-            return Builders<Problem>.Update.Set(p => p.ArchiveId, ArchiveId);
-        }
     }
 }

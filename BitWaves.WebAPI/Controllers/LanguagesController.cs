@@ -1,14 +1,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using BitWaves.Data;
+using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
+using BitWaves.Data.Repositories;
 using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
 {
@@ -29,11 +29,9 @@ namespace BitWaves.WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<LanguageInfo[]>> GetLanguages()
         {
-            var languages = await _repo.Languages.Find(Builders<Language>.Filter.Empty)
-                                       .ToListAsync();
+            var languages = await _repo.Languages.FindManyAsync(LanguageFindPipeline.Default);
 
-            return languages.Select(e => _mapper.Map<Language, LanguageInfo>(e))
-                            .ToArray();
+            return languages.ResultSet.Select(e => _mapper.Map<Language, LanguageInfo>(e)).ToArray();
         }
 
         // POST: /languages
@@ -60,8 +58,8 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var deleteResult = await _repo.Languages.DeleteOneAsync(Builders<Language>.Filter.Eq(e => e.Id, objId));
-            if (deleteResult.DeletedCount == 0)
+            var deleteResult = await _repo.Languages.DeleteOneAsync(objId);
+            if (!deleteResult)
             {
                 return NotFound();
             }

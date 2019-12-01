@@ -2,16 +2,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using BitWaves.Data;
+using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
+using BitWaves.Data.Repositories;
 using BitWaves.WebAPI.Authentication;
-using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
 {
@@ -34,17 +33,15 @@ namespace BitWaves.WebAPI.Controllers
             [FromQuery] [Range(0, int.MaxValue)] int page = 0,
             [FromQuery] [Range(1, int.MaxValue)] int itemsPerPage = 20)
         {
-            var query = _repo.Announcements.Find(Builders<Announcement>.Filter.Empty)
-                             .Sort(Builders<Announcement>.Sort.Combine(
-                                       Builders<Announcement>.Sort.Descending(ann => ann.IsPinned),
-                                       Builders<Announcement>.Sort.Descending(ann => ann.LastUpdateTime)));
-            var totalCount = await query.CountDocumentsAsync();
-            var entities = await query.Paginate(page, itemsPerPage)
-                                      .ToListAsync();
+            var findPipeline = new AnnouncementFindPipeline()
+            {
+                Pagination = new Pagination(page, itemsPerPage)
+            };
+            var findResult = await _repo.Announcements.FindManyAsync(findPipeline);
 
-            var models = entities.Select(e => _mapper.Map<Announcement, AnnouncementListInfo>(e))
-                                 .ToList();
-            return (totalCount, models);
+            var models = findResult.ResultSet.Select(e => _mapper.Map<Announcement, AnnouncementListInfo>(e))
+                                   .ToList();
+            return (findResult.TotalCount, models);
         }
 
         // POST: /announcements
@@ -71,8 +68,7 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var entity = await _repo.Announcements.Find(Builders<Announcement>.Filter.Eq(ann => ann.Id, id))
-                                    .FirstOrDefaultAsync();
+            var entity = await _repo.Announcements.FindOneAsync(id);
             if (entity == null)
             {
                 return NotFound();
@@ -94,15 +90,9 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var update = model.ToUpdateDefinition();
-            if (update == null)
-            {
-                return Ok();
-            }
-
-            var updateResult = await _repo.Announcements.UpdateOneAsync(
-                Builders<Announcement>.Filter.Eq(ann => ann.Id, id), update);
-            if (updateResult.MatchedCount == 0)
+            var update = _mapper.Map<UpdateAnnouncementModel, AnnouncementUpdateInfo>(model);
+            var updateResult = await _repo.Announcements.UpdateOneAsync(id, update);
+            if (!updateResult)
             {
                 return NotFound();
             }
@@ -122,9 +112,8 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var deleteResult = await _repo.Announcements.DeleteOneAsync(
-                Builders<Announcement>.Filter.Eq(ann => ann.Id, id));
-            if (deleteResult.DeletedCount == 0)
+            var deleteResult = await _repo.Announcements.DeleteOneAsync(id);
+            if (!deleteResult)
             {
                 return NotFound();
             }

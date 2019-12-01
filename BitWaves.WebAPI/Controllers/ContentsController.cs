@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using BitWaves.Data;
+using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
+using BitWaves.Data.Repositories;
 using BitWaves.WebAPI.Authentication;
-using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Utils;
 using BitWaves.WebAPI.Validation;
@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
 {
@@ -40,26 +39,26 @@ namespace BitWaves.WebAPI.Controllers
             [FromQuery] [Range(0, int.MaxValue)] int page = 0,
             [FromQuery] [Range(1, int.MaxValue)] int itemsPerPage = 20)
         {
-            var filter = Builders<Content>.Filter.Empty;
+            var filterBuilder = ContentFilterBuilder.Empty;
+
             if (name != null)
             {
-                filter &= Builders<Content>.Filter.Eq(content => content.Name, name);
+                filterBuilder = filterBuilder.Name(name);
             }
+
             if (mimeType != null)
             {
-                filter &= Builders<Content>.Filter.Eq(content => content.MimeType, mimeType);
+                filterBuilder = filterBuilder.MimeType(mimeType);
             }
 
-            var query = _repo.Contents.Find(filter);
-            var totalCount = await query.CountDocumentsAsync();
+            var findPipeline = new ContentFindPipeline(filterBuilder)
+            {
+                Pagination = new Pagination(page, itemsPerPage)
+            };
 
-            var entities = await query.Sort(Builders<Content>.Sort.Descending(content => content.CreationTime))
-                                      .Project(Builders<Content>.Projection.Exclude(content => content.Data))
-                                      .Paginate(page, itemsPerPage)
-                                      .ToEntityListAsync<Content>();
-
-            var models = entities.Select(e => _mapper.Map<Content, ContentInfo>(e));
-            return (totalCount, models);
+            var findResult = await _repo.Contents.FindManyAsync(findPipeline);
+            var models = findResult.ResultSet.Select(e => _mapper.Map<Content, ContentInfo>(e));
+            return (findResult.TotalCount, models);
         }
 
         // POST: /contents
@@ -92,8 +91,7 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var content = await _repo.Contents.Find(Builders<Content>.Filter.Eq(e => e.Id, id))
-                                     .FirstOrDefaultAsync();
+            var content = await _repo.Contents.FindOneAsync(id);
             if (content == null)
             {
                 return NotFound();
@@ -114,9 +112,8 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var deleteResult = await _repo.Contents.DeleteOneAsync(
-                Builders<Content>.Filter.Eq(content => content.Id, id));
-            if (deleteResult.DeletedCount == 0)
+            var deleteResult = await _repo.Contents.DeleteOneAsync(id);
+            if (!deleteResult)
             {
                 return NotFound();
             }

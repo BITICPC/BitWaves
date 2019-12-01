@@ -1,19 +1,17 @@
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using BitWaves.Data;
+using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
+using BitWaves.Data.Repositories;
 using BitWaves.WebAPI.Authentication;
-using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Utils;
 using BitWaves.WebAPI.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
 {
@@ -39,13 +37,14 @@ namespace BitWaves.WebAPI.Controllers
             [FromQuery] [Range(0, int.MaxValue)] int page = 0,
             [FromQuery] [Range(1, int.MaxValue)] int itemsPerPage = 20)
         {
-            var query = _repo.Problems.Find(Builders<Problem>.Filter.Empty)
-                             .SortByDescending(p => p.LastUpdateTime);
-            var totalCount = await query.CountDocumentsAsync();
-            var entities = await query.Paginate(page, itemsPerPage)
-                                .ToListAsync();
-            var models = entities.Select(e => _mapper.Map<Problem, ProblemListInfo>(e));
-            return (totalCount, models);
+            var findPipeline = new ProblemFindPipeline(ProblemFilterBuilder.Empty)
+            {
+                Pagination = new Pagination(page, itemsPerPage)
+            };
+
+            var findResult = await _repo.Problems.FindManyAsync(findPipeline);
+            var models = findResult.ResultSet.Select(e => _mapper.Map<Problem, ProblemListInfo>(e));
+            return (findResult.TotalCount, models);
         }
 
         // POST: /problems
@@ -74,17 +73,9 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var updateDefinition = model.CreateUpdateDefinition();
-            if (updateDefinition == null)
-            {
-                return Ok();
-            }
-
-            var entity = await _repo.Problems.FindOneAndUpdateAsync(
-                Builders<Problem>.Filter.Eq(p => p.Id, id),
-                updateDefinition);
-
-            if (entity == null)
+            var update = _mapper.Map<UpdateProblemModel, ProblemUpdateInfo>(model);
+            var updateResult = await _repo.Problems.UpdateOneAsync(id, update);
+            if (!updateResult)
             {
                 return NotFound();
             }
@@ -105,19 +96,8 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            // Checks that every new problem tags specified is in the problem tag data dictionary.
-            var uniqueTags = tagNames.ToImmutableHashSet();
-            var count = await _repo.ProblemTags.CountDocumentsAsync(
-                Builders<ProblemTag>.Filter.In(t => t.Name, uniqueTags));
-
-            if (count != uniqueTags.Count)
-            {
-                return UnprocessableEntity();
-            }
-
-            var update = Builders<Problem>.Update.AddToSetEach(p => p.Tags, uniqueTags);
-            var updateResult = await _repo.Problems.UpdateOneAsync(Builders<Problem>.Filter.Eq(p => p.Id, id), update);
-            if (updateResult.MatchedCount == 0)
+            var updateResult = await _repo.Problems.AddTagsToProblemAsync(id, tagNames);
+            if (!updateResult)
             {
                 return NotFound();
             }
@@ -138,10 +118,8 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var uniqueTags = tagNames.ToImmutableHashSet();
-            var update = Builders<Problem>.Update.PullAll(p => p.Tags, uniqueTags);
-            var updateResult = await _repo.Problems.UpdateOneAsync(Builders<Problem>.Filter.Eq(p => p.Id, id), update);
-            if (updateResult.MatchedCount == 0)
+            var updateResult = await _repo.Problems.DeleteTagsFromProblemAsync(id, tagNames);
+            if (!updateResult)
             {
                 return NotFound();
             }
@@ -160,8 +138,7 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var entity = await _repo.Problems.Find(Builders<Problem>.Filter.Eq(p => p.Id, id))
-                                    .FirstOrDefaultAsync();
+            var entity = await _repo.Problems.FindOneAsync(id);
             if (entity == null)
             {
                 return NotFound();
@@ -180,46 +157,10 @@ namespace BitWaves.WebAPI.Controllers
         // GET: /problems/tags
         [HttpGet("tags")]
         [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
-        public async Task<ActionResult<string[]>> GetProblemTags()
+        public async Task<ActionResult<ProblemTagInfo[]>> GetProblemTags()
         {
-            var entities = await _repo.ProblemTags.Find(Builders<ProblemTag>.Filter.Empty)
-                                      .ToListAsync();
-            return entities.Select(e => e.Name).ToArray();
-        }
-
-        // POST: /problems/tags
-        [HttpPost("tags")]
-        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
-        public async Task<IActionResult> CreateProblemTags(
-            [FromBody] [Required] [EnumerableValidation(typeof(ProblemTagNameAttribute))] string[] tagNames)
-        {
-            var entities = tagNames.Select(name => new ProblemTag(name));
-            try
-            {
-                await _repo.ProblemTags.InsertManyAsync(entities);
-            }
-            catch (MongoBulkWriteException ex)
-            {
-                if (ex.WriteErrors.All(error => error.Category == ServerErrorCategory.DuplicateKey))
-                {
-                    // Duplicate tag name.
-                    return Conflict();
-                }
-            }
-
-            return Ok();
-        }
-
-        // DELETE: /problems/tags
-        [HttpDelete("tags")]
-        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
-        public async Task<IActionResult> DeleteProblemTags(
-            [FromBody] [Required] [EnumerableValidation(typeof(ProblemTagNameAttribute))] string[] tagNames)
-        {
-            var filter = Builders<ProblemTag>.Filter.In(e => e.Name, tagNames);
-            await _repo.ProblemTags.DeleteManyAsync(filter);
-
-            return Ok();
+            var entities = await _repo.Problems.FindAllTagsAsync(ProblemFilterBuilder.Empty);
+            return entities.Select(e => _mapper.Map<ProblemTag, ProblemTagInfo>(e)).ToArray();
         }
     }
 }

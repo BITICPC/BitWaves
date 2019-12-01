@@ -1,7 +1,5 @@
-using BitWaves.Data;
-using BitWaves.Data.Entities;
+using BitWaves.Data.Utils;
 using BitWaves.WebAPI.Validation;
-using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -15,8 +13,8 @@ namespace BitWaves.WebAPI.Models
         /// 获取或设置旧密码。
         /// </summary>
         [JsonProperty("oldPassword")]
-        [OptionalValidation(typeof(PasswordAttribute))]
-        public Utils.Optional<string> OldPassword { get; set; }
+        [Inner(typeof(PasswordAttribute))]
+        public Maybe<string> OldPassword { get; set; }
 
         /// <summary>
         /// 获取新密码。
@@ -24,14 +22,5 @@ namespace BitWaves.WebAPI.Models
         [JsonProperty("password")]
         [Password]
         public string NewPassword { get; set; }
-
-        /// <summary>
-        /// 获取从当前数据模型创建的数据源更新定义。
-        /// </summary>
-        /// <returns>从当前数据模型创建的数据源更新定义。</returns>
-        public UpdateDefinition<User> ToUpdateDefinition()
-        {
-            return Builders<User>.Update.Set(u => u.PasswordHash, PasswordUtils.GetPasswordHash(NewPassword));
-        }
     }
 }

@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using BitWaves.Data.Entities;
+using BitWaves.Data.Utils;
 using BitWaves.WebAPI.Validation;
-using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Models
@@ -16,131 +14,64 @@ namespace BitWaves.WebAPI.Models
         /// 获取题目的标题。
         /// </summary>
         [JsonProperty("title")]
-        [OptionalValidation(typeof(ProblemTitleAttribute))]
-        public Utils.Optional<string> Title { get; private set; }
+        [Inner(typeof(ProblemTitleAttribute))]
+        public Maybe<string> Title { get; private set; }
 
         /// <summary>
         /// 获取题目的背景描述。
         /// </summary>
         [JsonProperty("legend")]
-        public Utils.Optional<string> Legend { get; private set; }
+        public Maybe<string> Legend { get; private set; }
 
         /// <summary>
         /// 获取题目的输入格式描述。
         /// </summary>
         [JsonProperty("input")]
-        public Utils.Optional<string> Input { get; private set; }
+        public Maybe<string> Input { get; private set; }
 
         /// <summary>
         /// 获取题目的输出格式描述。
         /// </summary>
         [JsonProperty("output")]
-        public Utils.Optional<string> Output { get; private set; }
+        public Maybe<string> Output { get; private set; }
 
         /// <summary>
         /// 获取题目的提示信息。
         /// </summary>
         [JsonProperty("notes")]
-        public Utils.Optional<string> Notes { get; private set; }
+        public Maybe<string> Notes { get; private set; }
 
         /// <summary>
         /// 获取题目的难度系数。
         /// </summary>
         [JsonProperty("difficulty")]
-        [OptionalValidation(typeof(DifficultyAttribute))]
-        public Utils.Optional<int> Difficulty { get; private set; }
+        [Inner(typeof(DifficultyAttribute))]
+        public Maybe<int> Difficulty { get; private set; }
 
         /// <summary>
         /// 获取题目单个测试点的时间限制，单位为毫秒。
         /// </summary>
         [JsonProperty("timeLimit")]
-        [OptionalValidation(typeof(TimeLimitAttribute))]
-        public Utils.Optional<int> TimeLimit { get; private set; }
+        [Inner(typeof(TimeLimitAttribute))]
+        public Maybe<int> TimeLimit { get; private set; }
 
         /// <summary>
         /// 获取题目单个测试点的内存限制，单位为 MB。
         /// </summary>
         [JsonProperty("memoryLimit")]
-        [OptionalValidation(typeof(MemoryLimitAttribute))]
-        public Utils.Optional<int> MemoryLimit { get; private set; }
+        [Inner(typeof(MemoryLimitAttribute))]
+        public Maybe<int> MemoryLimit { get; private set; }
 
         /// <summary>
         /// 获取题目的评测模式。
         /// </summary>
         [JsonProperty("judgeMode")]
-        public Utils.Optional<ProblemJudgeMode> JudgeMode { get; private set; }
+        public Maybe<ProblemJudgeMode> JudgeMode { get; private set; }
 
         /// <summary>
         /// 当评测模式为 Standard 时，获取传递给内建答案检查器的选项。
         /// </summary>
         [JsonProperty("builtinCheckerOptions")]
-        public Utils.Optional<BuiltinCheckerOptions> BuiltinCheckerOptions { get; private set; }
-
-        /// <summary>
-        /// 从当前的题目信息更新数据模型创建对应的数据库更新定义。
-        /// </summary>
-        /// <returns>创建的数据库更新定义。若没有任何数据需要更新，返回 null。</returns>
-        public UpdateDefinition<Problem> CreateUpdateDefinition()
-        {
-            // TODO: 重构 UpdateProblemModel.CreateUpdateDefinition 方法
-
-            var updates = new List<UpdateDefinition<Problem>>();
-            updates.Add(Builders<Problem>.Update.Set(p => p.LastUpdateTime, DateTime.UtcNow));
-
-            if (Title.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.Title, Title.Value));
-            }
-
-            if (Legend.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.Description.Legend, Legend.Value));
-            }
-
-            if (Input.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.Description.Input, Input.Value));
-            }
-
-            if (Output.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.Description.Output, Output.Value));
-            }
-
-            if (Notes.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.Description.Notes, Notes.Value));
-            }
-
-            if (Difficulty.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.Difficulty, Difficulty.Value));
-            }
-
-            if (TimeLimit.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.JudgeInfo.TimeLimit, TimeLimit.Value));
-            }
-
-            if (MemoryLimit.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.JudgeInfo.MemoryLimit, MemoryLimit.Value));
-            }
-
-            if (JudgeMode.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.JudgeInfo.JudgeMode, JudgeMode.Value));
-            }
-
-            if (BuiltinCheckerOptions.HasValue)
-            {
-                updates.Add(Builders<Problem>.Update.Set(p => p.JudgeInfo.BuiltinCheckerOptions,
-                                                         BuiltinCheckerOptions.Value));
-            }
-
-            return updates.Count > 0
-                ? Builders<Problem>.Update.Combine(updates)
-                : null;
-        }
+        public Maybe<BuiltinCheckerOptions> BuiltinCheckerOptions { get; private set; }
     }
 }

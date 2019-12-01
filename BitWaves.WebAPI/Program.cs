@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using BitWaves.Data;
+using BitWaves.Data.Repositories;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

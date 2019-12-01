@@ -1,17 +1,15 @@
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using BitWaves.Data;
+using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
+using BitWaves.Data.Repositories;
 using BitWaves.WebAPI.Authentication;
-using BitWaves.WebAPI.Extensions;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Utils;
 using BitWaves.WebAPI.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
 {
@@ -19,11 +17,6 @@ namespace BitWaves.WebAPI.Controllers
     [ApiController]
     public sealed class ArchiveController : ControllerBase
     {
-        /// <summary>
-        /// 为保证 ArchiveId 的唯一性，在应用端设置的对象互斥锁。
-        /// </summary>
-        private static readonly object UpdateArchiveIdLock = new object();
-
         private readonly Repository _repo;
         private readonly IMapper _mapper;
 
@@ -36,34 +29,21 @@ namespace BitWaves.WebAPI.Controllers
         // GET: /archive
         [HttpGet]
         public async Task<PaginatedListActionResult<ProblemListInfo>> GetProblemList(
-            [FromQuery] ArchiveListSortKey by = ArchiveListSortKey.Id,
+            [FromQuery] ProblemSortKey by = ProblemSortKey.ArchiveId,
             [FromQuery] bool descend = false,
             [FromQuery] [Page] int page = 0,
             [FromQuery] [ItemsPerPage] int itemsPerPage = 20)
         {
-            var query = _repo.Problems.Find(Builders<Problem>.Filter.Ne(problem => problem.ArchiveId, null));
-
-            // 获取符合筛选条件的总题目数量
-            var totalCount = await query.CountDocumentsAsync();
-
-            // 执行排序
-            var sortKey = by.GetFieldSelector();
-            if (descend)
+            var findPipeline = new ProblemFindPipeline(new ProblemFilterBuilder().InArchive(true))
             {
-                query = query.SortByDescending(sortKey);
-            }
-            else
-            {
-                query = query.SortBy(sortKey);
-            }
+                SortKey = by,
+                SortByDescending = descend,
+                Pagination = new Pagination(page, itemsPerPage)
+            };
+            var findResult = await _repo.Problems.FindManyAsync(findPipeline);
 
-            // 执行分页
-            query = query.Paginate(page, itemsPerPage);
-
-            var viewEntityList = await query.ToListAsync();
-            var viewList = viewEntityList.Select(entity => _mapper.Map<Problem, ProblemListInfo>(entity));
-
-            return (totalCount, viewList);
+            var models = findResult.ResultSet.Select(p => _mapper.Map<Problem, ProblemListInfo>(p));
+            return (findResult.TotalCount, models);
         }
 
         // GET: /archive/{archiveId}
@@ -71,8 +51,7 @@ namespace BitWaves.WebAPI.Controllers
         public async Task<ActionResult<ProblemInfo>> GetArchiveProblem(
             int archiveId)
         {
-            var entity = await _repo.Problems.Find(Builders<Problem>.Filter.Eq(problem => problem.ArchiveId, archiveId))
-                                             .FirstOrDefaultAsync();
+            var entity = await _repo.Problems.FindOneArchiveProblemAsync(archiveId);
             if (entity == null)
             {
                 return NotFound();
@@ -87,15 +66,14 @@ namespace BitWaves.WebAPI.Controllers
         public async Task<IActionResult> AddProblem(
             [FromBody] ArchiveAddProblemModel model)
         {
-            UpdateResult updateResult;
-
+            bool updateResult;
             try
             {
-                updateResult = await _repo.Problems.UpdateOneAsync(model.GetFilter(), model.GetUpdateDefinition());
+                updateResult = await _repo.Problems.AddProblemToArchiveAsync(model.ProblemId, model.ArchiveId);
             }
-            catch (MongoWriteException ex)
+            catch (RepositoryException ex)
             {
-                if (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+                if (ex.IsDuplicateKey)
                 {
                     return Conflict();
                 }
@@ -103,7 +81,7 @@ namespace BitWaves.WebAPI.Controllers
                 throw;
             }
 
-            if (updateResult.MatchedCount == 0)
+            if (!updateResult)
             {
                 return NotFound();
             }
@@ -117,8 +95,7 @@ namespace BitWaves.WebAPI.Controllers
         public async Task<IActionResult> DeleteProblems(
             [FromBody] int[] problemIds)
         {
-            var filter = Builders<Problem>.Filter.In(p => p.ArchiveId, problemIds.Select<int, int?>(x => x));
-            await _repo.Problems.UpdateManyAsync(filter, Builders<Problem>.Update.Unset(p => p.ArchiveId));
+            await _repo.Problems.DeleteProblemsFromArchiveAsync(problemIds);
 
             return Ok();
         }

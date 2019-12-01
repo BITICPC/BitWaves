@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
-using BitWaves.Data;
-using BitWaves.Data.Entities;
+using BitWaves.Data.Repositories;
 using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
 
 namespace BitWaves.WebAPI.Controllers
 {
@@ -29,24 +27,21 @@ namespace BitWaves.WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<LoginResult>> Login([FromBody] LoginModel model)
         {
-            var user = await _repo.Users.Find(Builders<User>.Filter.Eq(u => u.Username, model.Username))
-                                  .FirstOrDefaultAsync();
-            if (user == null)
+            var entity = await _repo.Users.FindOneAsync(model.Username);
+            if (entity == null)
             {
-                // 用户不存在
                 return NotFound();
             }
 
-            if (!PasswordUtils.Challenge(user.PasswordHash, model.Password))
+            if (!entity.Challenge(model.Password))
             {
-                // 密码错误
                 return UnprocessableEntity();
             }
 
-            var authToken = new BitWavesAuthenticationToken(user);
+            var authToken = new BitWavesAuthenticationToken(entity);
             var authTokenJwt = _jwt.Encode(authToken);
 
-            return new LoginResult(user, authTokenJwt);
+            return new LoginResult(entity, authTokenJwt);
         }
     }
 }
