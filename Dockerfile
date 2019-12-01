@@ -3,12 +3,14 @@ WORKDIR /app
 
 # Copy project metadata and restore as distinct layers.
 COPY BitWaves.WebAPI/BitWaves.WebAPI.csproj ./BitWaves.WebAPI/
+COPY BitWaves.Data/BitWaves.Data/BitWaves.Data.csproj ./BitWaves.Data/BitWaves.Data/
 WORKDIR /app/BitWaves.WebAPI
 RUN dotnet restore
 
 # Copy everything else and build app.
 WORKDIR /app
 COPY BitWaves.WebAPI/. ./BitWaves.WebAPI/
+COPY BitWaves.Data/BitWaves.Data/ ./BitWaves.Data/BitWaves.Data/
 WORKDIR /app/BitWaves.WebAPI
 RUN dotnet publish -c Release -o publish
 
