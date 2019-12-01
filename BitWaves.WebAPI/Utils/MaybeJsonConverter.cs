@@ -1,5 +1,6 @@
 using System;
 using BitWaves.Data.Utils;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace BitWaves.WebAPI.Utils
@@ -35,7 +36,7 @@ namespace BitWaves.WebAPI.Utils
         {
             if (reader.TokenType == JsonToken.Undefined)
             {
-                // undefined 表示空的 Optional<T> 实例。直接使用 Activator 实例化即可。
+                // undefined 表示空的 Maybe<T> 实例。直接使用 Activator 实例化即可。
                 existingValue = Activator.CreateInstance(objectType);
                 return existingValue;
             }
@@ -59,6 +60,25 @@ namespace BitWaves.WebAPI.Utils
         public override bool CanConvert(Type objectType)
         {
             return MaybeUtils.IsMaybeType(objectType);
+        }
+    }
+
+    /// <summary>
+    /// 为 <see cref="MaybeJsonConverter"/> 提供扩展方法。
+    /// </summary>
+    public static class MaybeJsonConverterExtensions
+    {
+        /// <summary>
+        /// 将 <see cref="MaybeJsonConverter"/> 注册到给定的 <see cref="MvcJsonOptions"/> 对象上。
+        /// </summary>
+        /// <param name="options"><see cref="MvcJsonOptions"/> 对象。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="options"/> 为 null。</exception>
+        public static MvcJsonOptions AddMaybeJsonConverter(this MvcJsonOptions options)
+        {
+            Contract.NotNull(options, nameof(options));
+
+            options.SerializerSettings.Converters.Add(new MaybeJsonConverter());
+            return options;
         }
     }
 }
