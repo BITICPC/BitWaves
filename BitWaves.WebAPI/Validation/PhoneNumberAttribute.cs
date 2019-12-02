@@ -16,8 +16,7 @@ namespace BitWaves.WebAPI.Validation
         /// 初始化 <see cref="PhoneNumberAttribute"/> 类的新实例。
         /// </summary>
         public PhoneNumberAttribute()
-            : base(new RequiredAttribute(),
-                   new RegularExpressionAttribute(RegularExpression))
+            : base(new RegularExpressionAttribute(RegularExpression))
         { }
     }
 }

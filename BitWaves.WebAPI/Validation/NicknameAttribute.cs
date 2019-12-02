@@ -21,8 +21,7 @@ namespace BitWaves.WebAPI.Validation
         /// 初始化 <see cref="NicknameAttribute"/> 类的新实例。
         /// </summary>
         public NicknameAttribute()
-            : base(new RequiredAttribute(),
-                   new MinLengthAttribute(MinLength),
+            : base(new MinLengthAttribute(MinLength),
                    new MaxLengthAttribute(MaxLength))
         { }
     }

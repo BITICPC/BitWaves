@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace BitWaves.WebAPI.Validation
 {
@@ -21,23 +22,9 @@ namespace BitWaves.WebAPI.Validation
         }
 
         /// <inheritdoc />
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        public override bool IsValid(object value)
         {
-            if (validationContext == null)
-            {
-                validationContext = new ValidationContext(value);
-            }
-
-            foreach (var innerValidator in _inner)
-            {
-                var innerResult = innerValidator.GetValidationResult(value, validationContext);
-                if (innerResult != ValidationResult.Success)
-                {
-                    return innerResult;
-                }
-            }
-
-            return ValidationResult.Success;
+            return _inner.All(v => v.IsValid(value));
         }
     }
 }
