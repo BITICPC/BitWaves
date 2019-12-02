@@ -21,6 +21,8 @@ tags:
     description: 用于访问公开题目集的 API
   - name: languages
     description: 评测语言相关 API
+  - name: submissions
+    description: 提交相关 API
 
 paths:
   /contents:
@@ -955,6 +957,170 @@ paths:
         404:
           description: 未能找到指定的评测语言
 
+  /submissions:
+    get:
+      summary: 获取实时用户提交列表
+      description: 获取实时用户提交列表
+      tags:
+        - submissions
+      parameters:
+        - in: query
+          name: page
+          type: integer
+          minimum: 0
+          default: 0
+          required: false
+          description: 分页参数，页面编号。页面编号从 0 开始
+        - in: query
+          name: itemsPerPage
+          type: integer
+          minimum: 1
+          default: 20
+          required: false
+          description: 分页参数，每一页上的元素数量
+        - in: query
+          name: author
+          type: string
+          required: false
+          description: 筛选创建提交的用户
+        - in: query
+          name: problem
+          type: string
+          required: false
+          description: 筛选提交的题目的全局唯一 ID
+        - in: query
+          name: status
+          type: string
+          required: false
+          description: 筛选提交的评测状态
+          enum:
+            - Pending
+            - Judging
+            - Finished
+        - in: query
+          name: verdict
+          type: string
+          required: false
+          description: 筛选提交的评测结果
+          enum:
+            - Accepted
+            - WrongAnswer
+            - RuntimeError
+            - TimeLimitExceeded
+            - MemoryLimitExceeded
+            - IdlenessLimitExceeded
+            - BadSystemCall
+            - CheckerFailed
+            - InteractorFailed
+            - JudgeFailed
+        - in: query
+          name: language
+          type: string
+          required: false
+          description: 筛选提交的语言
+      responses:
+        200:
+          description: 操作成功完成
+          headers:
+            X-BitWaves-Count:
+              type: integer
+              description: 在未执行分页之前符合筛选条件的提交数量
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/SubmissionListItem'
+        400:
+          description: 一个或多个查询参数无效
+    post:
+      summary: 创建一个提交
+      description: 创建一个提交
+      tags:
+        - submissions
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+          description: 用户身份验证标识，格式 `Jwt <jwt>`
+        - in: body
+          name: data
+          required: true
+          description: 提交数据
+          schema:
+            $ref: '#/definitions/PostSubmissionModel'
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: 新创建的提交的全局唯一 ID
+                example: "25fa137e2b3513ace3253cdf"
+        400:
+          description: 请求中包含不合法的参数
+        403:
+          description: 用户没有提交给定题目的权限
+        404:
+          description: 没有找到给定的题目 或 没有找到给定的语言
+
+  /submissions/{submissionId}:
+    get:
+      summary: 获取提交的详细信息
+      description: 获取提交的详细信息
+      tags:
+        - submissions
+      parameters:
+        - in: path
+          name: submissionId
+          type: string
+          required: true
+          description: 提交的全局唯一 ID
+        - in: header
+          name: Authorization
+          type: string
+          required: false
+          description: 用户身份验证标识，格式为 `Jwt <jwt>`
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            $ref: '#/definitions/SubmissionInfo'
+        400:
+          description: 请求中有无效的参数
+        403:
+          description: 用户无权访问该提交
+        404:
+          description: 该提交不存在
+    patch:
+      summary: 将指定的提交重置为评测前的状态
+      description: 将指定的提交重置为评测前的状态。该 API 可以用于重测指定的提交
+      tags:
+        - submissions
+      parameters:
+        - in: path
+          name: submissionId
+          type: string
+          required: true
+          description: 提交的全局唯一 ID
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份验证标识，格式为 `Jwt <jwt>`
+      responses:
+        200:
+          description: 操作成功完成
+        400:
+          description: 请求中有无效的参数
+        403:
+          description: 用户无权执行此操作
+        404:
+          description: 无法找到指定的提交
+
 definitions:
   ContentObjectInfo:
     type: object
@@ -1675,3 +1841,227 @@ definitions:
         type: string
         description: 语言的显示名称
         example: 'Clang++ 17'
+
+  PostSubmissionModel:
+    type: object
+    required:
+      - problemId
+      - languageId
+      - code
+    properties:
+      problemId:
+        type: string
+        description: 提交的题目的全局唯一  ID
+        example: "25fa137e2b3513ace3253cdf"
+      languageId:
+        type: string
+        description: 提交所使用的语言的全局唯一 ID
+        example: "25fa137e2b3513ace3253cdf"
+      code:
+        type: string
+        minLength: 1
+        description: 提交的源代码
+
+  SubmissionListItem:
+    type: object
+    required:
+      - id
+      - author
+      - problemId
+      - problemArchiveId
+      - problemTitle
+      - creationTime
+      - judgeTime
+      - language
+      - status
+      - verdict
+    properties:
+      id:
+        type: string
+        description: 提交的全局唯一 ID
+        example: '25fa137e2b3513ace3253cdf'
+      author:
+        type: string
+        description: 题目的作者
+        example: "Lancern"
+      problemId:
+        type: string
+        description: 题目的全局唯一 ID
+        example: "25fa137e2b3513ace3253cdf"
+      problemArchiveId:
+        type: integer
+        description: 题目在公开题目集中的 ID；若题目不在公开题目集中，该字段为 null
+        example: 100
+      problemTitle:
+        type: string
+        description: 题目的标题
+        example: "Two Sums"
+      creationTime:
+        type: string
+        description: 提交的创建时间，UTC 时区
+        example: "2019-09-23T01:54:48.087Z"
+      judgeTime:
+        type: string
+        description: 提交的评测时间，UTC 时区。若题目尚未被评测，该字段为 null
+        example: "2019-09-23T01:54:48.087Z"
+      language:
+        type: string
+        description: 提交所使用的语言的显示名称
+        example: "GNU C++ 17"
+      status:
+        type: string
+        description: 提交的评测状态
+        enum:
+          - Pending
+          - Judging
+          - Finished
+        example: "Pending"
+      verdict:
+        type: string
+        description: 提交的评测结果
+        enum:
+          - Accepted
+          - WrongAnswer
+          - RuntimeError
+          - TimeLimitExceeded
+          - MemoryLimitExceeded
+          - IdlenessLimitExceeded
+          - BadSystemCall
+          - CheckerFailed
+          - InteractorFailed
+          - JudgeFailed
+  SubmissionInfo:
+    type: object
+    required:
+      - id
+      - author
+      - problemId
+      - problemArchiveId
+      - problemTitle
+      - creationTime
+      - judgeTime
+      - language
+      - status
+      - judgeResult
+    properties:
+      id:
+        type: string
+        description: 提交的全局唯一 ID
+        example: '25fa137e2b3513ace3253cdf'
+      author:
+        type: string
+        description: 题目的作者
+        example: "Lancern"
+      problemId:
+        type: string
+        description: 题目的全局唯一 ID
+        example: "25fa137e2b3513ace3253cdf"
+      problemArchiveId:
+        type: integer
+        description: 题目在公开题目集中的 ID；若题目不在公开题目集中，该字段为 null
+        example: 100
+      problemTitle:
+        type: string
+        description: 题目的标题
+        example: "Two Sums"
+      creationTime:
+        type: string
+        description: 提交的创建时间，UTC 时区
+        example: "2019-09-23T01:54:48.087Z"
+      judgeTime:
+        type: string
+        description: 提交的评测时间，UTC 时区。若题目尚未被评测，该字段为 null
+        example: "2019-09-23T01:54:48.087Z"
+      language:
+        type: string
+        description: 提交所使用的语言的显示名称
+        example: "GNU C++ 17"
+      status:
+        type: string
+        description: 提交的评测状态
+        enum:
+          - Pending
+          - Judging
+          - Finished
+      judgeResult:
+        type: object
+        description: 提交的评测结果
+        required:
+          - verdict
+          - time
+          - memory
+          - testCaseResults
+        properties:
+          verdict:
+            type: string
+            enum:
+              - Accepted
+              - WrongAnswer
+              - RuntimeError
+              - TimeLimitExceeded
+              - MemoryLimitExceeded
+              - IdlenessLimitExceeded
+              - BadSystemCall
+              - CheckerFailed
+              - InteractorFailed
+              - JudgeFailed
+            description: 提交的评测结果
+          time:
+            type: integer
+            description: 用户提交在所有的测试点上消耗的 CPU 时间的最大值，单位为毫秒
+            example: 128
+          memory:
+            type: integer
+            description: 用户提交在所有的测试点上占用的内存的最大值，单位为 MB
+            example: 8
+          testCaseResults:
+            type: array
+            items:
+              type: object
+              required:
+                - verdict
+                - time
+                - memory
+                - exitCode
+                - inputView
+                - outputView
+                - comment
+              properties:
+                verdict:
+                  type: string
+                  enum:
+                    - Accepted
+                    - WrongAnswer
+                    - RuntimeError
+                    - TimeLimitExceeded
+                    - MemoryLimitExceeded
+                    - IdlenessLimitExceeded
+                    - BadSystemCall
+                    - CheckerFailed
+                    - InteractorFailed
+                    - JudgeFailed
+                  description: 用户的提交在测试点上的评测结果
+                time:
+                  type: integer
+                  description: 用户的提交在测试点上所消耗的 CPU 时间，单位为毫秒
+                  example: 128
+                memory:
+                  type: integer
+                  description: 用户的提交在测试点上占用的内存，单位为 MB
+                  example: 8
+                exitCode:
+                  type: integer
+                  description: 用户的程序的退出代码
+                  example: 0
+                inputView:
+                  type: string
+                  description: 输入数据的视图
+                  example: "1 2"
+                outputView:
+                  type: string
+                  description: 用户提交的输出的视图
+                  example: "3"
+                comment:
+                  type: string
+                  description: 评测系统产生的消息
+                  example: "Ok 1 token(s)"

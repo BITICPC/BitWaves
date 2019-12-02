@@ -31,6 +31,7 @@ namespace BitWaves.WebAPI.Models
             CreateMap<CreateUserModel, User>(MemberList.Source);
             CreateMap<CreateProblemModel, Problem>(MemberList.Source);
             CreateMap<CreateLanguageModel, Language>(MemberList.Source);
+            CreateMap<CreateSubmissionModel, Submission>(MemberList.Source);
         }
 
         private void MapUpdateModels()
@@ -67,6 +68,8 @@ namespace BitWaves.WebAPI.Models
             CreateMap<ProblemSampleTest, ProblemSampleTestInfo>();
             CreateMap<ProblemTag, ProblemTagInfo>();
             CreateMap<Language, LanguageInfo>();
+            CreateMap<Submission, SubmissionListInfo>();
+            CreateMap<Submission, SubmissionInfo>();
         }
     }
 }
