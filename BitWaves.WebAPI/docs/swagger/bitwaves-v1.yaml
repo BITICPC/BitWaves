@@ -70,6 +70,8 @@ paths:
               $ref: '#/definitions/ContentObjectInfo'
         400:
           description: 无效的查询参数
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
     post:
@@ -102,6 +104,8 @@ paths:
                 example: a154edb2431fdbb230fbf384
         400:
           description: 无效的输入数据
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
 
@@ -150,6 +154,8 @@ paths:
           description: 操作成功完成
         400:
           description: 无效的静态对象 ID
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
         404:
@@ -260,6 +266,8 @@ paths:
           description: 操作成功完成
           schema:
             $ref: '#/definitions/UserInfo'
+        401:
+          description: 参数 `detailed` 为 `true` 但请求不包含有效的用户身份标识
         403:
           description: 参数 `detailed` 为 `true` 但提供的 JWT 无效
         404:
@@ -295,6 +303,8 @@ paths:
           description: 操作成功完成
         400:
           description: 数据模型验证失败
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户不具备相应的权限
 
@@ -326,6 +336,8 @@ paths:
           description: 操作成功完成
         400:
           description: 请求数据无效
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
         404:
@@ -434,6 +446,8 @@ paths:
                 example: a154edb2431fdbb230fbf384
         400:
           description: 无效的请求参数
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
 
@@ -484,6 +498,8 @@ paths:
           description: 操作成功完成
         400:
           description: 无效的请求参数
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
         404:
@@ -509,6 +525,8 @@ paths:
           description: 操作成功完成
         400:
           description: 无效的请求参数
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
         404:
@@ -571,6 +589,8 @@ paths:
               $ref: '#/definitions/ProblemListItem'
         400:
           description: 请求中携带的参数无效
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
     post:
@@ -604,6 +624,8 @@ paths:
                 example: "a154edb2431fdbb230fbf384"
         400:
           description: 给定的题目创建数据无效
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有权限创建题目
 
@@ -635,6 +657,8 @@ paths:
           description: 操作成功完成
         400:
           description: 给定的题目修改信息无效
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有权限修改题目信息
         404:
@@ -662,6 +686,8 @@ paths:
             $ref: '#/definitions/ProblemInfo'
         400:
           description: 无效的题目 ID
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有足够的权限访问题目
         404:
@@ -691,6 +717,8 @@ paths:
           description: 操作成功完成
         400:
           description: 请求中包含无效的标签名称
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
         404:
@@ -719,6 +747,8 @@ paths:
           description: 操作成功完成
         400:
           description: 请求中包含无效的标签名称
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
         404:
@@ -743,6 +773,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ProblemTagInfo'
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
 
@@ -826,6 +858,8 @@ paths:
           description: 操作成功完成
         400:
           description: 请求中的数据不合法
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有权限执行此操作
         404:
@@ -860,6 +894,8 @@ paths:
           description: 操作成功完成
         400:
           description: 请求中的数据无效
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有权限执行此操作
   /archive/{archiveId}:
@@ -928,6 +964,8 @@ paths:
                 example: "a154edb2431fdbb230fbf384"
         400:
           description: 无效的请求数据
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户不具备需要的权限
   /languages/{languageId}:
@@ -952,6 +990,8 @@ paths:
           description: 操作成功完成
         400:
           description: 无效的评测语言 ID
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有相应的权限
         404:
@@ -1062,6 +1102,8 @@ paths:
                 example: "25fa137e2b3513ace3253cdf"
         400:
           description: 请求中包含不合法的参数
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户没有提交给定题目的权限
         404:
@@ -1091,6 +1133,8 @@ paths:
             $ref: '#/definitions/SubmissionInfo'
         400:
           description: 请求中有无效的参数
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户无权访问该提交
         404:
@@ -1116,6 +1160,8 @@ paths:
           description: 操作成功完成
         400:
           description: 请求中有无效的参数
+        401:
+          description: 请求不包含有效的用户身份标识
         403:
           description: 用户无权执行此操作
         404:

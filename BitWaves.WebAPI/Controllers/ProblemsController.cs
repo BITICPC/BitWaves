@@ -152,6 +152,11 @@ namespace BitWaves.WebAPI.Controllers
             var authResult = await _authorization.AuthorizeAsync(User, entity, BitWavesAuthPolicies.GetProblemDetail);
             if (!authResult.Succeeded)
             {
+                if (User == null)
+                {
+                    return Challenge();
+                }
+
                 return Forbid();
             }
 

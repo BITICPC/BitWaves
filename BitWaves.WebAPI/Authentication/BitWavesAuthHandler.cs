@@ -61,14 +61,12 @@ namespace BitWaves.WebAPI.Authentication
         /// <inheritdoc />
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
-            // In BitWavesAuthHandler we need to return 403 instead of 401 since all authentication information
-            // is available.
             if (Context.Response.HasStarted)
             {
                 return Task.CompletedTask;
             }
 
-            Context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
+            Context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
             return Task.CompletedTask;
         }
     }
