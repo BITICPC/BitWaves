@@ -11,6 +11,6 @@ namespace BitWaves.WebAPI.Models
         /// 获取全站公告的内容。
         /// </summary>
         [JsonProperty("content")]
-        public string Content { get; }
+        public string Content { get; set; }
     }
 }
