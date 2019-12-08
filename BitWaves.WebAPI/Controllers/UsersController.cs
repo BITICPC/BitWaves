@@ -109,7 +109,7 @@ namespace BitWaves.WebAPI.Controllers
             }
 
             var model = _mapper.Map<User, UserInfo>(entity);
-            model.Rank = await _repo.Users.CountUsersWithMoreAcceptedProblemsAsync(entity.TotalProblemsAccepted);
+            model.Rank = await _repo.Users.CountUsersWithMoreAcceptedProblemsAsync(entity.TotalProblemsAccepted) + 1;
 
             return model;
         }
