@@ -1314,16 +1314,13 @@ definitions:
     required:
       - username
       - nickname
-      - phone
-      - email
-      - school
-      - studentId
       - blogUrl
       - joinTime
       - totalSubmissions
       - totalAccepted
       - totalProblemsAttempted
       - totalProblemsAccepted
+      - rank
       - isAdmin
     properties:
       username:
@@ -1340,11 +1337,11 @@ definitions:
         example: "13901234567"
       email:
         type: string
-        description: 用户邮箱
+        description: 当 `detailed` 为 `true` 时，本字段包含用户邮箱
         example: msr@bit.edu.cn
       school:
         type: string
-        description: 用户的学校
+        description: 当 `detailed` 为 `true` 时，本字段包含用户的学校
         example: Beijing Institute of Technology
       studentId:
         type: string
@@ -1374,6 +1371,10 @@ definitions:
         type: integer
         description: 用户总 AC 题目数量
         example: 1
+      rank:
+        type: integer
+        description: 用户的排名
+        example: 10
       isAdmin:
         type: boolean
         description: 用户是否为管理员

@@ -57,7 +57,8 @@ namespace BitWaves.WebAPI.Models
             CreateMap<Announcement, AnnouncementListInfo>();
             CreateMap<Announcement, AnnouncementInfo>();
             CreateMap<User, UserListInfo>();
-            CreateMap<User, UserInfo>();
+            CreateMap<User, UserInfo>()
+                .ForMember(u => u.Rank, opt => opt.Ignore());
             CreateMap<Content, ContentInfo>();
             CreateMap<Problem, ProblemListInfo>();
             CreateMap<Problem, ProblemInfo>()

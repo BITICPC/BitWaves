@@ -99,8 +99,19 @@ namespace BitWaves.WebAPI.Controllers
                     return Forbid();
                 }
             }
+            else
+            {
+                // 当 detailed 为 false 时抹去保密字段
+                entity.Phone = null;
+                entity.Email = null;
+                entity.School = null;
+                entity.StudentId = null;
+            }
 
-            return _mapper.Map<User, UserInfo>(entity);
+            var model = _mapper.Map<User, UserInfo>(entity);
+            model.Rank = await _repo.Users.CountUsersWithMoreAcceptedProblemsAsync(entity.TotalProblemsAccepted);
+
+            return model;
         }
 
         // PUT: /users/{username}

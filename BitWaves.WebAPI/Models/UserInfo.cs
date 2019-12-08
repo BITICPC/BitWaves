@@ -38,6 +38,12 @@ namespace BitWaves.WebAPI.Models
         public string BlogUrl { get; set; }
 
         /// <summary>
+        /// 获取或设置用户的排名。
+        /// </summary>
+        [JsonProperty("rank")]
+        public long Rank { get; set; }
+
+        /// <summary>
         /// 获取或设置用户是否为管理员。
         /// </summary>
         [JsonProperty("isAdmin")]
