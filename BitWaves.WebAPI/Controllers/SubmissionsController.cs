@@ -141,13 +141,7 @@ namespace BitWaves.WebAPI.Controllers
                 return ValidationProblem();
             }
 
-            var update = new SubmissionUpdateInfo
-            {
-                Result = new Maybe<JudgeResult>(null),
-                Status = new Maybe<JudgeStatus>(JudgeStatus.Pending)
-            };
-
-            var updateResult = await _repo.Submissions.UpdateOneAsync(id, update);
+            var updateResult = await _repo.Submissions.ResetJudgeStatusAsync(id);
             if (!updateResult)
             {
                 return NotFound();
