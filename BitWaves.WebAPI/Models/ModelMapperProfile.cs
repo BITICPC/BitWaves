@@ -31,7 +31,8 @@ namespace BitWaves.WebAPI.Models
             CreateMap<CreateUserModel, User>(MemberList.Source);
             CreateMap<CreateProblemModel, Problem>(MemberList.Source);
             CreateMap<CreateLanguageModel, Language>(MemberList.Source);
-            CreateMap<CreateSubmissionModel, Submission>(MemberList.Source);
+            CreateMap<CreateSubmissionModel, Submission>(MemberList.Source)
+                .ForSourceMember(m => m.LanguageId, opt => opt.DoNotValidate());
         }
 
         private void MapUpdateModels()
@@ -55,13 +56,16 @@ namespace BitWaves.WebAPI.Models
         private void MapOutputModels()
         {
             CreateMap<Announcement, AnnouncementListInfo>();
-            CreateMap<Announcement, AnnouncementInfo>();
+            CreateMap<Announcement, AnnouncementInfo>()
+                .IncludeBase<Announcement, AnnouncementListInfo>();
             CreateMap<User, UserListInfo>();
             CreateMap<User, UserInfo>()
+                .IncludeBase<User, UserListInfo>()
                 .ForMember(u => u.Rank, opt => opt.Ignore());
             CreateMap<Content, ContentInfo>();
             CreateMap<Problem, ProblemListInfo>();
             CreateMap<Problem, ProblemInfo>()
+                .IncludeBase<Problem, ProblemListInfo>()
                 .IncludeMembers(p => p.Description, p => p.JudgeInfo);
             CreateMap<ProblemDescription, ProblemInfo>(MemberList.Source);
             CreateMap<ProblemJudgeInfo, ProblemInfo>(MemberList.Source)
@@ -69,8 +73,15 @@ namespace BitWaves.WebAPI.Models
             CreateMap<ProblemSampleTest, ProblemSampleTestInfo>();
             CreateMap<ProblemTag, ProblemTagInfo>();
             CreateMap<Language, LanguageInfo>();
-            CreateMap<Submission, SubmissionListInfo>();
-            CreateMap<Submission, SubmissionInfo>();
+            CreateMap<Submission, SubmissionListInfo>()
+                .ForMember(i => i.ProblemTitle, opt => opt.MapFrom((e, _) => e.Problem?.Title))
+                .ForMember(i => i.ProblemArchiveId, opt => opt.MapFrom((e, _) => e.Problem?.ArchiveId))
+                .ForMember(i => i.Language, opt => opt.MapFrom((e, _) => e.LanguageDisplayName))
+                .ForMember(i => i.Verdict, opt => opt.MapFrom((s, _) => s.Result?.Verdict));
+            CreateMap<Submission, SubmissionInfo>()
+                .IncludeBase<Submission, SubmissionListInfo>();
+            CreateMap<JudgeResult, SubmissionJudgeResultInfo>();
+            CreateMap<TestCaseResult, TestCaseJudgeResultInfo>();
         }
     }
 }

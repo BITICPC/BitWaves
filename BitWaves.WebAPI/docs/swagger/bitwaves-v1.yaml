@@ -1989,6 +1989,7 @@ definitions:
       - judgeTime
       - language
       - status
+      - verdict
       - judgeResult
     properties:
       id:
@@ -2030,6 +2031,20 @@ definitions:
           - Pending
           - Judging
           - Finished
+      verdict:
+        type: string
+        description: 提交的评测结果
+        enum:
+          - Accepted
+          - WrongAnswer
+          - RuntimeError
+          - TimeLimitExceeded
+          - MemoryLimitExceeded
+          - IdlenessLimitExceeded
+          - BadSystemCall
+          - CheckerFailed
+          - InteractorFailed
+          - JudgeFailed
       judgeResult:
         type: object
         description: 提交的评测结果

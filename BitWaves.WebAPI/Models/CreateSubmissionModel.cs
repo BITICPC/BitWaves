@@ -1,3 +1,4 @@
+using BitWaves.Data.Entities;
 using BitWaves.WebAPI.Validation;
 using MongoDB.Bson;
 using Newtonsoft.Json;
@@ -26,6 +27,18 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         [JsonIgnore]
         public string Author { get; set; }
+
+        /// <summary>
+        /// 获取或设置提交的语言的三元组。该属性应该由调用方设置。
+        /// </summary>
+        [JsonIgnore]
+        public LanguageTriple LanguageTriple { get; set; }
+
+        /// <summary>
+        /// 获取或设置提交的语言的显示名称。该属性应该由调用方设置。
+        /// </summary>
+        [JsonIgnore]
+        public string LanguageDisplayName { get; set; }
 
         /// <summary>
         /// 获取或设置提交的源代码。
