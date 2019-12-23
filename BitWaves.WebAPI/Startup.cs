@@ -43,6 +43,7 @@ namespace BitWaves.WebAPI
                         options.AddObjectIdConverter();
                         options.AddEnumJsonConverter();
                         options.AddMaybeJsonConverter();
+                        options.AddNullableJsonConverter();
                     });
 
             // 添加 BitWaves 数据仓库
