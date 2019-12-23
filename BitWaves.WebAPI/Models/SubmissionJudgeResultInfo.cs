@@ -16,6 +16,12 @@ namespace BitWaves.WebAPI.Models
         public Verdict Verdict { get; set; }
 
         /// <summary>
+        /// 获取或设置在编译过程中编译器产生的消息。
+        /// </summary>
+        [JsonProperty("compilerMessage")]
+        public string CompilerMessage { get; set; }
+
+        /// <summary>
         /// 获取或设置提交的程序在其运行的所有测试用例上所消耗的 CPU 时间的最大值，单位为毫秒。
         /// </summary>
         [JsonProperty("time")]

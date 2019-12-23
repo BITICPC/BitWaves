@@ -2050,6 +2050,7 @@ definitions:
         description: 提交的评测结果
         required:
           - verdict
+          - compilerMessage
           - time
           - memory
           - testCaseResults
@@ -2068,6 +2069,10 @@ definitions:
               - InteractorFailed
               - JudgeFailed
             description: 提交的评测结果
+          compilerMessage:
+            type: string
+            example: "warning: xxxxx"
+            description: 在编译阶段编译器产生的消息
           time:
             type: integer
             description: 用户提交在所有的测试点上消耗的 CPU 时间的最大值，单位为毫秒
