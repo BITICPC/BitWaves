@@ -77,7 +77,9 @@ namespace BitWaves.WebAPI.Models
                 .ForMember(i => i.ProblemTitle, opt => opt.MapFrom((e, _) => e.Problem?.Title))
                 .ForMember(i => i.ProblemArchiveId, opt => opt.MapFrom((e, _) => e.Problem?.ArchiveId))
                 .ForMember(i => i.Language, opt => opt.MapFrom((e, _) => e.LanguageDisplayName))
-                .ForMember(i => i.Verdict, opt => opt.MapFrom((s, _) => s.Result?.Verdict));
+                .ForMember(i => i.Verdict, opt => opt.MapFrom((s, _) => s.Result?.Verdict))
+                .ForMember(i => i.Time, opt => opt.MapFrom((s, _) => s.Result?.Time))
+                .ForMember(i => i.Memory, opt => opt.MapFrom((s, _) => s.Result?.Memory));
             CreateMap<Submission, SubmissionInfo>()
                 .IncludeBase<Submission, SubmissionListInfo>();
             CreateMap<JudgeResult, SubmissionJudgeResultInfo>();

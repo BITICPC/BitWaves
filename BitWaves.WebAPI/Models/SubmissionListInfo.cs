@@ -69,5 +69,17 @@ namespace BitWaves.WebAPI.Models
         /// </summary>
         [JsonProperty("verdict")]
         public Verdict? Verdict { get; set; }
+
+        /// <summary>
+        /// 获取或设置用户提交消耗的的 CPU 时间，单位为毫秒。
+        /// </summary>
+        [JsonProperty("time")]
+        public int? Time { get; set; }
+
+        /// <summary>
+        /// 获取或设置用户提交的峰值内存占用，单位为 MB。
+        /// </summary>
+        [JsonProperty("memory")]
+        public int? Memory { get; set; }
     }
 }
