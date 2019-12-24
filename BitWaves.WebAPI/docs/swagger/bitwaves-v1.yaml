@@ -1044,6 +1044,7 @@ paths:
           description: 筛选提交的评测结果
           enum:
             - Accepted
+            - CompilationFailed
             - WrongAnswer
             - RuntimeError
             - TimeLimitExceeded
@@ -1922,6 +1923,8 @@ definitions:
       - language
       - status
       - verdict
+      - time
+      - memory
     properties:
       id:
         type: string
@@ -1968,6 +1971,7 @@ definitions:
         description: 提交的评测结果
         enum:
           - Accepted
+          - CompilationFailed
           - WrongAnswer
           - RuntimeError
           - TimeLimitExceeded
@@ -1977,6 +1981,14 @@ definitions:
           - CheckerFailed
           - InteractorFailed
           - JudgeFailed
+      time:
+        type: integer
+        description: 提交所消耗的 CPU 时间，单位为毫秒
+        example: 10
+      memory:
+        type: integer
+        description: 提交的峰值内存占用，单位为 MB
+        example: 32
   SubmissionInfo:
     type: object
     required:
@@ -1990,6 +2002,8 @@ definitions:
       - language
       - status
       - verdict
+      - time
+      - memory
       - judgeResult
     properties:
       id:
@@ -2045,6 +2059,14 @@ definitions:
           - CheckerFailed
           - InteractorFailed
           - JudgeFailed
+      time:
+        type: integer
+        description: 提交所消耗的 CPU 时间，单位为毫秒
+        example: 10
+      memory:
+        type: integer
+        description: 提交的峰值内存占用，单位为 MB
+        example: 32
       judgeResult:
         type: object
         description: 提交的评测结果
@@ -2059,6 +2081,7 @@ definitions:
             type: string
             enum:
               - Accepted
+              - CompilationFailed
               - WrongAnswer
               - RuntimeError
               - TimeLimitExceeded
@@ -2098,6 +2121,7 @@ definitions:
                   type: string
                   enum:
                     - Accepted
+                    - CompilationFailed
                     - WrongAnswer
                     - RuntimeError
                     - TimeLimitExceeded
