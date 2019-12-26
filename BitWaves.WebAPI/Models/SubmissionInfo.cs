@@ -8,6 +8,12 @@ namespace BitWaves.WebAPI.Models
     public sealed class SubmissionInfo : SubmissionListInfo
     {
         /// <summary>
+        /// 获取或设置提交的源代码。
+        /// </summary>
+        [JsonProperty("code")]
+        public string Code { get; set; }
+
+        /// <summary>
         /// 获取或设置提交的评测结果。
         /// </summary>
         [JsonProperty("judgeResult")]
