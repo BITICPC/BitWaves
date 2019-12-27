@@ -17,7 +17,9 @@ RUN dotnet publish -c $BUILD_TYPE -o publish
 
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.1 AS runtime
+ARG HOST_ENV=Production
 WORKDIR /app
 COPY --from=build /app/BitWaves.WebAPI/publish ./
+ENV ASPNETCORE_ENVIRONMENT=$HOST_ENV
 ENTRYPOINT ["dotnet", "BitWaves.WebAPI.dll"]
 EXPOSE 80 443
