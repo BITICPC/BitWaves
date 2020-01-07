@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using BitWaves.Data.Repositories;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog;
@@ -50,38 +48,12 @@ namespace BitWaves.WebAPI
         }
 
         /// <summary>
-        /// 在当前环境中查找数据库配置文件并返回找到的配置文件的路径。该方法将会尝试查找下列路径上的配置文件：
-        ///
-        /// * ./dbsettings.json
-        /// * /etc/bitwaves/dbsettings.json
-        /// </summary>
-        /// <returns>找到的配置文件的路径。</returns>
-        /// <exception cref="Exception">无法在任何一个路径上找到配置文件。</exception>
-        private static string FindDbConfigFile()
-        {
-            var paths = new[] { "./dbsettings.json", "/etc/bitwaves/dbsettings.json" };
-            foreach (var p in paths)
-            {
-                if (File.Exists(p))
-                {
-                    return p;
-                }
-            }
-
-            throw new Exception("无法找到任何有效的数据库配置文件。");
-        }
-
-        /// <summary>
         /// 创建 <see cref="IWebHostBuilder"/> 以构建应用程序框架。
         /// </summary>
         /// <param name="args">命令行参数。</param>
         /// <returns>创建的 <see cref="IWebHostBuilder"/> 对象。</returns>
         private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                   .ConfigureAppConfiguration((context, config) =>
-                   {
-                       config.AddJsonFile(FindDbConfigFile(), optional: false);
-                   })
                    .ConfigureLogging(logging => { logging.ClearProviders(); })
                    .UseNLog()
                    .UseStartup<Startup>();

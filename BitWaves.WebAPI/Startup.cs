@@ -2,6 +2,7 @@
 using BitWaves.Data.Repositories.DependencyInjection;
 using BitWaves.WebAPI.Authentication;
 using BitWaves.WebAPI.Models;
+using BitWaves.WebAPI.Services;
 using BitWaves.WebAPI.Services.DependencyInjection;
 using BitWaves.WebAPI.Utils;
 using BitWaves.WebAPI.Validation;
@@ -58,6 +59,13 @@ namespace BitWaves.WebAPI
             services.AddAuthentication(options => options.DefaultScheme = BitWavesAuthDefaults.SchemeName)
                     .AddBitWavesScheme();
             services.AddBitWavesAuthorization();
+
+            // 添加评测管理服务
+            services.AddDefaultJudgeService(options =>
+            {
+                options.JudgeBoardAddress = _config.GetSection("BitWaves")
+                                                   .GetValue<string>("JudgeBoard");
+            });
 
             // 添加 AutoMapper 配置
             services.AddAutoMapper(typeof(ModelMapperProfile));

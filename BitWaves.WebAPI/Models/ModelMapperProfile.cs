@@ -1,6 +1,7 @@
 using AutoMapper;
 using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
+using BitWaves.WebAPI.Services;
 
 namespace BitWaves.WebAPI.Models
 {
@@ -84,6 +85,8 @@ namespace BitWaves.WebAPI.Models
                 .IncludeBase<Submission, SubmissionListInfo>();
             CreateMap<JudgeResult, SubmissionJudgeResultInfo>();
             CreateMap<TestCaseResult, TestCaseJudgeResultInfo>();
+            CreateMap<JudgeNodeInfo, JudgeNodeInfoModel>();
+            CreateMap<JudgeNodePerformanceInfo, JudgeNodePerformanceInfoModel>();
         }
     }
 }
