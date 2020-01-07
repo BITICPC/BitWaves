@@ -67,6 +67,12 @@ namespace BitWaves.WebAPI.Controllers
         public async Task<IActionResult> CreateObject(
             [FromForm(Name = "content")] [FileMaxLength(16 * 1024 * 1024)] IFormFile file)
         {
+            if (file == null)
+            {
+                ModelState.AddModelError("content", "no object data found.");
+                return ValidationProblem();
+            }
+
             var buffer = new byte[file.Length];
             using (var bufferStream = new MemoryStream(buffer))
             {
