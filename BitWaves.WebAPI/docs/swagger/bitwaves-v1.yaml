@@ -23,6 +23,8 @@ tags:
     description: 评测语言相关 API
   - name: submissions
     description: 提交相关 API
+  - name: judges
+    description: 评测集群控制相关 API
 
 paths:
   /contents:
@@ -1168,6 +1170,30 @@ paths:
         404:
           description: 无法找到指定的提交
 
+  /judges:
+    get:
+      summary: 获取活跃的评测节点列表
+      description: 获取活跃的评测节点列表
+      tags:
+        - judges
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: 用户身份验证标识，格式为 `Jwt <jwt>`
+      responses:
+        200:
+          description: 操作成功完成
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/JudgeNodeInfo'
+        401:
+          description: 请求不包含有效的用户身份标识
+        403:
+          description: 用户没有相应的访问权限
+
 definitions:
   ContentObjectInfo:
     type: object
@@ -2156,3 +2182,71 @@ definitions:
                   type: string
                   description: 评测系统产生的消息
                   example: "Ok 1 token(s)"
+
+  JudgeNodeInfo:
+    type: object
+    required:
+      - address
+      - lastHeartBeat
+      - lastSeen
+      - queuedSubmissions
+      - isBlocked
+      - performance
+    properties:
+      address:
+        type: string
+        description: 评测节点的地址
+        example: "192.168.32.1:8472"
+      lastHeartBeat:
+        type: string
+        description: 评测节点上一次发送心跳包的时间戳，时区为 UTC 时区
+        example: "2019-09-23T01:54:48.087Z"
+      lastSeen:
+        type: string
+        description: 评测节点上一次进行网络通信的时间戳，时区为 UTC 时区
+        example: "2019-09-23T01:54:48.087Z"
+      queuedSubmissions:
+        type: integer
+        description: 已经分配给评测节点、正在执行评测的评测任务数量
+        example: 3
+      isBlocked:
+        type: boolean
+        description: 当前评测节点是否已经被暂时冻结。被冻结的评测节点将不会被分配新的评测任务。
+        example: false
+      performance:
+        description: 评测节点的实时性能信息
+        $ref: '#/definitions/JudgeNodePerformanceInfo'
+  JudgeNodePerformanceInfo:
+    type: object
+    required:
+      - cpuUsage
+      - cores
+      - totalPhysicalMemory
+      - freePhysicalMemory
+      - swapFileSize
+      - cachedSwapSpace
+    properties:
+      cpuUsage:
+        type: number
+        description: 一个在 0 到 1 之间的实数，表示 CPU 占用率。
+        example: 0.85
+      cores:
+        type: integer
+        description: 评测节点上安装的 CPU 核心数量。
+        example: 4
+      totalPhysicalMemory:
+        type: integer
+        description: 评测节点上安装的总物理内存数量，单位为 MB。
+        example: 2048
+      freePhysicalMemory:
+        type: integer
+        description: 评测节点上的可用物理内存数量，单位为 MB。
+        example: 996
+      swapFileSize:
+        type: integer
+        description: 评测节点上的页交换文件大小。单位为 MB。
+        example: 80
+      cachedSwapSpace:
+        type: integer
+        description: 评测节点上已缓存的页交换文件大小。单位为 MB。
+        example: 60
