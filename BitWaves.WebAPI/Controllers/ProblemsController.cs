@@ -10,6 +10,7 @@ using BitWaves.WebAPI.Models;
 using BitWaves.WebAPI.Utils;
 using BitWaves.WebAPI.Validation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
@@ -170,6 +171,63 @@ namespace BitWaves.WebAPI.Controllers
         {
             var entities = await _repo.Problems.FindAllTagsAsync(ProblemFilterBuilder.Empty);
             return entities.Select(e => _mapper.Map<ProblemTag, ProblemTagInfo>(e)).ToArray();
+        }
+
+        // POST: /problems/{problemId}/testset
+        [HttpPost("{problemId}/testset")]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
+        [RequestSizeLimit(256 * 1024 * 1024)] // The maximal size of request is 256 MB for this action.
+        [RequestFormLimits(MultipartBodyLengthLimit = 256 * 1024 * 1024)]
+        public async Task<IActionResult> UploadTestArchive(
+            string problemId,
+            [FromForm(Name = "archive")] IFormFile file)
+        {
+            var validateOk = true;
+            if (!ObjectId.TryParse(problemId, out var id))
+            {
+                ModelState.AddModelError("problemId", "invalid problem ID.");
+                validateOk = false;
+            }
+
+            if (file == null)
+            {
+                ModelState.AddModelError("archive", "no test archive found.");
+                validateOk = false;
+            }
+
+            if (!validateOk)
+            {
+                return ValidationProblem();
+            }
+
+            bool succeeded;
+            using (var fileStream = file.OpenReadStream())
+            {
+                succeeded = await _repo.Problems.UploadProblemTestDataArchive(id, fileStream);
+            }
+
+            if (!succeeded)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
+        // DELETE: /problems/{problemId}/testset
+        [HttpDelete("{problemId}/testset")]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
+        public async Task<IActionResult> DeleteTestArchive(
+            string problemId)
+        {
+            if (!ObjectId.TryParse(problemId, out var id))
+            {
+                ModelState.AddModelError("problemId", "invalid problem ID.");
+                return ValidationProblem();
+            }
+
+            await _repo.Problems.DeleteProblemTestDataArchive(id);
+            return Ok();
         }
     }
 }

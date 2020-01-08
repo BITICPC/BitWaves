@@ -24,7 +24,7 @@ namespace BitWaves.WebAPI.Controllers
 
         // GET: /judges
         [HttpGet]
-        [Authorize(Roles = BitWavesAuthRoles.Admin)]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
         public async Task<List<JudgeNodeInfoModel>> GetJudges()
         {
             var judges = await _judgeService.GetJudgeNodesAsync();
