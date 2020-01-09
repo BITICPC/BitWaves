@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -29,6 +30,26 @@ namespace BitWaves.WebAPI.Controllers
         {
             var judges = await _judgeService.GetJudgeNodesAsync();
             return _mapper.Map<List<JudgeNodeInfo>, List<JudgeNodeInfoModel>>(judges);
+        }
+
+        // PUT: /judges/{address}/blocked
+        [HttpPut("{address}/blocked")]
+        [Authorize(Policy = BitWavesAuthPolicies.AdminOnly)]
+        public async Task<IActionResult> SetBlocked(
+            string address,
+            [FromQuery(Name = "blocked")] bool blocked = true)
+        {
+            try
+            {
+                await _judgeService.BlockJudgeNodeAsync(address, blocked);
+            }
+            catch (ArgumentException)
+            {
+                ModelState.AddModelError(nameof(address), "Invalid judge node address.");
+                return ValidationProblem();
+            }
+
+            return Ok();
         }
     }
 }

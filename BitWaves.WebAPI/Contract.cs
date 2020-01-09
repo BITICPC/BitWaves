@@ -42,5 +42,17 @@ namespace BitWaves.WebAPI
             if (value <= 0)
                 throw new ArgumentOutOfRangeException(variableName);
         }
+
+        /// <summary>
+        /// 检查给定的字符串不为空串。
+        /// </summary>
+        /// <param name="value">要检查的字符串。</param>
+        /// <param name="variableName">要检查的字符串在调用端的变量名称。</param>
+        /// <exception cref="ArgumentException"><paramref name="value"/> 为空串。</exception>
+        public static void NotEmpty(string value, string variableName)
+        {
+            if (value == string.Empty)
+                throw new ArgumentException($"{variableName} 不能为空。", variableName);
+        }
     }
 }
